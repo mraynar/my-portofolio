@@ -91,61 +91,8 @@ export const PROJECTS = [
   },
 ];
 
-/* ─── CERTIFICATES (legacy - kept for compatibility) ─────── */
-export const CERTIFICATES = [
-  {
-    emoji: "☁️",
-    issuer: "Google",
-    title: "Google Cloud Fundamentals",
-    date: "2024",
-    color: "#4285F4",
-    bg: "linear-gradient(135deg,#4285F4,#34A853)",
-  },
-  {
-    emoji: "⚛️",
-    issuer: "Meta",
-    title: "Front-End Developer Professional",
-    date: "2024",
-    color: "#0866FF",
-    bg: "linear-gradient(135deg,#0866FF,#00C8FF)",
-  },
-  {
-    emoji: "🐍",
-    issuer: "Dicoding",
-    title: "Belajar Dasar Python",
-    date: "2023",
-    color: "#306998",
-    bg: "linear-gradient(135deg,#306998,#FFD43B)",
-  },
-  {
-    emoji: "🔒",
-    issuer: "Cisco",
-    title: "Cybersecurity Essentials",
-    date: "2023",
-    color: "#1BA0D7",
-    bg: "linear-gradient(135deg,#1BA0D7,#003087)",
-  },
-  {
-    emoji: "🤖",
-    issuer: "Google",
-    title: "Intro to Generative AI",
-    date: "2024",
-    color: "#EA4335",
-    bg: "linear-gradient(135deg,#EA4335,#FBBC05)",
-  },
-  {
-    emoji: "🗄️",
-    issuer: "Oracle",
-    title: "MySQL Database Foundations",
-    date: "2023",
-    color: "#F80000",
-    bg: "linear-gradient(135deg,#F80000,#C74634)",
-  },
-];
-
-/* ─── CERTIFICATIONS ────────────────────────────────────── */
 export const CERTIFICATIONS = [
-  // --- PRIORITAS 1: COURSERA ---
+  // --- COURSERA ---
   {
     provider: "Coursera",
     title: "Full Stack Web Development Professional",
@@ -174,72 +121,72 @@ export const CERTIFICATIONS = [
     image: "/images/sertifikasi/coursera/Html.jpg",
   },
 
-  // --- PRIORITAS 2: DICODING ---
-  {
+    // --- DICODING ---
+    {
     provider: "Dicoding",
     title: "React Application Development",
     issuer: "Dicoding Academy",
     date: "Maret 2026",
     credentialId: "4EXG140QQPRL",
     credentialUrl: "https://dicoding.com/certificates/4EXG140QQPRL",
-    image: "/images/sertifikasi/dicoding/full stack react.jpg",
-  },
-  {
+    image: "/images/sertifikasi/dicoding/membuat aplikasi react.jpg",
+    },
+    {
     provider: "Dicoding",
     title: "Enterprise Data Science with Microsoft Fabric",
     issuer: "Dicoding Academy",
     date: "Maret 2026",
     credentialId: "72ZDJ771LZYW",
     credentialUrl: "https://dicoding.com/certificates/72ZDJ771LZYW",
-    image: "/images/sertifikasi/dicoding/data science.jpg",
-  },
-  {
+    image: "/images/sertifikasi/dicoding/data science microsoft fabric.jpg",
+    },
+    {
     provider: "Dicoding",
     title: "Front-End Web Architecture",
     issuer: "Dicoding Academy",
     date: "Maret 2026",
     credentialId: "KEXLQLNLWPG2",
     credentialUrl: "https://dicoding.com/certificates/KEXLQLNLWPG2",
-    image: "/images/sertifikasi/dicoding/web dev.jpg",
-  },
-  {
+    image: "/images/sertifikasi/dicoding/front end pemula.jpg",
+    },
+    {
     provider: "Dicoding",
     title: "Advanced JavaScript Programming",
     issuer: "Dicoding Academy",
     date: "Maret 2026",
     credentialId: "JLX1VW5E5Z72",
     credentialUrl: "https://dicoding.com/certificates/JLX1VW5E5Z72",
-    image: "/images/sertifikasi/dicoding/java script.jpg",
-  },
-  {
+    image: "/images/sertifikasi/dicoding/Java script dicoding.jpg",
+    },
+    {
     provider: "Dicoding",
     title: "Python Programming Specialist",
     issuer: "Dicoding Academy",
     date: "Maret 2026",
     credentialId: "72ZDJ7K6VZYW",
     credentialUrl: "https://dicoding.com/certificates/72ZDJ7K6VZYW",
-    image: "/images/sertifikasi/dicoding/full stack python & djangpo.jpg",
-  },
-  {
+    image: "/images/sertifikasi/dicoding/python dasar.jpg",
+    },
+    {
     provider: "Dicoding",
     title: "Professional Web Development",
     issuer: "Dicoding Academy",
     date: "Maret 2026",
     credentialId: "OLZOYQ6M3X65",
     credentialUrl: "https://dicoding.com/certificates/OLZOYQ6M3X65",
-    image: "/images/sertifikasi/dicoding/mastering mysql.jpg",
-  },
-  {
+    image: "/images/sertifikasi/dicoding/dasar pemrograman web.jpg",
+    },
+    {
     provider: "Dicoding",
     title: "Financial Literacy for Professionals",
     issuer: "Dicoding Academy",
     date: "Maret 2026",
     credentialId: "6RPN744M9X2M",
     credentialUrl: "https://dicoding.com/certificates/6RPN744M9X2M",
-    image: "/images/sertifikasi/dicoding/data analyst.jpg",
-  },
+    image: "/images/sertifikasi/dicoding/financial literity.jpg",
+    },
 
-  // --- PRIORITAS 3: UDEMY ---
+  // --- UDEMY ---
   {
     provider: "Udemy",
     title: "Full Stack Python & Django Expert",
@@ -311,6 +258,17 @@ export const CERTIFICATIONS = [
     credentialId: "UC-1c74beb6-f05e-43a4-bf1c-42f43fae526c",
     credentialUrl: "https://ude.my/UC-1c74beb6-f05e-43a4-bf1c-42f43fae526c",
     image: "/images/sertifikasi/udemy/java script.jpg",
+  },
+
+  // --- KARIRNEX --- ✅ BARU
+  {
+    provider: "Karirnex",
+    title: "Data Analyst Professional",
+    issuer: "Karirnex",
+    date: "2026",
+    credentialId: "KARIRNEX-DA-001",
+    credentialUrl: "#",
+    image: "/images/sertifikasi/karirnex/Data Analyst.jpg",
   },
 ];
 

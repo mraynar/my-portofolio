@@ -518,7 +518,6 @@ function CertificationCard({ cert, dark }) {
             parent.appendChild(fb);
           }}
         />
-        {/* Provider badge */}
         <span
           style={{
             position: "absolute", top: 10, left: 10, zIndex: 2,
@@ -530,7 +529,6 @@ function CertificationCard({ cert, dark }) {
         >
           {cert.provider}
         </span>
-        {/* Connector dot */}
         <div
           style={{
             position: "absolute", bottom: -8, left: "50%", transform: "translateX(-50%)",
@@ -547,19 +545,23 @@ function CertificationCard({ cert, dark }) {
           style={{
             fontFamily: F.display, fontWeight: 700, fontSize: ".93rem",
             color: T.text(dark), lineHeight: 1.4, marginBottom: ".35rem",
+            minHeight: "2.6rem",
             display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden",
           }}
         >
           {cert.title}
         </h4>
-        <p style={{ fontSize: ".78rem", color: cfg.color, fontWeight: 600, fontFamily: F.body, marginBottom: ".25rem" }}>
+        <p style={{
+          fontSize: ".78rem", color: cfg.color, fontWeight: 600,
+          fontFamily: F.body, marginBottom: ".25rem",
+          minHeight: "1.1rem",
+          overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis",
+        }}>
           {cert.issuer}
         </p>
         <p style={{ fontSize: ".72rem", color: T.text3(dark), fontFamily: F.body, marginBottom: "1rem" }}>
           {cert.date}
         </p>
-
-        {/* Credential ID */}
         <div
           style={{
             background: dark ? "rgba(37,99,235,.12)" : "rgba(37,99,235,.06)",
@@ -574,10 +576,8 @@ function CertificationCard({ cert, dark }) {
             {cert.credentialId}
           </span>
         </div>
-
-        {/* Show Credential button */}
-        <a
-          href={cert.credentialUrl}
+        
+        <a href={cert.credentialUrl}
           target="_blank"
           rel="noreferrer"
           style={{
