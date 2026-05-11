@@ -104,8 +104,7 @@ function Hero({ dark }) {
         {/* Photo */}
         <div className="hero-photo-wrapper" style={{
           opacity: 0,
-          animation: "heroPhotoIn 1.1s .65s cubic-bezier(.22,.68,0,1.08) forwards",
-          position: "relative", flexShrink: 0, alignSelf: "flex-end",
+          animation: "heroPhotoIn 1.2s 1.2s cubic-bezier(.22,.68,0,1.08) forwards",          position: "relative", flexShrink: 0, alignSelf: "flex-end",
         }}>
           <div style={{ position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "130%", height: "68%", background: "#3b82f6", borderRadius: "50% 50% 0 0 / 38% 38% 0 0", zIndex: 0 }} />
           <div style={{ position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "145%", height: "73%", borderRadius: "50% 50% 0 0 / 38% 38% 0 0", border: "2px solid rgba(147,197,253,0.55)", zIndex: 0 }} />
@@ -127,9 +126,9 @@ function Hero({ dark }) {
           to   { opacity: 1; transform: translateY(0); }
         }
         @keyframes heroPhotoIn {
-          0%   { opacity: 0; transform: translateY(100px) scale(.96); }
-          60%  { opacity: 1; }
-          80%  { transform: translateY(-12px) scale(1.01); }
+          0%   { opacity: 0; transform: translateY(100vh) scale(.96); }
+          60%  { opacity: 1; transform: translateY(-16px) scale(1.01); }
+          80%  { transform: translateY(-8px) scale(1.005); }
           100% { opacity: 1; transform: translateY(0) scale(1); }
         }
         @keyframes popIn {
@@ -176,11 +175,9 @@ function About({ dark }) {
                 <h2 style={{ fontFamily: F.display, fontSize: "1.75rem", fontWeight: 800, color: "#2563eb", letterSpacing: "-.4px", lineHeight: 1.18 }}>ABOUT ME</h2>
                 <div style={{ width: 44, height: 4, background: "#3b82f6", borderRadius: 99, margin: "12px 0 20px" }} />
                 <p style={{ fontSize: ".97rem", lineHeight: 1.85, color: dark ? "#c3d8ff" : "#1e293b", marginBottom: "1rem", fontFamily: F.body }}>
-                  Hello! I&apos;m <strong style={{ color: "#1d4ed8", fontWeight: 700 }}>Muhammad Raynar Hammam</strong>, an Information Systems student at <strong style={{ color: "#1d4ed8", fontWeight: 700 }}>UPN &ldquo;Veteran&rdquo; Jawa Timur</strong>. Passionate about building meaningful digital products from the ground up.
-                </p>
+                  A passionate <strong style={{ color: "#1d4ed8", fontWeight: 700 }}>Full-Stack & Mobile Developer</strong> and Information Systems student at <strong style={{ color: "#1d4ed8", fontWeight: 700 }}>UPN &ldquo;Veteran&rdquo; Jawa Timur</strong> — building real products that create real impact.                </p>
                 <p style={{ fontSize: ".97rem", lineHeight: 1.85, color: dark ? "#c3d8ff" : "#1e293b", fontFamily: F.body, marginBottom: "1.8rem" }}>
-                  I enjoy working with <span style={{ color: dark ? "#93c5fd" : "#1d4ed8", fontWeight: 600 }}>web development</span>, <span style={{ color: dark ? "#93c5fd" : "#1d4ed8", fontWeight: 600 }}>mobile apps</span>, and <span style={{ color: dark ? "#93c5fd" : "#1d4ed8", fontWeight: 600 }}>UI/UX design</span> — always pushing to learn new technologies and create real impact through code.
-                </p>
+                  I specialize in <span style={{ color: dark ? "#93c5fd" : "#1d4ed8", fontWeight: 600 }}>web development</span>, <span style={{ color: dark ? "#93c5fd" : "#1d4ed8", fontWeight: 600 }}>mobile & iOS</span>, and <span style={{ color: dark ? "#93c5fd" : "#1d4ed8", fontWeight: 600 }}>data</span> — with hands-on experience growing a social media-based business. A self-driven technologist who thrives on exploring and mastering new technologies.                </p>      
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 12, background: dark ? "rgba(37,99,235,.25)" : "rgba(37,99,235,.09)", borderRadius: 16, padding: "1.3rem", border: dark ? "1px solid rgba(59,130,246,.2)" : "none" }}>
                   {[["10+", "Projects"], ["5+", "Organizations"], ["10+", "Certifications"]].map(([n, l]) => (
                     <div key={l} style={{ textAlign: "center" }}>
