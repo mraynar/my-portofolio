@@ -288,15 +288,15 @@ export const EXPERIENCE = [
         "Managed departmental work programs and cross-division coordination.",
         "Developed leadership skills and strengthened team collaboration.",
     ],
-    tags: ["Organization", "Leadership", "Teamwork"],
+    tags: ["Communication", "Leadership", "Teamwork"],
   },
   {
     featured: true,
     badge: "Organization",
     badgeColor: { bg: "rgba(37,99,235,.12)", color: "#1d4ed8" },
     date: "2024 – 2025",
-    title: "Anggota Aktif",
-    org: "UKM Penalaran (PNK) UPN Veteran Jawa Timur",
+    title: "Staff Ahli Website",
+    org: "UKM Penalaran Dan Kreativitas",
     photo: "/images/experiences/ukmpnk/pnk.jpg",
     photoAlt: "UKM Penalaran PNK",
     items: [
@@ -304,7 +304,7 @@ export const EXPERIENCE = [
         "Participated in scientific paper competitions and academic contests.",
         "Supported campus literacy programs and intellectual development initiatives.",
     ],
-    tags: ["Research", "Academic", "Competition"],
+    tags: ["Creativity", "Academic", "Competition"],
   },
   {
     badge: "Internship",
@@ -319,10 +319,10 @@ export const EXPERIENCE = [
       "Translated design prototypes into clean, production-ready code.",
       "Optimized frontend performance and cross-browser compatibility.",
     ],
-    tags: ["Front End", "JavaScript"],
+    tags: ["Front End", "UI/UX Desgin", "Team Project"],
   },
   {
-    badge: "Leadership",
+    badge: "Organization",
     badgeColor: { bg: "rgba(37,99,235,.12)", color: "#1d4ed8" },
     date: "2026 – Present",
     title: "Novo Entrepreneurship",
@@ -334,6 +334,6 @@ export const EXPERIENCE = [
       "Developing business mindset and strategic thinking skills.",
       "Networking with corporate leaders and industry experts.",
     ],
-    tags: ["Leadership", "Entrepreneurship"],
+    tags: ["Leadership", "Entrepreneurship", "Problem Solving"],
   },
 ];
