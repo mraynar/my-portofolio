@@ -181,8 +181,7 @@ function About({ dark }) {
                   Currently expanding into <span style={{ color: dark ? "#93c5fd" : "#1d4ed8", fontWeight: 600 }}>mobile and iOS development</span> and <span style={{ color: dark ? "#93c5fd" : "#1d4ed8", fontWeight: 600 }}>data</span>, while also having experience growing an online business through social media.
                 </p>      
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 12, background: dark ? "rgba(37,99,235,.25)" : "rgba(37,99,235,.09)", borderRadius: 16, padding: "1.3rem", border: dark ? "1px solid rgba(59,130,246,.2)" : "none" }}>
-                  {[["10+", "Projects"], ["5+", "Organizations"], ["10+", "Certifications"]].map(([n, l]) => (
-                    <div key={l} style={{ textAlign: "center" }}>
+                      {[[`${PROJECTS.length}+`, "Projects"], [`${EXPERIENCE.length}+`, "Organizations"], [`${CERTIFICATIONS.length}+`, "Certifications"]].map(([n, l]) => (                    <div key={l} style={{ textAlign: "center" }}>
                       <span style={{ fontFamily: F.display, fontSize: "1.65rem", fontWeight: 800, color: dark ? "#60a5fa" : "#2563eb", display: "block", lineHeight: 1.2 }}>{n}</span>
                       <span style={{ fontSize: ".76rem", color: dark ? "#93afd8" : "#6b7280", fontWeight: 500, letterSpacing: ".04em", fontFamily: F.body }}>{l}</span>
                     </div>
@@ -404,8 +403,7 @@ function ExperiencePreview({ dark }) {
                 <p style={{ opacity: 0.82, fontSize: ".92rem", fontFamily: F.body, lineHeight: 1.7, maxWidth: 360 }}>A collection of my professional journey and contributions.</p>
               </div>
               <div className="exp-stats" style={{ display: "flex", gap: 10, flexWrap: "nowrap" }}>
-                {[["4+", "Organizations"], ["3+", "Projects"], ["2022", "Since"]].map(([n, l]) => (
-                  <div key={l} style={{ textAlign: "center", background: "rgba(255,255,255,.18)", borderRadius: 16, padding: ".75rem 1rem", backdropFilter: "blur(8px)", flex: "0 0 auto" }}>
+                    {[[`${EXPERIENCE.length}+`, "Organizations"], [`${PROJECTS.length}+`, "Projects"], ["2022", "Since"]].map(([n, l]) => (                  <div key={l} style={{ textAlign: "center", background: "rgba(255,255,255,.18)", borderRadius: 16, padding: ".75rem 1rem", backdropFilter: "blur(8px)", flex: "0 0 auto" }}>
                     <span style={{ fontFamily: F.display, fontWeight: 800, display: "block", lineHeight: 1.2, fontSize: "clamp(1.1rem, 3vw, 1.8rem)" }}>{n}</span>
                     <span style={{ opacity: 0.85, fontFamily: F.body, lineHeight: 1.4, fontSize: "clamp(.58rem, 1.5vw, .76rem)", whiteSpace: "nowrap" }}>{l}</span>
                   </div>
