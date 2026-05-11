@@ -104,6 +104,15 @@ export const CERTIFICATIONS = [
   },
   {
     provider: "Coursera",
+    title: "Foundation Of Coding Front End",
+    issuer: "Microsoft",
+    date: "May 2026",
+    credentialId: "BABFA59PQ6P1",
+    credentialUrl: "https://coursera.org/verify/WH2MXPLCC1PU",
+    image: "/images/sertifikasi/coursera/Front End Microsoft.jpg",
+  },
+  {
+    provider: "Coursera",
     title: "Software Engineering Mastery",
     issuer: "IBM",
     date: "Mei 2026",
