@@ -82,7 +82,7 @@ export const PROJECTS = [
   {
     image: "/images/projects/Data Analyst.png",
     title: "FMCG Sales Analysis",
-    label: "Data Science",
+    label: "Data Analyst",
     desc: "Transforming raw FMCG transaction data into strategic BI insights, accessible via secure organizational Google Workspace integration.",
     badges: ["Power BI", "Data Analysis", "FMCG"],
     gradient: "from-yellow-600 to-orange-400",
