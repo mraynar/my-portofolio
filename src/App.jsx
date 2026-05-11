@@ -175,7 +175,7 @@ function About({ dark }) {
                 <h2 style={{ fontFamily: F.display, fontSize: "1.75rem", fontWeight: 800, color: "#2563eb", letterSpacing: "-.4px", lineHeight: 1.18 }}>ABOUT ME</h2>
                 <div style={{ width: 44, height: 4, background: "#3b82f6", borderRadius: 99, margin: "12px 0 20px" }} />
                 <p style={{ fontSize: ".97rem", lineHeight: 1.85, color: dark ? "#c3d8ff" : "#1e293b", marginBottom: "1rem", fontFamily: F.body }}>
-                  I&apos;m <strong style={{ color: "#1d4ed8", fontWeight: 700 }}>Muhammad Raynar Hammam</strong>, an Information Systems student at <strong style={{ color: "#1d4ed8", fontWeight: 700 }}>UPN &ldquo;Veteran&rdquo; Jawa Timur</strong> with solid experience in web development.
+                  I&apos;m <strong style={{ color: "#1d4ed8", fontWeight: 700 }}>Muhammad Raynar Hammam</strong>, an Information Systems student at UPN "Veteran" Jawa Timur with solid experience in <strong style={{ color: "#1d4ed8", fontWeight: 700 }}>Web &ldquo;Development</strong>.
                 </p>
                 <p style={{ fontSize: ".97rem", lineHeight: 1.85, color: dark ? "#c3d8ff" : "#1e293b", fontFamily: F.body, marginBottom: "1.8rem" }}>
                   Currently expanding into <span style={{ color: dark ? "#93c5fd" : "#1d4ed8", fontWeight: 600 }}>mobile and iOS development</span> and <span style={{ color: dark ? "#93c5fd" : "#1d4ed8", fontWeight: 600 }}>data</span>, while also having experience growing an online business through social media.
