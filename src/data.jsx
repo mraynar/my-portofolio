@@ -54,7 +54,7 @@ export const PROJECTS = [
     title: "Shopping Kuy",
     label: "Web App",
     desc: "A sophisticated C2C marketplace specializing in authentic pre-loved fashion, integrating Google OAuth and RajaOngkir for seamless transactions.",
-    badges: ["Laravel", "React", "Midtrans", "RajaOngkir"],
+    badges: ["Laravel", "React JS", "RajaOngkir"],
     gradient: "from-violet-700 to-violet-400",
     featured: false,
     repo: null,
