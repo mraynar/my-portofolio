@@ -150,7 +150,7 @@ export const CERTIFICATIONS = [
     provider: "Coursera",
     title: "Full Stack Web Development Professional",
     issuer: "Amazon Web Services (AWS)",
-    date: "pril 2026",
+    date: "April 2026",
     credentialId: "BABFA59PQ6P1",
     credentialUrl: "https://coursera.org/verify/BABFA59PQ6P1",
     image: "/images/sertifikasi/coursera/Full Stack AWS.jpg",
