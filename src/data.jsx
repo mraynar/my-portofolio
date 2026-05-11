@@ -279,7 +279,7 @@ export const EXPERIENCE = [
     badge: "Organization",
     badgeColor: { bg: "rgba(37,99,235,.12)", color: "#1d4ed8" },
     date: "2025 – 2026",
-    title: "Staff Departemen",
+    title: "Public Relations Staff",
     org: "HIMASIFO UPN Veteran Jawa Timur",
     photo: "/images/experiences/hima/himasifo.jpg",
     photoAlt: "HIMASIFO UPN Veteran Jawa Timur",
