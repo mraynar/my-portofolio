@@ -187,7 +187,7 @@ export function ProjectCard({ p, dark }) {
 
         {p.repo ? (
           <a href={p.repo} target="_blank" rel="noreferrer"
-            style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none", borderRadius: 12, background: repoBgDefault, color: "#fff", padding: "10px 16px", fontFamily: F.body, fontWeight: 600, fontSize: ".82rem", lineHeight: 1, letterSpacing: ".03em", transition: "transform .2s ease" }}
+            style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none", borderRadius: 12, background: repoBgDefault, color: "#fff", padding: "10px 16px", fontFamily: F.body, fontWeight: 600, fontSize: "clamp(.65rem, 2vw, .82rem)", lineHeight: 1, letterSpacing: ".03em", transition: "transform .2s ease" }}
             onMouseEnter={(e) => { e.currentTarget.style.background = dark ? "#2563eb" : "#1e3a8a"; e.currentTarget.style.transform = "translateY(-2px)"; }}
             onMouseLeave={(e) => { e.currentTarget.style.background = repoBgDefault; e.currentTarget.style.transform = "translateY(0)"; }}>
             <svg viewBox="0 0 24 24" fill="currentColor" width="15" height="15">
@@ -422,7 +422,7 @@ export function Footer({ dark }) {
         <span style={{ fontFamily: F.display, fontWeight: 800, fontSize: "1.4rem", color: "#3b82f6", letterSpacing: "-.3px" }}>mraynar</span>
 
         {/* Nav links */}
-        <div style={{ display: "flex", gap: "1.8rem", flexWrap: "wrap", justifyContent: "center" }}>
+        <div style={{ display: "flex", gap: "clamp(.6rem, 2vw, 1.8rem)", flexWrap: "nowrap", justifyContent: "center" }}>
           {["Home", "About", "Projects", "Experience", "Contact"].map((item) => (
             <a key={item}
               href={item === "Home" ? "/" : item === "Projects" ? "/projects" : item === "Experience" ? "/experience" : `/#${item.toLowerCase()}`}
