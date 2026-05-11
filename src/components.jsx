@@ -138,15 +138,15 @@ export function ProjectCard({ p, dark }) {
   return (
     <div style={{
       background: T.card(dark),
-      border: "1.5px solid rgba(59,130,246,.35)",
+      border: `1.5px solid ${dark ? "rgba(59,130,246,.35)" : BORDER}`,  // ← samakan dengan ExpCard
       borderRadius: 20, overflow: "hidden", display: "flex", flexDirection: "column", height: "100%",
-      transition: "transform .3s ease, box-shadow .3s ease, border-color .3s ease",
+      transition: "transform .28s ease, box-shadow .28s ease, border-color .28s ease",  // ← durasi .28s sama ExpCard
       boxShadow: dark
         ? "0 0 0 1px rgba(59,130,246,.2), 0 0 20px rgba(37,99,235,.25), 0 4px 24px rgba(37,99,235,.15)"
         : "none",
     }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.transform = "translateY(-10px)";
+        e.currentTarget.style.transform = "translateY(-8px)";           // ← dari -10px ke -8px
         e.currentTarget.style.borderColor = dark ? "#60a5fa" : "rgba(37,99,235,.5)";
         e.currentTarget.style.boxShadow = dark
           ? "0 0 0 1.5px rgba(96,165,250,.6), 0 0 40px rgba(37,99,235,.55), 0 0 80px rgba(37,99,235,.25), 0 16px 48px rgba(37,99,235,.3)"
@@ -154,7 +154,7 @@ export function ProjectCard({ p, dark }) {
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.transform = "translateY(0)";
-        e.currentTarget.style.borderColor = dark ? "rgba(59,130,246,.35)" : "rgba(59,130,246,.2)";
+        e.currentTarget.style.borderColor = dark ? "rgba(59,130,246,.35)" : BORDER;  // ← pakai BORDER constant
         e.currentTarget.style.boxShadow = dark
           ? "0 0 0 1px rgba(59,130,246,.2), 0 0 20px rgba(37,99,235,.25), 0 4px 24px rgba(37,99,235,.15)"
           : "none";
