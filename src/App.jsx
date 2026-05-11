@@ -805,16 +805,18 @@ function Contact({ dark }) {
           </p>
           <p style={{ color: T.text3(dark), marginBottom: "3rem", fontSize: "1.05rem", fontFamily: F.body, lineHeight: 1.75 }}>Got a project in mind? Let&apos;s build something.</p>
         </Reveal>
-          <Reveal delay={120} className="flex justify-center items-center flex-wrap" style={{ gap: "0.5rem 1.2rem" }}>
-          {socials.map((s) => (
-            <a key={s.label} href={s.href} target="_blank" rel="noreferrer"
-              className="inline-flex items-center gap-2.5 no-underline font-semibold transition-all duration-200"
-              style={{ background: s.bg, color: s.color, fontSize: ".92rem", padding: "14px 24px", borderRadius: 14, fontFamily: F.body, lineHeight: 1 }}
-              onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-5px)"; e.currentTarget.style.boxShadow = "0 14px 32px rgba(0,0,0,.24)"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "none"; }}>
-              {s.icon}{s.label}
-            </a>
-          ))}
+        <Reveal delay={120}>
+          <div className="flex justify-center items-center flex-wrap" style={{ gap: "0.8rem" }}>
+            {socials.map((s) => (
+              <a key={s.label} href={s.href} target="_blank" rel="noreferrer"
+                className="inline-flex items-center gap-2.5 no-underline font-semibold transition-all duration-200"
+                style={{ background: s.bg, color: s.color, fontSize: ".92rem", padding: "14px 24px", borderRadius: 14, fontFamily: F.body, lineHeight: 1 }}
+                onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-5px)"; e.currentTarget.style.boxShadow = "0 14px 32px rgba(0,0,0,.24)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "none"; }}>
+                {s.icon}{s.label}
+              </a>
+            ))}
+          </div>
         </Reveal>
       </Container>
     </section>
