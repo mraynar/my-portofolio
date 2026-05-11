@@ -144,8 +144,8 @@ function Hero({ dark }) {
 /* ─── ABOUT ─────────────────────────────────────────────── */
 function About({ dark }) {
   const educations = [
-    { period: "2023 – Present", degree: "Bachelor of Information Systems", school: 'UPN "Veteran" Jawa Timur', note: "Currently Active", current: true },
-    { period: "2020 – 2023", degree: "Software Engineering", school: "SMKN 2 Surabaya", note: "Graduated with Honors", current: false },
+    { period: "2024 – Present", degree: "Bachelor of Information Systems", school: 'UPN "Veteran" Jawa Timur', note: "Currently Active", current: true },
+    { period: "2021 – 2024", degree: "Software Engineering", school: "SMKN 2 Surabaya", note: "Graduated with Honors", current: false },
   ];
 
   return (
