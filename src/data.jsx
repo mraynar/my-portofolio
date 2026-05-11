@@ -294,7 +294,7 @@ export const EXPERIENCE = [
     photoAlt: "HIMASIFO UPN Veteran Jawa Timur",
     items: [
         "Actively participated in student association programs and events.",
-        "Managed departmental work programs and cross-division coordination.",
+        "Make a communication cooperation with the company and between universities.",
         "Developed leadership skills and strengthened team collaboration.",
     ],
     tags: ["Communication", "Leadership", "Teamwork"],
@@ -310,7 +310,7 @@ export const EXPERIENCE = [
     photoAlt: "UKM Penalaran PNK",
     items: [
         "Actively engaged in student reasoning and research activities.",
-        "Participated in scientific paper competitions and academic contests.",
+        "Building and maintaining the organization's website.",
         "Supported campus literacy programs and intellectual development initiatives.",
     ],
     tags: ["Creativity", "Academic", "Competition"],

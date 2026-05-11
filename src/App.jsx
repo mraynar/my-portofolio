@@ -181,7 +181,7 @@ function About({ dark }) {
                   Currently expanding into <span style={{ color: dark ? "#93c5fd" : "#1d4ed8", fontWeight: 600 }}>mobile and iOS development</span> and <span style={{ color: dark ? "#93c5fd" : "#1d4ed8", fontWeight: 600 }}>data</span>, while also having experience growing an online business through social media.
                 </p>      
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 12, background: dark ? "rgba(37,99,235,.25)" : "rgba(37,99,235,.09)", borderRadius: 16, padding: "1.3rem", border: dark ? "1px solid rgba(59,130,246,.2)" : "none" }}>
-                      {[[`${PROJECTS.length}+`, "Projects"], [`${EXPERIENCE.length}+`, "Organizations"], [`${CERTIFICATIONS.length}+`, "Certifications"]].map(([n, l]) => (                    <div key={l} style={{ textAlign: "center" }}>
+                      {[[`${PROJECTS.length}+`, "Projects"], [`${EXPERIENCE.length}+`, "Experience"], [`${CERTIFICATIONS.length}+`, "Certifications"]].map(([n, l]) => (                    <div key={l} style={{ textAlign: "center" }}>
                       <span style={{ fontFamily: F.display, fontSize: "1.65rem", fontWeight: 800, color: dark ? "#60a5fa" : "#2563eb", display: "block", lineHeight: 1.2 }}>{n}</span>
                       <span style={{ fontSize: ".76rem", color: dark ? "#93afd8" : "#6b7280", fontWeight: 500, letterSpacing: ".04em", fontFamily: F.body }}>{l}</span>
                     </div>
