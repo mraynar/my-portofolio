@@ -172,7 +172,7 @@ function About({ dark }) {
           <div className="about-grid" style={{ display: "grid", gridTemplateColumns: "1fr", gap: 24 }}>
             <Reveal delay={80}>
               <div className="about-card" style={{ background: dark ? "#0d1b3e" : "#f3f6fc", borderRadius: 28, padding: "2.6rem 2.8rem", boxShadow: dark ? "0 20px 60px rgba(0,0,0,.5),0 4px 16px rgba(0,0,0,.3)" : "0 20px 60px rgba(0,0,0,.22),0 4px 16px rgba(0,0,0,.1)", boxSizing: "border-box", height: "100%", border: dark ? "1px solid rgba(59,130,246,.2)" : "none" }}>
-                <h2 style={{ fontFamily: F.display, fontSize: "1.75rem", fontWeight: 800, color: "#2563eb", letterSpacing: "-.4px", lineHeight: 1.18 }}>ABOUT ME</h2>
+                <h2 style={{ fontFamily: F.display, fontSize: "1.75rem", fontWeight: 800, color: dark ? "#93c5fd" : "#2563eb", letterSpacing: "-.4px", lineHeight: 1.18 }}>ABOUT ME</h2>
                 <div style={{ width: 44, height: 4, background: "#3b82f6", borderRadius: 99, margin: "12px 0 20px" }} />
                 <p style={{ fontSize: ".97rem", lineHeight: 1.85, color: dark ? "#c3d8ff" : "#1e293b", marginBottom: "1rem", fontFamily: F.body }}>
                   I&apos;m <strong style={{ color: dark ? "#93c5fd" : "#1d4ed8", fontWeight: 700 }}>Muhammad Raynar Hammam</strong>, an Information Systems student at UPN "Veteran" Jawa Timur with solid experience in <strong style={{ color: dark ? "#93c5fd" : "#1d4ed8", fontWeight: 700 }}>Web Development</strong>.
