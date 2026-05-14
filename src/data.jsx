@@ -21,7 +21,7 @@ export const TECH_STACK = [
 export const PROJECTS = [
   {
     image: "/images/projects/Griya Asri Kos.png",
-    title: "Griya Asri Kos",
+    title: "Kos Management System",
     label: "Web App",
     desc: "An all-in-one property management solution that automates room bookings and tenant tracking, featuring seamless Google OAuth for effortless user access.",
     badges: ["Laravel", "Tailwind", "Midtrans"],
@@ -80,13 +80,23 @@ export const PROJECTS = [
     repo: null,
   },
   {
-    image: "/images/projects/Data Analyst.png",
+    image: "/images/projects/Data Analyst Dashboard.png",
     title: "FMCG Sales Analysis",
     label: "Data Analyst",
     desc: "Transforming raw FMCG transaction data into strategic BI insights, accessible via secure organizational Google Workspace integration.",
     badges: ["Power BI", "Data Analysis", "FMCG"],
     gradient: "from-yellow-600 to-orange-400",
     featured: false,
+    repo: null,
+  },
+  {
+    image: "/images/projects/Data Analyst.png",
+    title: "E-Commerce 360° Analytics",
+    label: "Data Analyst",
+    desc: "Transforming raw e-commerce transaction data into actionable business insights across sales performance, customer behavior, and product intelligence using Google Looker Studio.",
+    badges: ["Looker Studio", "Data Analysis", "E-Commerce"],
+    gradient: "from-blue-600 to-cyan-400",
+    featured: true,
     repo: null,
   },
 ];
