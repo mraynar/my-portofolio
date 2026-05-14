@@ -175,7 +175,7 @@ export function ProjectCard({ p, dark }) {
 
       <div style={{ padding: "1.6rem 1.8rem 2rem", flex: 1, display: "flex", flexDirection: "column" }}>
         <h3 style={{ fontFamily: F.display, fontWeight: 700, fontSize: "1.08rem", color: T.text(dark), marginBottom: ".5rem", lineHeight: 1.35 }}>{p.title}</h3>
-        <p style={{ fontSize: ".92rem", lineHeight: 1.78, color: T.text3(dark), marginBottom: "1.2rem", fontFamily: F.body, flex: 1 }}>{p.desc}</p>
+        <p style={{ fontSize: ".92rem", lineHeight: 1.78, color: T.text3(dark), marginBottom: "1.2rem", fontFamily: F.body, flex: 1, minHeight: "5rem"}}>{p.desc}</p>
 
         <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: "1.2rem" }}>
           {p.badges.map((b) => (
