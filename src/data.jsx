@@ -81,9 +81,9 @@ export const PROJECTS = [
   },
   {
     image: "/images/projects/Data Analyst Dashboard.png",
-    title: "E-Commerce 360° Analytics",
+    title: "SalesLens Analytics",
     label: "Data Analyst",
-    desc: "Transforming raw e-commerce transaction data into actionable business insights across sales performance, customer behavior, and product intelligence using Google Looker Studio.",
+    desc: "Transforming raw e-commerce data into actionable insights across sales, customer behavior, and product performance using Google Looker Studio.",
     badges: ["Looker Studio", "Data Analysis", "E-Commerce"],
     gradient: "from-blue-600 to-cyan-400",
     featured: false,
