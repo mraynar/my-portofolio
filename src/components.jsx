@@ -63,7 +63,7 @@ export function Container({ children, style = {}, className = "" }) {
 export function Reveal({ children, className = "", delay = 0 }) {
   const [ref, visible] = useReveal();
   return (
-    <div ref={ref} style={{ transitionDelay: `${delay}ms` }}
+    <div ref={ref} style={{ transitionDelay: `${delay}ms`, height: "100%", display: "flex", flexDirection: "column", }}
       className={`transition-all duration-700 ease-out ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"} ${className}`}>
       {children}
     </div>

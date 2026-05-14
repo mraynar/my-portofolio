@@ -173,13 +173,19 @@ export default function ProjectPage({ dark }) {
           </Reveal>
 
           {/* ── Grid 3 kolom, sisa card center ── */}
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 28, justifyContent: "center" }}>
+          <div style={{ 
+            display: "flex", 
+            flexWrap: "wrap", 
+            gap: 28,
+            justifyContent: "center",
+          }}>
             {filtered.map((p, i) => (
-              <div key={`${p.title}-${filter}`} className="proj-wrap"
-                style={{ width: "calc((100% - 56px) / 3)", flex: "0 0 calc((100% - 56px) / 3)" }}>
-                <Reveal delay={Math.min(i, 5) * 70} style={{ height: "100%" }}>
-                  <ProjectCard p={p} dark={dark} />
-                </Reveal>
+              <div key={`${p.title}-${filter}`} style={{ 
+                width: "calc((100% - 56px) / 3)",
+                maxWidth: 420,
+                display: "flex",
+              }}>
+                <ProjectCard p={p} dark={dark} />
               </div>
             ))}
           </div>
@@ -205,11 +211,12 @@ export default function ProjectPage({ dark }) {
 
         <style>{`
           @media (max-width: 960px) {
-            .proj-wrap { width: calc((100% - 28px) / 2) !important; flex: 0 0 calc((100% - 28px) / 2) !important; }
+            .proj-grid { grid-template-columns: repeat(2, 1fr) !important; }
           }
           @media (max-width: 580px) {
-            .proj-wrap { width: 100% !important; flex: 0 0 100% !important; }
+            .proj-grid { grid-template-columns: 1fr !important; }
           }
+
         `}</style>
       </section>
     </main>
