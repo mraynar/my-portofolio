@@ -81,37 +81,29 @@ export default function ProjectPage({ dark }) {
       {/* ── FILTER + GRID ── */}
       <section className="relative overflow-hidden" style={{ background: T.bg(dark), paddingTop: "80px", paddingBottom: "120px" }}>
 
-        {/* ── LAYER 1: dot grid ── */}
         <div className="absolute inset-0 pointer-events-none" style={{
           backgroundImage: dark
             ? "radial-gradient(circle, rgba(37,99,235,0.35) 1.5px, transparent 1.5px)"
             : "radial-gradient(circle, rgba(37,99,235,0.18) 1.5px, transparent 1.5px)",
           backgroundSize: "28px 28px", zIndex: 0,
         }} />
-
-        {/* ── LAYER 2: line grid ── */}
         <div className="absolute inset-0 pointer-events-none" style={{
           backgroundImage: dark
             ? "linear-gradient(rgba(37,99,235,.15) 1px,transparent 1px),linear-gradient(90deg,rgba(37,99,235,.15) 1px,transparent 1px)"
             : "linear-gradient(rgba(37,99,235,.09) 1px,transparent 1px),linear-gradient(90deg,rgba(37,99,235,.09) 1px,transparent 1px)",
           backgroundSize: "80px 80px", zIndex: 0,
         }} />
-
-        {/* ── LAYER 3: mesh gradient blobs ── */}
         <div className="absolute pointer-events-none" style={{ inset: 0, zIndex: 0, overflow: "hidden" }}>
           <div style={{ position: "absolute", top: "-10%", left: "-8%", width: 600, height: 600, borderRadius: "50%", background: dark ? "radial-gradient(circle, rgba(37,99,235,.18) 0%, transparent 70%)" : "radial-gradient(circle, rgba(37,99,235,.09) 0%, transparent 70%)", filter: "blur(40px)" }} />
           <div style={{ position: "absolute", bottom: "-10%", right: "-6%", width: 500, height: 500, borderRadius: "50%", background: dark ? "radial-gradient(circle, rgba(99,102,241,.16) 0%, transparent 70%)" : "radial-gradient(circle, rgba(99,102,241,.07) 0%, transparent 70%)", filter: "blur(40px)" }} />
           <div style={{ position: "absolute", top: "38%", left: "38%", width: 400, height: 400, borderRadius: "50%", background: dark ? "radial-gradient(circle, rgba(251,191,36,.07) 0%, transparent 70%)" : "radial-gradient(circle, rgba(251,191,36,.04) 0%, transparent 70%)", filter: "blur(50px)" }} />
         </div>
-
-        {/* ── LAYER 4: noise texture ── */}
         <div className="absolute inset-0 pointer-events-none" style={{
           zIndex: 0, opacity: dark ? 0.04 : 0.025,
           backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
           backgroundRepeat: "repeat", backgroundSize: "180px 180px",
         }} />
 
-        {/* ── Ornamen tetap ── */}
         <DotsGrid cols={5} rows={3} dotColor={dark ? "#3b82f6" : "#1d4ed8"} opacity={0.4} style={{ bottom: "5%", right: "2%", zIndex: 1 }} />
         <DotsGrid cols={4} rows={3} dotColor={dark ? "#3b82f6" : "#1d4ed8"} opacity={0.3} style={{ top: "8%", left: "1%", zIndex: 1 }} />
         <Star4 size={22} fill="#2563eb" opacity={0.7} style={{ top: "3%", right: "4%", zIndex: 1 }} />
@@ -120,8 +112,6 @@ export default function ProjectPage({ dark }) {
         <DiamondShape size={16} color="#2563eb" opacity={0.2} style={{ bottom: "20%", right: "3%", zIndex: 1 }} />
         <RingShape size={90} color="#2563eb" opacity={0.12} strokeW={3} style={{ bottom: "8%", left: "3%", zIndex: 1 }} />
         <RingShape size={60} color="#fbbf24" opacity={0.15} strokeW={2} style={{ top: "22%", right: "6%", zIndex: 1 }} />
-
-        {/* ── Ornamen bergerak ── */}
         <FloatDot size={14} color="#2563eb" style={{ top: "12%", left: "48%", animationDelay: "-1.5s", zIndex: 1, opacity: 0.5 }} />
         <FloatDot size={10} color="#fbbf24" style={{ top: "30%", right: "12%", animationDelay: "-0.8s", zIndex: 1, opacity: 0.6 }} />
         <FloatDot size={12} color="#3b82f6" style={{ top: "55%", left: "8%", animationDelay: "-3.2s", zIndex: 1, opacity: 0.45 }} />
@@ -172,22 +162,15 @@ export default function ProjectPage({ dark }) {
             </p>
           </Reveal>
 
-          {/* ── Grid 3 kolom, sisa card center ── */}
-          <div style={{ 
-            display: "flex", 
-            flexWrap: "wrap", 
-            gap: 28,
-            justifyContent: "center",
-          }}>
-            {filtered.map((p, i) => (
-              <div key={`${p.title}-${filter}`} style={{ 
-                width: "calc((100% - 56px) / 3)",
-                maxWidth: 420,
-                display: "flex",
-              }}>
-                <ProjectCard p={p} dark={dark} />
-              </div>
-            ))}
+          {/* ── Grid ── */}
+          <div className="proj-outer">
+            <div className="proj-grid">
+              {filtered.map((p, i) => (
+                <div key={`${p.title}-${filter}`} className="proj-card-wrap">
+                  <ProjectCard p={p} dark={dark} />
+                </div>
+              ))}
+            </div>
           </div>
 
           {filtered.length === 0 && (
@@ -197,7 +180,7 @@ export default function ProjectPage({ dark }) {
             </div>
           )}
 
-           {/* ── CTA Back to Home ── */}
+          {/* ── CTA Back to Home ── */}
           <div style={{ display: "flex", justifyContent: "center", marginTop: "5rem" }}>
             <a href="/"
               style={{ display: "inline-flex", alignItems: "center", gap: 8, fontWeight: 700, borderRadius: 99, textDecoration: "none", transition: "all .2s ease", background: "transparent", border: "2px solid #2563eb", color: "#2563eb", fontSize: ".95rem", padding: "14px 36px", fontFamily: F.body, lineHeight: 1, letterSpacing: ".02em" }}
@@ -210,13 +193,32 @@ export default function ProjectPage({ dark }) {
         </Container>
 
         <style>{`
-          @media (max-width: 960px) {
-            .proj-grid { grid-template-columns: repeat(2, 1fr) !important; }
+          .proj-outer {
+            display: flex;
+            justify-content: center;
           }
-          @media (max-width: 580px) {
-            .proj-grid { grid-template-columns: 1fr !important; }
+          .proj-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 360px);
+            gap: 28px;
+            justify-items: center;
           }
-
+          .proj-card-wrap {
+            width: 360px;
+            display: flex;
+            flex-direction: column;
+          }
+          .proj-card-wrap > div {
+            flex: 1;
+          }
+          @media (max-width: 1160px) {
+            .proj-grid { grid-template-columns: repeat(2, 360px); }
+          }
+          @media (max-width: 780px) {
+            .proj-outer { padding: 0 16px; }
+            .proj-grid { grid-template-columns: 1fr; width: 100%; }
+            .proj-card-wrap { width: 100%; }
+          }
         `}</style>
       </section>
     </main>
