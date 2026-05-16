@@ -103,8 +103,6 @@ function Hero({ dark }) {
 
         {/* Photo */}
         <div className="hero-photo-wrapper" style={{
-          opacity: 0,
-          // GANTI:
           opacity: 1,
           position: "relative", flexShrink: 0, alignSelf: "flex-end",
         }}>
@@ -170,33 +168,84 @@ function About({ dark }) {
       <Container style={{ paddingLeft: SECTION_PX, paddingRight: SECTION_PX, position: "relative", zIndex: 2 }}>
         <div className="about-wrap" style={{ position: "relative" }}>
           <div className="about-grid" style={{ display: "grid", gridTemplateColumns: "1fr", gap: 24 }}>
+
+            {/* ── ABOUT ME CARD ── */}
             <Reveal delay={80}>
-              <div className="about-card" style={{ background: dark ? "#0d1b3e" : "#f3f6fc", borderRadius: 28, padding: "2.6rem 2.8rem", boxShadow: dark ? "0 20px 60px rgba(0,0,0,.5),0 4px 16px rgba(0,0,0,.3)" : "0 20px 60px rgba(0,0,0,.22),0 4px 16px rgba(0,0,0,.1)", boxSizing: "border-box", height: "100%", border: dark ? "1px solid rgba(59,130,246,.2)" : "none" }}>
-                <h2 style={{ fontFamily: F.display, fontSize: "1.75rem", fontWeight: 800, color: dark ?  "#60a5fa" : "#2563eb", letterSpacing: "-.4px", lineHeight: 1.18 }}>ABOUT ME</h2>
+              <div className="about-card" style={{
+                background: dark ? "#0d1b3e" : "#f3f6fc",
+                borderRadius: 28,
+                padding: "2.6rem 2.8rem",
+                boxShadow: dark ? "0 20px 60px rgba(0,0,0,.5),0 4px 16px rgba(0,0,0,.3)" : "0 20px 60px rgba(0,0,0,.22),0 4px 16px rgba(0,0,0,.1)",
+                boxSizing: "border-box",
+                height: "100%",
+                border: dark ? "1px solid rgba(59,130,246,.2)" : "none",
+                display: "flex",
+                flexDirection: "column",
+              }}>
+                <h2 style={{ fontFamily: F.display, fontSize: "1.75rem", fontWeight: 800, color: dark ? "#60a5fa" : "#2563eb", letterSpacing: "-.4px", lineHeight: 1.18 }}>ABOUT ME</h2>
                 <div style={{ width: 44, height: 4, background: "#3b82f6", borderRadius: 99, margin: "12px 0 20px" }} />
                 <p style={{ fontSize: ".97rem", lineHeight: 1.85, color: dark ? "#c3d8ff" : "#1e293b", marginBottom: "1rem", fontFamily: F.body }}>
                   I&apos;m <strong style={{ color: dark ? "#93c5fd" : "#1d4ed8", fontWeight: 700 }}>Muhammad Raynar Hammam</strong>, an Information Systems student at UPN "Veteran" Jawa Timur with solid experience in <strong style={{ color: dark ? "#93c5fd" : "#1d4ed8", fontWeight: 700 }}>Web Development</strong>.
                 </p>
                 <p style={{ fontSize: ".97rem", lineHeight: 1.85, color: dark ? "#c3d8ff" : "#1e293b", fontFamily: F.body, marginBottom: "1.8rem" }}>
                   Currently expanding into <span style={{ color: dark ? "#93c5fd" : "#1d4ed8", fontWeight: 600 }}>mobile and iOS development</span> and <span style={{ color: dark ? "#93c5fd" : "#1d4ed8", fontWeight: 600 }}>data</span>, while also having experience growing an online business through social media.
-                </p>      
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 12, background: dark ? "rgba(37,99,235,.25)" : "rgba(37,99,235,.09)", borderRadius: 16, padding: "1.3rem", border: dark ? "1px solid rgba(59,130,246,.2)" : "none" }}>
-                      {[[`${PROJECTS.length}+`, "Projects"], [`${EXPERIENCE.length}+`, "Experience"], [`${CERTIFICATIONS.length}+`, "Certifications"]].map(([n, l]) => (                    <div key={l} style={{ textAlign: "center" }}>
+                </p>
+
+                {/* Stats */}
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 12, background: dark ? "rgba(37,99,235,.25)" : "rgba(37,99,235,.09)", borderRadius: 16, padding: "1.3rem", border: dark ? "1px solid rgba(59,130,246,.2)" : "none", marginBottom: "1.5rem" }}>
+                  {[[`${PROJECTS.length}+`, "Projects"], [`${EXPERIENCE.length}+`, "Experience"], [`${CERTIFICATIONS.length}+`, "Certifications"]].map(([n, l]) => (
+                    <div key={l} style={{ textAlign: "center" }}>
                       <span style={{ fontFamily: F.display, fontSize: "1.65rem", fontWeight: 800, color: dark ? "#60a5fa" : "#2563eb", display: "block", lineHeight: 1.2 }}>{n}</span>
                       <span style={{ fontSize: ".76rem", color: dark ? "#93afd8" : "#6b7280", fontWeight: 500, letterSpacing: ".04em", fontFamily: F.body }}>{l}</span>
                     </div>
                   ))}
                 </div>
+
+                {/* Portfolio Button */}
+                <a
+                  href="https://canva.link/j46ixufnlunjhj7"
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{
+                    display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8,
+                    width: "100%", padding: "13px 20px", marginTop: "auto",
+                    background: "linear-gradient(135deg, #2563eb, #3b82f6)",
+                    color: "#fff", borderRadius: 14, textDecoration: "none",
+                    fontFamily: F.body, fontWeight: 700, fontSize: ".9rem",
+                    letterSpacing: ".02em", lineHeight: 1,
+                    boxShadow: "0 4px 18px rgba(37,99,235,.45)",
+                    transition: "transform .2s ease, box-shadow .2s ease",
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-3px)"; e.currentTarget.style.boxShadow = "0 8px 28px rgba(37,99,235,.6)"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 4px 18px rgba(37,99,235,.45)"; }}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
+                  </svg>
+                  View My Portfolio
+                </a>
               </div>
             </Reveal>
 
+            {/* ── EDUCATION CARD ── */}
             <Reveal delay={180}>
-              <div className="about-card" style={{ background: dark ? "#0d1b3e" : "#f3f6fc", borderRadius: 28, padding: "2.6rem 2.8rem", boxShadow: dark ? "0 20px 60px rgba(0,0,0,.5)" : "0 20px 60px rgba(0,0,0,.22)", boxSizing: "border-box", height: "100%", border: dark ? "1px solid rgba(59,130,246,.2)" : "none" }}>
+              <div className="about-card" style={{
+                background: dark ? "#0d1b3e" : "#f3f6fc",
+                borderRadius: 28,
+                padding: "2.6rem 2.8rem",
+                boxShadow: dark ? "0 20px 60px rgba(0,0,0,.5)" : "0 20px 60px rgba(0,0,0,.22)",
+                boxSizing: "border-box",
+                height: "100%",
+                border: dark ? "1px solid rgba(59,130,246,.2)" : "none",
+                display: "flex",
+                flexDirection: "column",
+              }}>
                 <h2 style={{ fontFamily: F.display, fontSize: "1.75rem", fontWeight: 800, color: dark ? "#60a5fa" : "#2563eb", letterSpacing: "-.4px", lineHeight: 1.18 }}>EDUCATION</h2>
                 <div style={{ width: 44, height: 4, background: "#3b82f6", borderRadius: 99, margin: "12px 0 28px" }} />
-                <div style={{ display: "flex", flexDirection: "column" }}>
+
+                <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
                   {educations.map((edu, i) => (
-                    <div key={edu.school} style={{ display: "flex", gap: 18, paddingBottom: i < educations.length - 1 ? "2.4rem" : 0 }}>
+                    <div key={edu.school} style={{ display: "flex", gap: 18, paddingBottom: i < educations.length - 1 ? "2.4rem" : "1.8rem" }}>
                       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flexShrink: 0 }}>
                         <div style={{ width: 44, height: 44, borderRadius: "50%", background: edu.current ? "linear-gradient(135deg,#2563eb,#60a5fa)" : "linear-gradient(135deg,#1e40af,#3b82f6)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: edu.current ? "0 4px 16px rgba(37,99,235,.55)" : "0 4px 12px rgba(37,99,235,.3)", flexShrink: 0 }}>
                           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z" /><path d="M6 12v5c3 3 9 3 12 0v-5" /></svg>
@@ -217,6 +266,41 @@ function About({ dark }) {
                     </div>
                   ))}
                 </div>
+
+                {/* CV Button */}
+                <a
+                  href="https://drive.google.com/file/d/1oF6d0tkoInylwEIh1uiZOdj4HM6bdmMN/view?usp=sharing"
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{
+                    display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8,
+                    width: "100%", padding: "13px 20px",
+                    background: "transparent",
+                    color: dark ? "#60a5fa" : "#2563eb",
+                    border: `2px solid ${dark ? "#3b82f6" : "#2563eb"}`,
+                    borderRadius: 14, textDecoration: "none",
+                    fontFamily: F.body, fontWeight: 700, fontSize: ".9rem",
+                    letterSpacing: ".02em", lineHeight: 1,
+                    transition: "transform .2s ease, background .2s ease, color .2s ease, box-shadow .2s ease",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = "translateY(-3px)";
+                    e.currentTarget.style.background = "#2563eb";
+                    e.currentTarget.style.color = "#fff";
+                    e.currentTarget.style.boxShadow = "0 8px 28px rgba(37,99,235,.5)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = "translateY(0)";
+                    e.currentTarget.style.background = "transparent";
+                    e.currentTarget.style.color = dark ? "#60a5fa" : "#2563eb";
+                    e.currentTarget.style.boxShadow = "none";
+                  }}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+                  </svg>
+                  View My CV
+                </a>
               </div>
             </Reveal>
           </div>
@@ -231,7 +315,7 @@ function About({ dark }) {
 
       <style>{`
         @media (min-width: 900px) {
-          .about-grid { grid-template-columns: 1fr 1fr !important; align-items: stretch !important; padding-bottom: 200px !important; }
+          .about-grid { grid-template-columns: 1fr 1fr !important; align-items: stretch !important; padding-bottom: 220px !important; }
           .about-grid > div, .about-card { height: 100% !important; }
           .about-photo-center { display: block !important; position: absolute !important; left: 50% !important; transform: translateX(-50%) !important; bottom: 0 !important; z-index: 20 !important; pointer-events: none !important; }
           .about-photo-img {
@@ -403,7 +487,8 @@ function ExperiencePreview({ dark }) {
                 <p style={{ opacity: 0.82, fontSize: ".92rem", fontFamily: F.body, lineHeight: 1.7, maxWidth: 360 }}>A collection of my professional journey and contributions.</p>
               </div>
               <div className="exp-stats" style={{ display: "flex", gap: 10, flexWrap: "nowrap" }}>
-                    {[[`${EXPERIENCE.length}+`, "Organizations"], [`${PROJECTS.length}+`, "Projects"], ["2022", "Since"]].map(([n, l]) => (                  <div key={l} style={{ textAlign: "center", background: "rgba(255,255,255,.18)", borderRadius: 16, padding: ".75rem 1rem", backdropFilter: "blur(8px)", flex: "0 0 auto" }}>
+                {[[`${EXPERIENCE.length}+`, "Organizations"], [`${PROJECTS.length}+`, "Projects"], ["2022", "Since"]].map(([n, l]) => (
+                  <div key={l} style={{ textAlign: "center", background: "rgba(255,255,255,.18)", borderRadius: 16, padding: ".75rem 1rem", backdropFilter: "blur(8px)", flex: "0 0 auto" }}>
                     <span style={{ fontFamily: F.display, fontWeight: 800, display: "block", lineHeight: 1.2, fontSize: "clamp(1.1rem, 3vw, 1.8rem)" }}>{n}</span>
                     <span style={{ opacity: 0.85, fontFamily: F.body, lineHeight: 1.4, fontSize: "clamp(.58rem, 1.5vw, .76rem)", whiteSpace: "nowrap" }}>{l}</span>
                   </div>
@@ -483,7 +568,6 @@ function CertificationCard({ cert, dark }) {
           : "0 4px 16px rgba(37,99,235,.07)";
       }}
     >
-      {/* Image thumbnail */}
       <div
         style={{
           position: "relative",
@@ -537,7 +621,6 @@ function CertificationCard({ cert, dark }) {
         />
       </div>
 
-      {/* Body */}
       <div style={{ padding: "1.4rem 1.4rem 1.5rem", display: "flex", flexDirection: "column", flex: 1 }}>
         <h4
           style={{
@@ -574,7 +657,7 @@ function CertificationCard({ cert, dark }) {
             {cert.credentialId}
           </span>
         </div>
-        
+
         <a href={cert.credentialUrl}
           target="_blank"
           rel="noreferrer"
@@ -616,25 +699,21 @@ function Certifications({ dark }) {
       className="relative overflow-hidden"
       style={{ background: CERT_SECTION_BG(dark), paddingTop: SECTION_PY, paddingBottom: SECTION_PY }}
     >
-      {/* Background dots */}
       <div className="absolute inset-0 pointer-events-none" style={{
         backgroundImage: dark
           ? "radial-gradient(circle, rgba(37,99,235,0.28) 1.5px, transparent 1.5px)"
           : "radial-gradient(circle, rgba(37,99,235,0.18) 1.5px, transparent 1.5px)",
         backgroundSize: "28px 28px", zIndex: 0,
       }} />
-      {/* Grid lines */}
       <div className="absolute inset-0 pointer-events-none" style={{
         backgroundImage: dark
           ? "linear-gradient(rgba(37,99,235,.18) 1px,transparent 1px),linear-gradient(90deg,rgba(37,99,235,.18) 1px,transparent 1px)"
           : "linear-gradient(rgba(37,99,235,.12) 1px,transparent 1px),linear-gradient(90deg,rgba(37,99,235,.12) 1px,transparent 1px)",
         backgroundSize: "84px 84px", zIndex: 0,
       }} />
-      {/* Glow blobs */}
       <div className="absolute pointer-events-none" style={{ top: "-5%", right: "-5%", width: 440, height: 440, borderRadius: "50%", background: dark ? "radial-gradient(circle,rgba(37,99,235,.22) 0%,transparent 70%)" : "radial-gradient(circle,rgba(37,99,235,.1) 0%,transparent 70%)", filter: "blur(52px)", zIndex: 0 }} />
       <div className="absolute pointer-events-none" style={{ bottom: "0%", left: "0%", width: 360, height: 360, borderRadius: "50%", background: dark ? "radial-gradient(circle,rgba(79,70,229,.15) 0%,transparent 70%)" : "radial-gradient(circle,rgba(79,70,229,.06) 0%,transparent 70%)", filter: "blur(44px)", zIndex: 0 }} />
 
-      {/* Decorative elements */}
       <DotsGrid cols={6} rows={3} dotColor={dark ? "#2563eb" : "#1d4ed8"} opacity={0.5} style={{ top: "6%", right: "2%", zIndex: 1 }} />
       <Star4 size={28} fill="#2563eb" opacity={0.8} style={{ bottom: "10%", left: "5%", zIndex: 1 }} />
       <Star4 size={20} fill="#fbbf24" opacity={0.7} style={{ top: "8%", left: "12%", zIndex: 1, animationDelay: "-2s" }} />
@@ -643,12 +722,9 @@ function Certifications({ dark }) {
       <FloatDot size={12} color="#2563eb" style={{ top: "35%", right: "4%", animationDelay: "-1.5s", zIndex: 1 }} />
 
       <Container style={{ paddingLeft: SECTION_PX, paddingRight: SECTION_PX, position: "relative", zIndex: 2 }}>
-
-        {/* ── Header: left-aligned + scroll arrows ── */}
         <Reveal>
           <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: "2.8rem", flexWrap: "wrap", gap: "1rem" }}>
             <div>
-              {/* Sub-label */}
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: ".6rem" }}>
                 <span style={{ display: "inline-block", width: 32, height: 3, borderRadius: 99, background: "#2563eb" }} />
                 <span style={{ fontFamily: F.body, fontWeight: 600, fontSize: ".8rem", letterSpacing: ".14em", textTransform: "uppercase", color: T.text3(dark) }}>
@@ -667,7 +743,6 @@ function Certifications({ dark }) {
               </p>
             </div>
 
-            {/* Arrow buttons */}
             <div style={{ display: "flex", gap: 10, flexShrink: 0 }}>
               {[{ dir: -1, label: "←" }, { dir: 1, label: "→" }].map(({ dir, label }) => (
                 <button
@@ -693,11 +768,8 @@ function Certifications({ dark }) {
           </div>
         </Reveal>
 
-        {/* ── Carousel track ── */}
         <div style={{ position: "relative" }}>
-          {/* Left fade edge */}
           <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 48, background: `linear-gradient(to right, ${CERT_SECTION_BG(dark)}, transparent)`, zIndex: 4, pointerEvents: "none" }} />
-          {/* Right fade edge */}
           <div style={{ position: "absolute", right: 0, top: 0, bottom: 0, width: 48, background: `linear-gradient(to left, ${CERT_SECTION_BG(dark)}, transparent)`, zIndex: 4, pointerEvents: "none" }} />
 
           <div
@@ -730,7 +802,6 @@ function Certifications({ dark }) {
           </div>
         </div>
 
-        {/* ── Stats strip ── */}
         <Reveal delay={120}>
           <div id="cert-stats" className="cert-stats-hide" style={{
             marginTop: "1rem",
@@ -739,28 +810,25 @@ function Certifications({ dark }) {
             borderRadius: 20, padding: "1.8rem",
             border: `1px solid ${dark ? "rgba(59,130,246,.2)" : "rgba(37,99,235,.12)"}`,
           }}>
-          {[
-            ["3", "Platforms", "Coursera, Dicoding & Udemy"],
-            [CERTIFICATIONS.length.toString(), "Certificates", "Verified & credentialed"],
-            ["2024–2026", "Active Period", "Continuous learning"],
-          ].map(([n, label, sub]) => (
-            <div key={label} style={{ textAlign: "center", minWidth: 0 }}>
-              <span style={{ fontFamily: F.display, fontSize: "clamp(.95rem, 3vw, 2rem)", fontWeight: 800, color: "#2563eb", display: "block", lineHeight: 1.1 }}>{n}</span>
-              <span style={{ fontFamily: F.display, fontWeight: 700, fontSize: "clamp(.55rem, 1.8vw, .9rem)", color: T.text(dark), display: "block", marginTop: 4, whiteSpace: "nowrap" }}>{label}</span>
-              <span style={{ fontFamily: F.body, fontSize: "clamp(.45rem, 1.4vw, .75rem)", color: T.text3(dark), whiteSpace: "nowrap", display: "block" }}>{sub}</span>
-            </div>
-          ))}
+            {[
+              ["3", "Platforms", "Coursera, Dicoding & Udemy"],
+              [CERTIFICATIONS.length.toString(), "Certificates", "Verified & credentialed"],
+              ["2024–2026", "Active Period", "Continuous learning"],
+            ].map(([n, label, sub]) => (
+              <div key={label} style={{ textAlign: "center", minWidth: 0 }}>
+                <span style={{ fontFamily: F.display, fontSize: "clamp(.95rem, 3vw, 2rem)", fontWeight: 800, color: "#2563eb", display: "block", lineHeight: 1.1 }}>{n}</span>
+                <span style={{ fontFamily: F.display, fontWeight: 700, fontSize: "clamp(.55rem, 1.8vw, .9rem)", color: T.text(dark), display: "block", marginTop: 4, whiteSpace: "nowrap" }}>{label}</span>
+                <span style={{ fontFamily: F.body, fontSize: "clamp(.45rem, 1.4vw, .75rem)", color: T.text3(dark), whiteSpace: "nowrap", display: "block" }}>{sub}</span>
+              </div>
+            ))}
           </div>
         </Reveal>
       </Container>
 
       <style>{`
         #certifications [style*="overflow-x"]::-webkit-scrollbar { display: none; }
-
         @media (max-width: 480px) {
-          .cert-stats-hide {
-            display: none !important;
-          }
+          .cert-stats-hide { display: none !important; }
         }
       `}</style>
     </section>
