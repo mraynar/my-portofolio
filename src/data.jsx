@@ -102,7 +102,25 @@ export const PROJECTS = [
 ];
 
 export const CERTIFICATIONS = [
-  // --- COURSERA ---
+// --- COURSERA ---
+  {
+    provider: "Coursera",
+    title: "Introduction to Data Analysis Using Python",
+    issuer: "Google",
+    date: "May 2026",
+    credentialId: "3EDUOKW3JJ88",
+    credentialUrl: "https://coursera.org/verify/3EDUOKW3JJ88",
+    image: "/images/sertifikasi/coursera/Google Data Analysis.jpg",
+  },
+  {
+    provider: "Coursera",
+    title: "Introduction to Front-End Development",
+    issuer: "Meta",
+    date: "May 2026",
+    credentialId: "AE5MQHRTIS9W",
+    credentialUrl: "https://coursera.org/verify/AE5MQHRTIS9W",
+    image: "/images/sertifikasi/coursera/Meta Front-End.jpg",
+  },
   {
     provider: "Coursera",
     title: "Full Stack Web Development Professional",
@@ -139,71 +157,6 @@ export const CERTIFICATIONS = [
     credentialUrl: "https://coursera.org/verify/OPIQUC835DYO",
     image: "/images/sertifikasi/coursera/Html.jpg",
   },
-
-    // --- DICODING ---
-    {
-    provider: "Dicoding",
-    title: "React Application Development",
-    issuer: "Dicoding Academy",
-    date: "Maret 2026",
-    credentialId: "4EXG140QQPRL",
-    credentialUrl: "https://dicoding.com/certificates/4EXG140QQPRL",
-    image: "/images/sertifikasi/dicoding/membuat aplikasi react.jpg",
-    },
-    {
-    provider: "Dicoding",
-    title: "Enterprise Data Science with Microsoft Fabric",
-    issuer: "Dicoding Academy",
-    date: "Maret 2026",
-    credentialId: "72ZDJ771LZYW",
-    credentialUrl: "https://dicoding.com/certificates/72ZDJ771LZYW",
-    image: "/images/sertifikasi/dicoding/data science microsoft fabric.jpg",
-    },
-    {
-    provider: "Dicoding",
-    title: "Front-End Web Architecture",
-    issuer: "Dicoding Academy",
-    date: "Maret 2026",
-    credentialId: "KEXLQLNLWPG2",
-    credentialUrl: "https://dicoding.com/certificates/KEXLQLNLWPG2",
-    image: "/images/sertifikasi/dicoding/front end pemula.jpg",
-    },
-    {
-    provider: "Dicoding",
-    title: "Advanced JavaScript Programming",
-    issuer: "Dicoding Academy",
-    date: "Maret 2026",
-    credentialId: "JLX1VW5E5Z72",
-    credentialUrl: "https://dicoding.com/certificates/JLX1VW5E5Z72",
-    image: "/images/sertifikasi/dicoding/Java script dicoding.jpg",
-    },
-    {
-    provider: "Dicoding",
-    title: "Python Programming Specialist",
-    issuer: "Dicoding Academy",
-    date: "Maret 2026",
-    credentialId: "72ZDJ7K6VZYW",
-    credentialUrl: "https://dicoding.com/certificates/72ZDJ7K6VZYW",
-    image: "/images/sertifikasi/dicoding/python dasar.jpg",
-    },
-    {
-    provider: "Dicoding",
-    title: "Professional Web Development",
-    issuer: "Dicoding Academy",
-    date: "Maret 2026",
-    credentialId: "OLZOYQ6M3X65",
-    credentialUrl: "https://dicoding.com/certificates/OLZOYQ6M3X65",
-    image: "/images/sertifikasi/dicoding/dasar pemrograman web.jpg",
-    },
-    {
-    provider: "Dicoding",
-    title: "Financial Literacy for Professionals",
-    issuer: "Dicoding Academy",
-    date: "Maret 2026",
-    credentialId: "6RPN744M9X2M",
-    credentialUrl: "https://dicoding.com/certificates/6RPN744M9X2M",
-    image: "/images/sertifikasi/dicoding/financial literity.jpg",
-    },
 
   // --- UDEMY ---
   {
