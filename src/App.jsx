@@ -269,7 +269,7 @@ function About({ dark }) {
 
                 {/* CV Button */}
                 <a
-                  href="https://drive.google.com/file/d/1oF6d0tkoInylwEIh1uiZOdj4HM6bdmMN/view?usp=sharing"
+                  href="https://drive.google.com/file/d/1pq52Be_s4RBNsxYBBS2YEAFgtYxQjrbi/view?usp=sharing"
                   target="_blank"
                   rel="noreferrer"
                   style={{
