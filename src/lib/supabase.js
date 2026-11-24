@@ -217,25 +217,63 @@ export async function deleteProject(id) {
   if (error) throw error;
 }
 
+const LOCAL_EXP_KEY = "portfolio_experience_cache";
+
 // Fetch experience entries with fallback
 export async function getExperience() {
-  if (!supabase) return EXPERIENCE;
+  if (!supabase) {
+    try {
+      const cached = localStorage.getItem(LOCAL_EXP_KEY);
+      if (cached) return JSON.parse(cached);
+    } catch {
+      // Fallback to static data
+    }
+    return EXPERIENCE;
+  }
   try {
     const { data, error } = await supabase
       .from("experience")
       .select("*")
       .order("order_index", { ascending: true });
 
-    if (error || !data || data.length === 0) return EXPERIENCE;
+    if (error || !data || data.length === 0) {
+      try {
+        const cached = localStorage.getItem(LOCAL_EXP_KEY);
+        if (cached) return JSON.parse(cached);
+      } catch {
+        // Fallback to static data
+      }
+      return EXPERIENCE;
+    }
     return data;
   } catch {
+    try {
+      const cached = localStorage.getItem(LOCAL_EXP_KEY);
+      if (cached) return JSON.parse(cached);
+    } catch {
+      // Fallback to static data
+    }
     return EXPERIENCE;
   }
 }
 
 // Create or update experience entry
 export async function upsertExperience(item) {
-  if (!supabase) throw new Error("Supabase credentials not configured.");
+  if (!supabase) {
+    const current = await getExperience();
+    const id = item.id || `exp-${Date.now()}`;
+    const payload = { ...item, id };
+    const exists = current.some((e) => e.id === id || e.role === item.role);
+    const updated = exists
+      ? current.map((e) => (e.id === id || e.role === item.role ? payload : e))
+      : [...current, payload];
+    try {
+      localStorage.setItem(LOCAL_EXP_KEY, JSON.stringify(updated));
+    } catch {
+      // Silently continue
+    }
+    return payload;
+  }
   const { data, error } = await supabase
     .from("experience")
     .upsert(item)
@@ -248,9 +286,20 @@ export async function upsertExperience(item) {
 
 // Delete experience entry
 export async function deleteExperience(id) {
-  if (!supabase) throw new Error("Supabase credentials not configured.");
+  if (!supabase) {
+    const current = await getExperience();
+    const updated = current.filter((e) => e.id !== id && e.role !== id);
+    try {
+      localStorage.setItem(LOCAL_EXP_KEY, JSON.stringify(updated));
+    } catch {
+      // Silently continue
+    }
+    return;
+  }
   const { error } = await supabase.from("experience").delete().eq("id", id);
-  if (error) throw error;
+  if (error) {
+    await supabase.from("experience").delete().eq("role", id);
+  }
 }
 
 const LOCAL_SKILLS_KEY = "portfolio_skill_categories_cache";

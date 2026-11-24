@@ -1,12 +1,20 @@
 import { useState } from "react";
 import { Card, Chip, Icon } from "../components";
-import { upsertExperience, deleteExperience } from "../lib/supabase";
+import {
+  upsertExperience,
+  deleteExperience,
+  uploadStorageFile,
+} from "../lib/supabase";
 
 const EMPTY_EXP = {
   role: "",
   org: "",
   org_url: "",
-  period: "2024 - Sekarang",
+  period: "Maret 2026 - Sekarang",
+  category: "Program Kepemimpinan",
+  photo: "",
+  photoAlt: "",
+  active: true,
   bullets: [],
   tags: [],
   order_index: 0,
@@ -34,13 +42,44 @@ export default function AdminExperience({ experience = [], onRefresh }) {
     setFeedback(null);
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Hapus catatan pengalaman ini?")) return;
+  const handleFileUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setIsSubmitting(true);
     try {
-      await deleteExperience(id);
+      const cleanName = file.name.replace(/[^a-zA-Z0-9._-]/g, "");
+      const path = `experience/${Date.now()}-${cleanName}`;
+      const url = await uploadStorageFile("media", path, file);
+      setEditingItem((prev) => ({ ...prev, photo: url }));
+      setFeedback({
+        type: "success",
+        text: "Foto dokumentasi berhasil diunggah.",
+      });
+    } catch {
+      // Fallback preview for offline environments
+      const localUrl = URL.createObjectURL(file);
+      setEditingItem((prev) => ({ ...prev, photo: localUrl }));
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDelete = async (identifier) => {
+    if (!window.confirm("Hapus catatan pengalaman ini secara permanen?")) {
+      return;
+    }
+    try {
+      await deleteExperience(identifier);
+      setFeedback({
+        type: "success",
+        text: "Catatan pengalaman berhasil dihapus.",
+      });
       await onRefresh();
     } catch (err) {
-      alert(err.message || "Gagal menghapus pengalaman.");
+      setFeedback({
+        type: "error",
+        text: err.message || "Gagal menghapus pengalaman.",
+      });
     }
   };
 
@@ -141,7 +180,9 @@ export default function AdminExperience({ experience = [], onRefresh }) {
               className="text-lg font-extrabold"
               style={{ fontFamily: "var(--font-display)" }}
             >
-              {editingItem.role ? `Edit: ${editingItem.role}` : "Tambah Pengalaman"}
+              {editingItem.role
+                ? `Edit: ${editingItem.role}`
+                : "Tambah Pengalaman"}
             </h3>
             <button
               onClick={() => setEditingItem(null)}
@@ -165,7 +206,7 @@ export default function AdminExperience({ experience = [], onRefresh }) {
                   onChange={(e) =>
                     setEditingItem({ ...editingItem, role: e.target.value })
                   }
-                  placeholder="Staf Hubungan Masyarakat"
+                  placeholder="Peserta Novo Entrepreneurship"
                   className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm"
                   style={{
                     backgroundColor: "var(--surface-alt)",
@@ -185,7 +226,51 @@ export default function AdminExperience({ experience = [], onRefresh }) {
                   onChange={(e) =>
                     setEditingItem({ ...editingItem, org: e.target.value })
                   }
-                  placeholder="HIMASIFO UPN Veteran Jawa Timur"
+                  placeholder="Novo Club by ParagonCorp"
+                  className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm"
+                  style={{
+                    backgroundColor: "var(--surface-alt)",
+                    borderColor: "var(--border)",
+                  }}
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-bold font-mono uppercase mb-1.5">
+                  Periode Waktu
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={editingItem.period}
+                  onChange={(e) =>
+                    setEditingItem({ ...editingItem, period: e.target.value })
+                  }
+                  placeholder="Maret 2026 - Sekarang"
+                  className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm"
+                  style={{
+                    backgroundColor: "var(--surface-alt)",
+                    borderColor: "var(--border)",
+                  }}
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold font-mono uppercase mb-1.5">
+                  Kategori Program / Jenis
+                </label>
+                <input
+                  type="text"
+                  value={editingItem.category || ""}
+                  onChange={(e) =>
+                    setEditingItem({
+                      ...editingItem,
+                      category: e.target.value,
+                    })
+                  }
+                  placeholder="Program Kepemimpinan / Magang Industri"
                   className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm"
                   style={{
                     backgroundColor: "var(--surface-alt)",
@@ -215,25 +300,100 @@ export default function AdminExperience({ experience = [], onRefresh }) {
                 />
               </div>
 
-              <div>
-                <label className="block text-xs font-bold font-mono uppercase mb-1.5">
-                  Periode Waktu
+              <div className="flex items-center gap-2 pt-6">
+                <label className="flex items-center gap-2 cursor-pointer font-bold text-sm">
+                  <input
+                    type="checkbox"
+                    checked={editingItem.active || false}
+                    onChange={(e) =>
+                      setEditingItem({
+                        ...editingItem,
+                        active: e.target.checked,
+                      })
+                    }
+                    className="w-4 h-4 rounded"
+                  />
+                  <span>Masih Aktif / Sekarang</span>
                 </label>
-                <input
-                  type="text"
-                  required
-                  value={editingItem.period}
-                  onChange={(e) =>
-                    setEditingItem({ ...editingItem, period: e.target.value })
-                  }
-                  placeholder="Januari 2025 - Sekarang"
-                  className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm"
-                  style={{
-                    backgroundColor: "var(--surface-alt)",
-                    borderColor: "var(--border)",
-                  }}
-                />
               </div>
+            </div>
+
+            {/* Photo upload and URL row */}
+            <div className="space-y-3 pt-2">
+              <label className="block text-xs font-bold font-mono uppercase">
+                Foto Dokumentasi Kegiatan
+              </label>
+
+              <div className="flex flex-col sm:flex-row gap-4 items-start">
+                {editingItem.photo && (
+                  <div
+                    className="w-32 h-24 rounded-xl overflow-hidden border-2 shrink-0"
+                    style={{ borderColor: "var(--border)" }}
+                  >
+                    <img
+                      src={editingItem.photo}
+                      alt="Pratinjau Foto"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
+
+                <div className="flex-1 space-y-2 w-full">
+                  <input
+                    type="text"
+                    value={editingItem.photo || ""}
+                    onChange={(e) =>
+                      setEditingItem({
+                        ...editingItem,
+                        photo: e.target.value,
+                      })
+                    }
+                    placeholder="/images/experiences/novo/novo.jpg atau URL online"
+                    className="w-full px-3.5 py-2 rounded-xl border-2 font-medium text-sm"
+                    style={{
+                      backgroundColor: "var(--surface-alt)",
+                      borderColor: "var(--border)",
+                    }}
+                  />
+                  <div className="flex items-center gap-2">
+                    <label className="neo-btn-secondary text-xs font-bold py-1.5 px-3 cursor-pointer">
+                      <Icon name="upload" size={14} />
+                      Unggah File Foto
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileUpload}
+                        className="hidden"
+                      />
+                    </label>
+                    <span
+                      className="text-xs"
+                      style={{ color: "var(--ink-muted)" }}
+                    >
+                      Mendukung format JPG, PNG, WebP
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold font-mono uppercase mb-1.5">
+                Alt Text Foto (Aksesibilitas)
+              </label>
+              <input
+                type="text"
+                value={editingItem.photoAlt || ""}
+                onChange={(e) =>
+                  setEditingItem({ ...editingItem, photoAlt: e.target.value })
+                }
+                placeholder="Dokumentasi Program Novo Entrepreneurship"
+                className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm"
+                style={{
+                  backgroundColor: "var(--surface-alt)",
+                  borderColor: "var(--border)",
+                }}
+              />
             </div>
 
             <div>
@@ -244,7 +404,7 @@ export default function AdminExperience({ experience = [], onRefresh }) {
                 rows={4}
                 value={bulletsText}
                 onChange={(e) => setBulletsText(e.target.value)}
-                placeholder="Menginisiasi dan mengoordinasikan jalinan kemitraan..."
+                placeholder="Mengikuti program intensif kepemimpinan...&#10;Menganalisis strategi model bisnis..."
                 className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm resize-y"
                 style={{
                   backgroundColor: "var(--surface-alt)",
@@ -261,7 +421,7 @@ export default function AdminExperience({ experience = [], onRefresh }) {
                 type="text"
                 value={tagsText}
                 onChange={(e) => setTagsText(e.target.value)}
-                placeholder="Komunikasi Publik, Kemitraan, Manajemen Acara"
+                placeholder="Kepemimpinan, Validasi Bisnis, Strategi Produk, Kolaborasi"
                 className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm"
                 style={{
                   backgroundColor: "var(--surface-alt)",
@@ -296,24 +456,43 @@ export default function AdminExperience({ experience = [], onRefresh }) {
         {experience.map((item, idx) => (
           <Card key={item.id || item.role + idx} className="p-5">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3 pb-3 border-b-2">
-              <div>
-                <span
-                  className="text-xs font-mono font-bold block mb-1"
-                  style={{ color: "var(--google-blue)" }}
-                >
-                  {item.period}
-                </span>
-                <h4
-                  className="text-base sm:text-lg font-extrabold"
-                  style={{ fontFamily: "var(--font-display)" }}
-                >
-                  {item.role}
-                </h4>
-                <div
-                  className="text-xs sm:text-sm font-bold"
-                  style={{ color: "var(--ink-secondary)" }}
-                >
-                  {item.org}
+              <div className="flex items-center gap-3">
+                {item.photo && (
+                  <div
+                    className="w-16 h-12 rounded-lg overflow-hidden border-2 shrink-0"
+                    style={{ borderColor: "var(--border)" }}
+                  >
+                    <img
+                      src={item.photo}
+                      alt={item.photoAlt || item.role}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <span
+                      className="text-xs font-mono font-bold"
+                      style={{ color: "var(--google-blue)" }}
+                    >
+                      {item.period}
+                    </span>
+                    {item.category && (
+                      <Chip variant="default">{item.category}</Chip>
+                    )}
+                  </div>
+                  <h4
+                    className="text-base sm:text-lg font-extrabold"
+                    style={{ fontFamily: "var(--font-display)" }}
+                  >
+                    {item.role}
+                  </h4>
+                  <div
+                    className="text-xs sm:text-sm font-bold"
+                    style={{ color: "var(--ink-secondary)" }}
+                  >
+                    {item.org}
+                  </div>
                 </div>
               </div>
 
@@ -325,19 +504,19 @@ export default function AdminExperience({ experience = [], onRefresh }) {
                   <Icon name="edit" size={13} />
                   Edit
                 </button>
-                {item.id && (
-                  <button
-                    onClick={() => handleDelete(item.id)}
-                    className="neo-badge text-xs font-bold py-1.5 px-2.5"
-                    style={{
-                      backgroundColor: "var(--google-red-bg)",
-                      color: "var(--google-red-text)",
-                      borderColor: "var(--google-red)",
-                    }}
-                  >
-                    <Icon name="trash" size={13} />
-                  </button>
-                )}
+                <button
+                  type="button"
+                  onClick={() => handleDelete(item.id || item.role)}
+                  className="neo-badge text-xs font-bold py-1.5 px-2.5"
+                  style={{
+                    backgroundColor: "var(--google-red-bg)",
+                    color: "var(--google-red-text)",
+                    borderColor: "var(--google-red)",
+                  }}
+                  aria-label={`Hapus ${item.role}`}
+                >
+                  <Icon name="trash" size={13} />
+                </button>
               </div>
             </div>
 

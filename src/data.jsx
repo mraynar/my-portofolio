@@ -270,6 +270,7 @@ export const PROJECTS = [
 // Experience timeline items
 export const EXPERIENCE = [
   {
+    id: "exp-novo",
     role: "Peserta Novo Entrepreneurship",
     org: "Novo Club by ParagonCorp",
     period: "Maret 2026 – Sekarang",
@@ -287,6 +288,7 @@ export const EXPERIENCE = [
     tags: ["Kepemimpinan", "Validasi Bisnis", "Strategi Produk", "Kolaborasi"],
   },
   {
+    id: "exp-himasifo",
     role: "Staf Hubungan Masyarakat",
     org: "HIMASIFO UPN Veteran Jawa Timur",
     period: "Januari 2025 – Desember 2025",
@@ -304,6 +306,7 @@ export const EXPERIENCE = [
     tags: ["Komunikasi Publik", "Kemitraan", "Manajemen Acara"],
   },
   {
+    id: "exp-ukmpnk",
     role: "Staf Ahli Website & IT",
     org: "UKM Penalaran dan Penelitian",
     period: "Januari 2024 – Desember 2024",
@@ -321,6 +324,7 @@ export const EXPERIENCE = [
     tags: ["Pengembangan Web", "Administrasi IT", "Riset Mahasiswa"],
   },
   {
+    id: "exp-indra",
     role: "Front-End Developer Intern",
     org: "CV Indra Protection",
     period: "Juli 2022 – Desember 2022",

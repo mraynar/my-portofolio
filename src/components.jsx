@@ -701,7 +701,7 @@ export function ProjectCard({ project, onOpenCaseStudy }) {
   );
 }
 
-// Experience card with internal number badge and padded media layout
+// Experience card with prominent top-left number badge and expanded media
 export function ExpCard({ item, index = 0 }) {
   const numberThemes = [
     { bg: "var(--google-blue)", text: "#ffffff" },
@@ -712,42 +712,47 @@ export function ExpCard({ item, index = 0 }) {
   const numColor = numberThemes[index % 4];
 
   return (
-    <div className="neo-card p-6 sm:p-8 flex flex-col md:flex-row gap-6 relative">
-      {/* Left column: step number and photo */}
-      <div className="flex md:flex-col items-center justify-between md:justify-start gap-4 flex-shrink-0">
-        <div
-          className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl border-2 border-[var(--border)] flex items-center justify-center font-extrabold font-mono text-lg sm:text-xl shadow-[3px_3px_0_var(--shadow-color)]"
-          style={{ backgroundColor: numColor.bg, color: numColor.text }}
-        >
-          {String(index + 1).padStart(2, "0")}
-        </div>
-
-        {item.photo && (
-          <div
-            className="w-24 h-24 md:w-44 md:h-36 rounded-xl overflow-hidden border-2 flex-shrink-0"
-            style={{
-              borderColor: "var(--border)",
-              backgroundColor: "var(--canvas)",
-            }}
-          >
-            <img
-              src={item.photo}
-              alt={item.photoAlt || item.role}
-              className="w-full h-full object-cover object-center"
-              loading="lazy"
-            />
-          </div>
-        )}
+    <div className="neo-card p-6 sm:p-8 flex flex-col md:flex-row gap-6 lg:gap-8 relative mt-3 sm:mt-4">
+      {/* Prominent embossed number badge perched at top-left */}
+      <div
+        className="absolute -top-3.5 -left-3.5 sm:-top-4 sm:-left-4 w-11 h-11 sm:w-14 sm:h-14 rounded-2xl border-2 border-[var(--border)] flex items-center justify-center font-extrabold font-mono text-base sm:text-xl shadow-[3px_3px_0_var(--shadow-color)] z-10"
+        style={{ backgroundColor: numColor.bg, color: numColor.text }}
+      >
+        {String(index + 1).padStart(2, "0")}
       </div>
+
+      {/* Spacious photo block */}
+      {item.photo && (
+        <div
+          className="w-full md:w-72 lg:w-80 h-52 sm:h-60 md:h-auto min-h-[220px] rounded-2xl overflow-hidden border-2 flex-shrink-0 shadow-[2px_2px_0_var(--shadow-color)]"
+          style={{
+            borderColor: "var(--border)",
+            backgroundColor: "var(--canvas)",
+          }}
+        >
+          <img
+            src={item.photo}
+            alt={item.photoAlt || item.role}
+            className="w-full h-full object-cover object-center"
+            loading="lazy"
+          />
+        </div>
+      )}
 
       {/* Right column: content */}
       <div className="flex-1 flex flex-col justify-between">
         <div>
-          <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
-            <Cluster gap={8}>
-              <Chip variant="default">{item.type}</Chip>
-              {item.current && <Chip variant="green">Sekarang</Chip>}
-            </Cluster>
+          <div className="flex items-center justify-between gap-2 mb-2">
+            {item.category ? (
+              <span
+                className="text-xs font-bold font-mono uppercase tracking-wider"
+                style={{ color: "var(--ink-muted)" }}
+              >
+                {item.category}
+              </span>
+            ) : (
+              <span />
+            )}
             <span
               className="text-xs sm:text-sm font-bold font-mono tracking-wider"
               style={{ color: "var(--ink-muted)" }}
@@ -769,35 +774,39 @@ export function ExpCard({ item, index = 0 }) {
             {item.org}
           </p>
 
-          <ul
-            className="space-y-2.5 mb-5 text-base sm:text-lg leading-relaxed"
-            style={{ color: "var(--ink-secondary)" }}
-          >
-            {item.bullets.map((b, idx) => (
-              <li key={idx} className="flex items-start gap-3">
-                <span
-                  className="mt-1 flex-shrink-0"
-                  style={{ color: "var(--google-blue)" }}
-                >
-                  <Icon name="chevron-right" size={16} />
-                </span>
-                <span>{b}</span>
-              </li>
-            ))}
-          </ul>
+          {item.bullets && item.bullets.length > 0 && (
+            <ul
+              className="space-y-2.5 mb-5 text-base sm:text-lg leading-relaxed"
+              style={{ color: "var(--ink-secondary)" }}
+            >
+              {item.bullets.map((b, idx) => (
+                <li key={idx} className="flex items-start gap-3">
+                  <span
+                    className="mt-1 flex-shrink-0"
+                    style={{ color: "var(--google-blue)" }}
+                  >
+                    <Icon name="chevron-right" size={16} />
+                  </span>
+                  <span>{b}</span>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
 
-        <Cluster
-          gap={8}
-          className="pt-4 border-t-2"
-          style={{ borderColor: "var(--border)" }}
-        >
-          {item.tags.map((t) => (
-            <Chip key={t} variant="default">
-              {t}
-            </Chip>
-          ))}
-        </Cluster>
+        {item.tags && item.tags.length > 0 && (
+          <Cluster
+            gap={8}
+            className="pt-4 border-t-2"
+            style={{ borderColor: "var(--border)" }}
+          >
+            {item.tags.map((t) => (
+              <Chip key={t} variant="default">
+                {t}
+              </Chip>
+            ))}
+          </Cluster>
+        )}
       </div>
     </div>
   );
