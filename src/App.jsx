@@ -227,27 +227,42 @@ function Hero({ info = PERSONAL_INFO }) {
                   </div>
 
                   <div
-                    className="mt-4 p-3.5 rounded-xl border-2 flex items-center justify-between"
+                    className="mt-4 p-3.5 sm:p-4 rounded-xl border-2 flex flex-col gap-2.5"
                     style={{
                       backgroundColor: "var(--surface-alt)",
                       borderColor: "var(--border)",
                     }}
                   >
-                    <div>
+                    <div className="flex flex-col gap-0.5">
                       <div
-                        className="font-extrabold text-base font-mono"
+                        className="font-extrabold text-sm sm:text-base font-mono tracking-tight"
                         style={{ color: "var(--ink)" }}
                       >
                         {displayName}
                       </div>
                       <div
-                        className="text-xs font-semibold"
+                        className="text-xs font-semibold leading-relaxed"
                         style={{ color: "var(--google-blue)" }}
                       >
-                        Mahasiswa Sistem Informasi - {university}
+                        Mahasiswa Sistem Informasi • {university}
                       </div>
                     </div>
-                    <Chip variant="blue">{location}</Chip>
+
+                    <div
+                      className="pt-2.5 border-t border-[var(--border)] flex items-center"
+                    >
+                      <span
+                        className="neo-badge text-[11px] sm:text-xs font-bold px-2.5 sm:px-3 py-1 inline-flex items-center gap-1.5 max-w-full"
+                        style={{
+                          backgroundColor: "var(--google-blue-bg)",
+                          color: "var(--google-blue-text)",
+                          borderColor: "var(--google-blue)",
+                        }}
+                      >
+                        <Icon name="map-pin" size={12} className="shrink-0 text-[var(--google-blue)]" />
+                        <span className="truncate">{location}</span>
+                      </span>
+                    </div>
                   </div>
                 </div>
               </Card>
