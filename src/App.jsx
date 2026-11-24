@@ -1120,23 +1120,74 @@ function Contact({ info = PERSONAL_INFO }) {
                   borderColor: "var(--border)",
                 }}
               >
-                <form onSubmit={handleSubmit} className="space-y-3.5 text-left">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <form
+                  onSubmit={handleSubmit}
+                  className="flex-1 flex flex-col justify-between text-left"
+                >
+                  <div className="space-y-4 mb-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label
+                          className="block text-xs font-bold font-mono uppercase mb-1"
+                          style={{ color: "var(--ink-secondary)" }}
+                        >
+                          {t("contact_name_label")}
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={formData.name}
+                          onChange={(e) =>
+                            setFormData({ ...formData, name: e.target.value })
+                          }
+                          placeholder={t("contact_name_placeholder")}
+                          className="w-full px-3 py-2 rounded-xl border-2 font-medium text-sm transition-all"
+                          style={{
+                            backgroundColor: "var(--surface)",
+                            borderColor: "var(--border)",
+                            color: "var(--ink)",
+                          }}
+                        />
+                      </div>
+                      <div>
+                        <label
+                          className="block text-xs font-bold font-mono uppercase mb-1"
+                          style={{ color: "var(--ink-secondary)" }}
+                        >
+                          {t("contact_email_label")}
+                        </label>
+                        <input
+                          type="email"
+                          required
+                          value={formData.email}
+                          onChange={(e) =>
+                            setFormData({ ...formData, email: e.target.value })
+                          }
+                          placeholder="email@domain.com"
+                          className="w-full px-3 py-2 rounded-xl border-2 font-medium text-sm transition-all"
+                          style={{
+                            backgroundColor: "var(--surface)",
+                            borderColor: "var(--border)",
+                            color: "var(--ink)",
+                          }}
+                        />
+                      </div>
+                    </div>
+
                     <div>
                       <label
                         className="block text-xs font-bold font-mono uppercase mb-1"
                         style={{ color: "var(--ink-secondary)" }}
                       >
-                        {t("contact_name_label")}
+                        {t("contact_subject_label")}
                       </label>
                       <input
                         type="text"
-                        required
-                        value={formData.name}
+                        value={formData.subject}
                         onChange={(e) =>
-                          setFormData({ ...formData, name: e.target.value })
+                          setFormData({ ...formData, subject: e.target.value })
                         }
-                        placeholder={t("contact_name_placeholder")}
+                        placeholder={t("contact_subject_placeholder")}
                         className="w-full px-3 py-2 rounded-xl border-2 font-medium text-sm transition-all"
                         style={{
                           backgroundColor: "var(--surface)",
@@ -1145,22 +1196,23 @@ function Contact({ info = PERSONAL_INFO }) {
                         }}
                       />
                     </div>
+
                     <div>
                       <label
                         className="block text-xs font-bold font-mono uppercase mb-1"
                         style={{ color: "var(--ink-secondary)" }}
                       >
-                        {t("contact_email_label")}
+                        {t("contact_message_label")}
                       </label>
-                      <input
-                        type="email"
+                      <textarea
+                        rows={4}
                         required
-                        value={formData.email}
+                        value={formData.message}
                         onChange={(e) =>
-                          setFormData({ ...formData, email: e.target.value })
+                          setFormData({ ...formData, message: e.target.value })
                         }
-                        placeholder="email@domain.com"
-                        className="w-full px-3 py-2 rounded-xl border-2 font-medium text-sm transition-all"
+                        placeholder={t("contact_message_placeholder")}
+                        className="w-full px-3 py-2.5 rounded-xl border-2 font-medium text-sm transition-all resize-y min-h-[110px]"
                         style={{
                           backgroundColor: "var(--surface)",
                           borderColor: "var(--border)",
@@ -1170,87 +1222,50 @@ function Contact({ info = PERSONAL_INFO }) {
                     </div>
                   </div>
 
-                  <div>
-                    <label
-                      className="block text-xs font-bold font-mono uppercase mb-1"
-                      style={{ color: "var(--ink-secondary)" }}
-                    >
-                      {t("contact_subject_label")}
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.subject}
-                      onChange={(e) =>
-                        setFormData({ ...formData, subject: e.target.value })
-                      }
-                      placeholder={t("contact_subject_placeholder")}
-                      className="w-full px-3 py-2 rounded-xl border-2 font-medium text-sm transition-all"
-                      style={{
-                        backgroundColor: "var(--surface)",
-                        borderColor: "var(--border)",
-                        color: "var(--ink)",
-                      }}
-                    />
-                  </div>
+                  <div className="pt-2">
+                    {feedback && (
+                      <div
+                        className="p-3 mb-3 rounded-xl border-2 text-xs font-bold flex items-center gap-2"
+                        style={{
+                          backgroundColor:
+                            feedback.type === "success"
+                              ? "var(--google-green-bg)"
+                              : "var(--google-red-bg)",
+                          borderColor:
+                            feedback.type === "success"
+                              ? "var(--google-green)"
+                              : "var(--google-red)",
+                          color:
+                            feedback.type === "success"
+                              ? "var(--google-green-text)"
+                              : "var(--google-red-text)",
+                        }}
+                      >
+                        <Icon
+                          name={feedback.type === "success" ? "check" : "alert"}
+                          size={16}
+                        />
+                        <span>{feedback.text}</span>
+                      </div>
+                    )}
 
-                  <div>
-                    <label
-                      className="block text-xs font-bold font-mono uppercase mb-1"
-                      style={{ color: "var(--ink-secondary)" }}
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="neo-btn-primary font-bold text-sm sm:text-base w-full justify-center py-3"
                     >
-                      {t("contact_message_label")}
-                    </label>
-                    <textarea
-                      rows={3}
-                      required
-                      value={formData.message}
-                      onChange={(e) =>
-                        setFormData({ ...formData, message: e.target.value })
-                      }
-                      placeholder={t("contact_message_placeholder")}
-                      className="w-full px-3 py-2 rounded-xl border-2 font-medium text-sm transition-all resize-y"
-                      style={{
-                        backgroundColor: "var(--surface)",
-                        borderColor: "var(--border)",
-                        color: "var(--ink)",
-                      }}
-                    />
-                  </div>
+                      {isSubmitting ? t("contact_sending") : t("contact_submit")}
+                      <Icon name="arrow-right" size={16} />
+                    </button>
 
-                  {feedback && (
                     <div
-                      className="p-3 rounded-xl border-2 text-xs font-bold flex items-center gap-2"
-                      style={{
-                        backgroundColor:
-                          feedback.type === "success"
-                            ? "var(--google-green-bg)"
-                            : "var(--google-red-bg)",
-                        borderColor:
-                          feedback.type === "success"
-                            ? "var(--google-green)"
-                            : "var(--google-red)",
-                        color:
-                          feedback.type === "success"
-                            ? "var(--google-green-text)"
-                            : "var(--google-red-text)",
-                      }}
+                      className="mt-2.5 flex items-center justify-center gap-1.5 text-xs font-mono"
+                      style={{ color: "var(--ink-muted)" }}
                     >
-                      <Icon
-                        name={feedback.type === "success" ? "check" : "alert"}
-                        size={16}
-                      />
-                      <span>{feedback.text}</span>
+                      <Icon name="clock" size={13} />
+                      <span>{t("contact_response_time")}</span>
                     </div>
-                  )}
-
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="neo-btn-primary font-bold text-sm w-full sm:w-auto"
-                  >
-                    {isSubmitting ? t("contact_sending") : t("contact_submit")}
-                    <Icon name="arrow-right" size={15} />
-                  </button>
+                  </div>
                 </form>
               </div>
             </div>

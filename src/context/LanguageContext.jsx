@@ -154,6 +154,7 @@ export const TRANSLATIONS = {
     contact_submit: "Kirim Pesan",
     contact_sending: "Mengirim...",
     contact_status: "Terbuka untuk Magang & Peluang Kolaborasi Proyek",
+    contact_response_time: "Respon cepat biasanya dalam 1x24 jam kerja.",
 
     // Footer
     footer_rights: "Hak Cipta Dilindungi.",
@@ -303,6 +304,7 @@ export const TRANSLATIONS = {
     contact_submit: "Send Message",
     contact_sending: "Sending...",
     contact_status: "Open for Internship & Project Collaboration Opportunities",
+    contact_response_time: "Typically responds within 24 business hours.",
 
     // Footer
     footer_rights: "All Rights Reserved.",
