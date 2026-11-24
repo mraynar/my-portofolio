@@ -372,7 +372,6 @@ export const CERTIFICATIONS = [
     date: "April 2026",
     credentialId: "BABFA59PQ6P1",
     credentialUrl: "https://coursera.org/verify/BABFA59PQ6P1",
-    image: "/images/sertifikasi/coursera/full-stack-aws.jpg",
   },
   {
     provider: "Coursera",
@@ -381,7 +380,6 @@ export const CERTIFICATIONS = [
     date: "Mei 2026",
     credentialId: "O4E735ED1C19",
     credentialUrl: "https://coursera.org/verify/O4E735ED1C19",
-    image: "/images/sertifikasi/coursera/software-engineer.jpg",
   },
   {
     provider: "Coursera",
@@ -390,7 +388,6 @@ export const CERTIFICATIONS = [
     date: "Mei 2026",
     credentialId: "OPIQUC835DYO",
     credentialUrl: "https://coursera.org/verify/OPIQUC835DYO",
-    image: "/images/sertifikasi/coursera/Html.jpg",
   },
   {
     provider: "Dicoding",
@@ -399,7 +396,6 @@ export const CERTIFICATIONS = [
     date: "Maret 2026",
     credentialId: "4EXG140QQPRL",
     credentialUrl: "https://dicoding.com/certificates/4EXG140QQPRL",
-    image: "/images/sertifikasi/dicoding/membuat-aplikasi-react.jpg",
   },
   {
     provider: "Dicoding",
@@ -408,7 +404,6 @@ export const CERTIFICATIONS = [
     date: "Maret 2026",
     credentialId: "72ZDJ771LZYW",
     credentialUrl: "https://dicoding.com/certificates/72ZDJ771LZYW",
-    image: "/images/sertifikasi/dicoding/data-science-microsoft-fabric.jpg",
   },
   {
     provider: "Udemy",
@@ -417,7 +412,6 @@ export const CERTIFICATIONS = [
     date: "Mei 2026",
     credentialId: "UC-b1e1180e-06a6-461a-91a7-b6f3f75ddce1",
     credentialUrl: "https://ude.my/UC-b1e1180e-06a6-461a-91a7-b6f3f75ddce1",
-    image: "/images/sertifikasi/udemy/full stack python & djangpo.jpg",
   },
   {
     provider: "Udemy",
@@ -426,7 +420,6 @@ export const CERTIFICATIONS = [
     date: "April 2026",
     credentialId: "UC-e151d82f-7011-4b42-b94f-9f64eecb4eaa",
     credentialUrl: "https://ude.my/UC-e151d82f-7011-4b42-b94f-9f64eecb4eaa",
-    image: "/images/sertifikasi/udemy/full stack react.jpg",
   },
   {
     provider: "Udemy",
@@ -435,15 +428,13 @@ export const CERTIFICATIONS = [
     date: "Mei 2026",
     credentialId: "UC-806f4b45-0109-4c65-9720-389fff8ca068",
     credentialUrl: "https://ude.my/UC-806f4b45-0109-4c65-9720-389fff8ca068",
-    image: "/images/sertifikasi/udemy/mastering mysql.jpg",
   },
   {
     provider: "Karirnex",
     title: "Data Analyst Professional",
     issuer: "Karirnex",
     date: "2026",
-    credentialId: "KARIRNEX-DA-001",
+    credentialId: "KNX-DA-001",
     credentialUrl: "#",
-    image: "/images/sertifikasi/karirnex/Data Analyst.jpg",
   },
 ];

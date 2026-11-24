@@ -54,6 +54,16 @@
 - [x] Implement client-side storage uploader for images and CV documents.
 - [x] Pass all quality checks (`check:comments`, `check:emoji`, `lint`, `check:layout`, `build`).
 
+### Phase C: Static Asset Cleanup & Waste Removal (COMPLETED)
+- [x] Remove unused template assets in `src/assets/` (`hero.png`, `vite.svg`, `react.svg`).
+- [x] Remove legacy unused logos in `public/images/logo/` (14 unused logo files, 708 KB).
+- [x] Remove unused certificate scans, duplicates, and PDFs in `public/images/sertifikasi/` (16 MB).
+- [x] Remove unreferenced portrait duplicates (`Profile Kedua.PNG`, `profile.PNG`).
+- [x] Remove unreferenced static SVG sprite (`public/icons.svg`).
+- [x] Remove OS clutter (`.DS_Store`) and empty tool folders (`.qodo`).
+- [x] Clean up unreferenced image fields in `src/data.jsx`.
+- [x] Verify zero broken references across codebase via `git grep` and automated layout test.
+
 ### Phase D: Public Site Integration & Resilient Caching (PENDING)
 - [ ] Connect public pages to Supabase data via `usePortfolioData`.
 - [ ] Implement memory cache and localStorage snapshot fallback for paused database mode.
