@@ -83,105 +83,83 @@ export default function AdminEducationCerts({
     }
   };
 
-  return (
-    <div className="space-y-8 w-full">
-      {/* Sub-tab navigation */}
-      <div className="flex items-center gap-3 pb-4 border-b-2">
-        <button
-          onClick={() => {
-            setActiveSubTab("education");
-            setFeedback(null);
-          }}
-          className="neo-badge text-xs sm:text-sm font-bold cursor-pointer"
-          style={{
-            backgroundColor:
-              activeSubTab === "education"
-                ? "var(--google-blue)"
-                : "var(--surface-alt)",
-            color: activeSubTab === "education" ? "#ffffff" : "var(--ink)",
-            borderColor: "var(--border)",
-          }}
-        >
-          Pendidikan Formal ({education.length})
-        </button>
-
-        <button
-          onClick={() => {
-            setActiveSubTab("certifications");
-            setFeedback(null);
-          }}
-          className="neo-badge text-xs sm:text-sm font-bold cursor-pointer"
-          style={{
-            backgroundColor:
-              activeSubTab === "certifications"
-                ? "var(--google-blue)"
-                : "var(--surface-alt)",
-            color: activeSubTab === "certifications" ? "#ffffff" : "var(--ink)",
-            borderColor: "var(--border)",
-          }}
-        >
-          Sertifikasi Resmi ({certifications.length})
-        </button>
-      </div>
-
-      {feedback && (
+    if (editingEdu) {
+    const isNew = !education.some((e) => e.id === editingEdu.id);
+    return (
+      <div className="space-y-6 w-full">
+        {/* Dedicated edit header with back button */}
         <div
-          className="p-4 rounded-xl border-2 text-sm font-bold flex items-center gap-2"
-          style={{
-            backgroundColor:
-              feedback.type === "success"
-                ? "var(--google-green-bg)"
-                : "var(--google-red-bg)",
-            borderColor:
-              feedback.type === "success"
-                ? "var(--google-green)"
-                : "var(--google-red)",
-            color:
-              feedback.type === "success"
-                ? "var(--google-green-text)"
-                : "var(--google-red-text)",
-          }}
+          className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b-2"
+          style={{ borderColor: "var(--border)" }}
         >
-          <Icon
-            name={feedback.type === "success" ? "check" : "alert"}
-            size={18}
-          />
-          <span>{feedback.text}</span>
-        </div>
-      )}
-
-      {/* Education tab view */}
-      {activeSubTab === "education" && (
-        <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <h3
-              className="text-lg font-extrabold"
+          <div>
+            <button
+              type="button"
+              onClick={() => {
+                setEditingEdu(null);
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+              className="neo-btn-secondary text-xs sm:text-sm font-bold inline-flex items-center gap-2 mb-3 cursor-pointer"
+            >
+              <Icon name="arrow-left" size={16} />
+              Kembali ke Riwayat Pendidikan
+            </button>
+            <h2
+              className="text-xl sm:text-2xl font-extrabold"
               style={{ fontFamily: "var(--font-display)" }}
             >
-              Riwayat Pendidikan Formal
-            </h3>
-            {!editingEdu && (
-              <button
-                onClick={() =>
-                  setEditingEdu({
-                    school: "",
-                    degree: "",
-                    period: "",
-                    focus: "",
-                    active: false,
-                    order_index: education.length,
-                  })
-                }
-                className="neo-btn-primary font-bold text-xs sm:text-sm"
-              >
-                <Icon name="plus" size={15} />
-                Tambah Pendidikan
-              </button>
-            )}
+              {isNew
+                ? "Tambah Riwayat Pendidikan"
+                : `Edit Pendidikan: ${editingEdu.school || "Tanpa Nama"}`}
+            </h2>
+            <p
+              className="text-xs sm:text-sm"
+              style={{ color: "var(--ink-secondary)" }}
+            >
+              Kelola institusi pendidikan, gelar akademik, periode, dan fokus konsentrasi studi.
+            </p>
           </div>
 
-          {editingEdu && (
-            <Card className="p-6 space-y-4">
+          <button
+            type="button"
+            onClick={() => {
+              setEditingEdu(null);
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+            className="neo-badge text-xs font-bold self-start sm:self-center cursor-pointer"
+          >
+            <Icon name="x" size={14} />
+            Batal
+          </button>
+        </div>
+
+        {feedback && (
+          <div
+            className="p-4 rounded-xl border-2 text-sm font-bold flex items-center gap-2"
+            style={{
+              backgroundColor:
+                feedback.type === "success"
+                  ? "var(--google-green-bg)"
+                  : "var(--google-red-bg)",
+              borderColor:
+                feedback.type === "success"
+                  ? "var(--google-green)"
+                  : "var(--google-red)",
+              color:
+                feedback.type === "success"
+                  ? "var(--google-green-text)"
+                  : "var(--google-red-text)",
+            }}
+          >
+            <Icon
+              name={feedback.type === "success" ? "check" : "alert"}
+              size={18}
+            />
+            <span>{feedback.text}</span>
+          </div>
+        )}
+
+        <Card className="p-6 space-y-4">
               <h4 className="font-extrabold text-base pb-3 border-b-2">
                 {editingEdu.school ? `Edit: ${editingEdu.school}` : "Pendidikan Baru"}
               </h4>
@@ -289,7 +267,7 @@ export default function AdminEducationCerts({
                 <div className="flex justify-end gap-3 pt-3 border-t-2">
                   <button
                     type="button"
-                    onClick={() => setEditingEdu(null)}
+                    onClick={() => { setEditingEdu(null); window.scrollTo({ top: 0, behavior: "smooth" }); }}
                     className="neo-btn-secondary text-sm font-bold"
                   >
                     Batal
@@ -304,97 +282,87 @@ export default function AdminEducationCerts({
                 </div>
               </form>
             </Card>
-          )}
+      </div>
+    );
+  }
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-stretch">
-            {education.map((edu, idx) => (
-              <Card key={edu.id || edu.school + idx} className="p-5">
-                <div className="flex items-center justify-between mb-2 pb-2 border-b-2">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-mono font-bold">
-                      {edu.period}
-                    </span>
-                    {edu.active && <Chip variant="green">Aktif</Chip>}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => setEditingEdu(edu)}
-                      className="neo-btn-secondary text-xs font-bold py-1 px-2.5"
-                    >
-                      <Icon name="edit" size={13} />
-                    </button>
-                    {edu.id && (
-                      <button
-                        onClick={() => handleDeleteEdu(edu.id)}
-                        className="neo-badge text-xs font-bold py-1 px-2.5"
-                        style={{
-                          backgroundColor: "var(--google-red-bg)",
-                          color: "var(--google-red-text)",
-                          borderColor: "var(--google-red)",
-                        }}
-                      >
-                        <Icon name="trash" size={13} />
-                      </button>
-                    )}
-                  </div>
-                </div>
-                <h4
-                  className="font-extrabold text-base sm:text-lg"
-                  style={{ fontFamily: "var(--font-display)" }}
-                >
-                  {edu.degree}
-                </h4>
-                <div
-                  className="text-xs sm:text-sm font-bold mb-1"
-                  style={{ color: "var(--google-blue)" }}
-                >
-                  {edu.school}
-                </div>
-                <p
-                  className="text-xs sm:text-sm"
-                  style={{ color: "var(--ink-secondary)" }}
-                >
-                  {edu.focus}
-                </p>
-              </Card>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Certifications tab view */}
-      {activeSubTab === "certifications" && (
-        <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <h3
-              className="text-lg font-extrabold"
+  if (editingCert) {
+    const isNew = !certifications.some((c) => c.id === editingCert.id);
+    return (
+      <div className="space-y-6 w-full">
+        {/* Dedicated edit header with back button */}
+        <div
+          className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b-2"
+          style={{ borderColor: "var(--border)" }}
+        >
+          <div>
+            <button
+              type="button"
+              onClick={() => {
+                setEditingCert(null);
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+              className="neo-btn-secondary text-xs sm:text-sm font-bold inline-flex items-center gap-2 mb-3 cursor-pointer"
+            >
+              <Icon name="arrow-left" size={16} />
+              Kembali ke Daftar Sertifikasi
+            </button>
+            <h2
+              className="text-xl sm:text-2xl font-extrabold"
               style={{ fontFamily: "var(--font-display)" }}
             >
-              Sertifikasi & Kredensial Resmi
-            </h3>
-            {!editingCert && (
-              <button
-                onClick={() =>
-                  setEditingCert({
-                    title: "",
-                    issuer: "",
-                    provider: "Coursera",
-                    credentialId: "",
-                    credentialUrl: "",
-                    date: "2024",
-                    orderIndex: certifications.length,
-                  })
-                }
-                className="neo-btn-primary font-bold text-xs sm:text-sm"
-              >
-                <Icon name="plus" size={15} />
-                Tambah Sertifikasi
-              </button>
-            )}
+              {isNew
+                ? "Tambah Sertifikasi Baru"
+                : `Edit Sertifikasi: ${editingCert.title || "Tanpa Judul"}`}
+            </h2>
+            <p
+              className="text-xs sm:text-sm"
+              style={{ color: "var(--ink-secondary)" }}
+            >
+              Kelola sertifikasi profesional, lembaga penerbit, platform, dan tautan verifikasi.
+            </p>
           </div>
 
-          {editingCert && (
-            <Card className="p-6 space-y-4">
+          <button
+            type="button"
+            onClick={() => {
+              setEditingCert(null);
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+            className="neo-badge text-xs font-bold self-start sm:self-center cursor-pointer"
+          >
+            <Icon name="x" size={14} />
+            Batal
+          </button>
+        </div>
+
+        {feedback && (
+          <div
+            className="p-4 rounded-xl border-2 text-sm font-bold flex items-center gap-2"
+            style={{
+              backgroundColor:
+                feedback.type === "success"
+                  ? "var(--google-green-bg)"
+                  : "var(--google-red-bg)",
+              borderColor:
+                feedback.type === "success"
+                  ? "var(--google-green)"
+                  : "var(--google-red)",
+              color:
+                feedback.type === "success"
+                  ? "var(--google-green-text)"
+                  : "var(--google-red-text)",
+            }}
+          >
+            <Icon
+              name={feedback.type === "success" ? "check" : "alert"}
+              size={18}
+            />
+            <span>{feedback.text}</span>
+          </div>
+        )}
+
+        <Card className="p-6 space-y-4">
               <h4 className="font-extrabold text-base pb-3 border-b-2">
                 {editingCert.title ? `Edit: ${editingCert.title}` : "Sertifikasi Baru"}
               </h4>
@@ -543,7 +511,7 @@ export default function AdminEducationCerts({
                 <div className="flex justify-end gap-3 pt-3 border-t-2">
                   <button
                     type="button"
-                    onClick={() => setEditingCert(null)}
+                    onClick={() => { setEditingCert(null); window.scrollTo({ top: 0, behavior: "smooth" }); }}
                     className="neo-btn-secondary text-sm font-bold"
                   >
                     Batal
@@ -558,7 +526,196 @@ export default function AdminEducationCerts({
                 </div>
               </form>
             </Card>
-          )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-8 w-full">
+      {/* Sub-tab navigation */}
+      <div className="flex items-center gap-3 pb-4 border-b-2">
+        <button
+          onClick={() => {
+            setActiveSubTab("education");
+            setFeedback(null);
+          }}
+          className="neo-badge text-xs sm:text-sm font-bold cursor-pointer"
+          style={{
+            backgroundColor:
+              activeSubTab === "education"
+                ? "var(--google-blue)"
+                : "var(--surface-alt)",
+            color: activeSubTab === "education" ? "#ffffff" : "var(--ink)",
+            borderColor: "var(--border)",
+          }}
+        >
+          Pendidikan Formal ({education.length})
+        </button>
+
+        <button
+          onClick={() => {
+            setActiveSubTab("certifications");
+            setFeedback(null);
+          }}
+          className="neo-badge text-xs sm:text-sm font-bold cursor-pointer"
+          style={{
+            backgroundColor:
+              activeSubTab === "certifications"
+                ? "var(--google-blue)"
+                : "var(--surface-alt)",
+            color: activeSubTab === "certifications" ? "#ffffff" : "var(--ink)",
+            borderColor: "var(--border)",
+          }}
+        >
+          Sertifikasi Resmi ({certifications.length})
+        </button>
+      </div>
+
+      {feedback && (
+        <div
+          className="p-4 rounded-xl border-2 text-sm font-bold flex items-center gap-2"
+          style={{
+            backgroundColor:
+              feedback.type === "success"
+                ? "var(--google-green-bg)"
+                : "var(--google-red-bg)",
+            borderColor:
+              feedback.type === "success"
+                ? "var(--google-green)"
+                : "var(--google-red)",
+            color:
+              feedback.type === "success"
+                ? "var(--google-green-text)"
+                : "var(--google-red-text)",
+          }}
+        >
+          <Icon
+            name={feedback.type === "success" ? "check" : "alert"}
+            size={18}
+          />
+          <span>{feedback.text}</span>
+        </div>
+      )}
+
+      {/* Education tab view */}
+      {activeSubTab === "education" && (
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <h3
+              className="text-lg font-extrabold"
+              style={{ fontFamily: "var(--font-display)" }}
+            >
+              Riwayat Pendidikan Formal
+            </h3>
+            <button
+              onClick={() => {
+                window.scrollTo({ top: 0, behavior: "smooth" });
+                setEditingEdu({
+                  school: "",
+                  degree: "",
+                  period: "",
+                  focus: "",
+                  active: false,
+                  order_index: education.length,
+                });
+              }}
+              className="neo-btn-primary font-bold text-xs sm:text-sm"
+            >
+                <Icon name="plus" size={15} />
+                Tambah Pendidikan
+              </button>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-stretch">
+            {education.map((edu, idx) => (
+              <Card key={edu.id || edu.school + idx} className="p-5">
+                <div className="flex items-center justify-between mb-2 pb-2 border-b-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-mono font-bold">
+                      {edu.period}
+                    </span>
+                    {edu.active && <Chip variant="green">Aktif</Chip>}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      aria-label="Edit pendidikan"
+                      onClick={() => {
+                        setEditingEdu(edu);
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                      }}
+                      className="neo-btn-secondary text-xs font-bold py-1 px-2.5"
+                    >
+                      <Icon name="edit" size={13} />
+                    </button>
+                    {edu.id && (
+                      <button
+                        onClick={() => handleDeleteEdu(edu.id)}
+                        className="neo-badge text-xs font-bold py-1 px-2.5"
+                        style={{
+                          backgroundColor: "var(--google-red-bg)",
+                          color: "var(--google-red-text)",
+                          borderColor: "var(--google-red)",
+                        }}
+                      >
+                        <Icon name="trash" size={13} />
+                      </button>
+                    )}
+                  </div>
+                </div>
+                <h4
+                  className="font-extrabold text-base sm:text-lg"
+                  style={{ fontFamily: "var(--font-display)" }}
+                >
+                  {edu.degree}
+                </h4>
+                <div
+                  className="text-xs sm:text-sm font-bold mb-1"
+                  style={{ color: "var(--google-blue)" }}
+                >
+                  {edu.school}
+                </div>
+                <p
+                  className="text-xs sm:text-sm"
+                  style={{ color: "var(--ink-secondary)" }}
+                >
+                  {edu.focus}
+                </p>
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Certifications tab view */}
+      {activeSubTab === "certifications" && (
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <h3
+              className="text-lg font-extrabold"
+              style={{ fontFamily: "var(--font-display)" }}
+            >
+              Sertifikasi & Kredensial Resmi
+            </h3>
+            <button
+              onClick={() => {
+                window.scrollTo({ top: 0, behavior: "smooth" });
+                setEditingCert({
+                  title: "",
+                  issuer: "",
+                  provider: "Coursera",
+                  credentialId: "",
+                  credentialUrl: "",
+                  date: "2024",
+                  orderIndex: certifications.length,
+                });
+              }}
+              className="neo-btn-primary font-bold text-xs sm:text-sm"
+            >
+                <Icon name="plus" size={15} />
+                Tambah Sertifikasi
+              </button>
+          </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {certifications.map((c, idx) => (
@@ -593,7 +750,12 @@ export default function AdminEducationCerts({
                   </span>
                   <div className="flex items-center gap-1.5">
                     <button
-                      onClick={() => setEditingCert(c)}
+                      type="button"
+                      aria-label="Edit sertifikasi"
+                      onClick={() => {
+                        setEditingCert(c);
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                      }}
                       className="neo-btn-secondary text-xs font-bold py-1 px-2"
                     >
                       <Icon name="edit" size={12} />

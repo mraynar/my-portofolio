@@ -41,6 +41,7 @@ export default function AdminExperience({ experience = [], onRefresh }) {
     setBulletsText((item.bullets || []).join("\n"));
     setTagsText((item.tags || []).join(", "));
     setFeedback(null);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleCreate = () => {
@@ -48,6 +49,7 @@ export default function AdminExperience({ experience = [], onRefresh }) {
     setBulletsText("");
     setTagsText("");
     setFeedback(null);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleFileSelect = (e) => {
@@ -140,62 +142,82 @@ export default function AdminExperience({ experience = [], onRefresh }) {
     }
   };
 
-  return (
-    <div className="space-y-8 w-full">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h2
-            className="text-xl sm:text-2xl font-extrabold"
-            style={{ fontFamily: "var(--font-display)" }}
-          >
-            Linimasa Pengalaman & Organisasi ({experience.length})
-          </h2>
-          <p
-            className="text-xs sm:text-sm"
-            style={{ color: "var(--ink-secondary)" }}
-          >
-            Rekam jejak program magang, organisasi, dan kepanitiaan.
-          </p>
-        </div>
-
-        {!editingItem && (
-          <button
-            onClick={handleCreate}
-            className="neo-btn-primary font-bold text-xs sm:text-sm self-start sm:self-auto"
-          >
-            <Icon name="plus" size={16} />
-            Tambah Pengalaman
-          </button>
-        )}
-      </div>
-
-      {feedback && (
+    if (editingItem) {
+    const isNew = !experience.some((e) => e.id === editingItem.id);
+    return (
+      <div className="space-y-6 w-full">
+        {/* Dedicated edit header with back button */}
         <div
-          className="p-4 rounded-xl border-2 text-sm font-bold flex items-center gap-2"
-          style={{
-            backgroundColor:
-              feedback.type === "success"
-                ? "var(--google-green-bg)"
-                : "var(--google-red-bg)",
-            borderColor:
-              feedback.type === "success"
-                ? "var(--google-green)"
-                : "var(--google-red)",
-            color:
-              feedback.type === "success"
-                ? "var(--google-green-text)"
-                : "var(--google-red-text)",
-          }}
+          className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b-2"
+          style={{ borderColor: "var(--border)" }}
         >
-          <Icon
-            name={feedback.type === "success" ? "check" : "alert"}
-            size={18}
-          />
-          <span>{feedback.text}</span>
-        </div>
-      )}
+          <div>
+            <button
+              type="button"
+              onClick={() => {
+                setEditingItem(null);
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+              className="neo-btn-secondary text-xs sm:text-sm font-bold inline-flex items-center gap-2 mb-3 cursor-pointer"
+            >
+              <Icon name="arrow-left" size={16} />
+              Kembali ke Linimasa Pengalaman
+            </button>
+            <h2
+              className="text-xl sm:text-2xl font-extrabold"
+              style={{ fontFamily: "var(--font-display)" }}
+            >
+              {isNew
+                ? "Tambah Pengalaman Baru"
+                : `Edit Pengalaman: ${editingItem.role || "Tanpa Judul"}`}
+            </h2>
+            <p
+              className="text-xs sm:text-sm"
+              style={{ color: "var(--ink-secondary)" }}
+            >
+              Kelola peran, organisasi, periode, foto dokumentasi, dan poin kontribusi.
+            </p>
+          </div>
 
-      {editingItem && (
+          <button
+            type="button"
+            onClick={() => {
+              setEditingItem(null);
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+            className="neo-badge text-xs font-bold self-start sm:self-center cursor-pointer"
+          >
+            <Icon name="x" size={14} />
+            Batal
+          </button>
+        </div>
+
+        {feedback && (
+          <div
+            className="p-4 rounded-xl border-2 text-sm font-bold flex items-center gap-2"
+            style={{
+              backgroundColor:
+                feedback.type === "success"
+                  ? "var(--google-green-bg)"
+                  : "var(--google-red-bg)",
+              borderColor:
+                feedback.type === "success"
+                  ? "var(--google-green)"
+                  : "var(--google-red)",
+              color:
+                feedback.type === "success"
+                  ? "var(--google-green-text)"
+                  : "var(--google-red-text)",
+            }}
+          >
+            <Icon
+              name={feedback.type === "success" ? "check" : "alert"}
+              size={18}
+            />
+            <span>{feedback.text}</span>
+          </div>
+        )}
+
         <Card className="p-6 sm:p-8 space-y-6">
           <div className="flex items-center justify-between pb-4 border-b-2">
             <h3
@@ -207,7 +229,7 @@ export default function AdminExperience({ experience = [], onRefresh }) {
                 : "Tambah Pengalaman"}
             </h3>
             <button
-              onClick={() => setEditingItem(null)}
+              onClick={() => { setEditingItem(null); window.scrollTo({ top: 0, behavior: "smooth" }); }}
               className="neo-badge text-xs font-bold"
             >
               <Icon name="x" size={14} />
@@ -491,7 +513,7 @@ export default function AdminExperience({ experience = [], onRefresh }) {
             <div className="flex justify-end gap-3 pt-4 border-t-2">
               <button
                 type="button"
-                onClick={() => setEditingItem(null)}
+                onClick={() => { setEditingItem(null); window.scrollTo({ top: 0, behavior: "smooth" }); }}
                 className="neo-btn-secondary text-sm font-bold"
               >
                 Batal
@@ -507,6 +529,71 @@ export default function AdminExperience({ experience = [], onRefresh }) {
             </div>
           </form>
         </Card>
+
+        {cropFile && (
+          <ImageCropModal
+            file={cropFile}
+            aspectRatio={16 / 9}
+            title="Sesuaikan Foto Dokumentasi Kegiatan"
+            onConfirm={handleCropConfirm}
+            onCancel={() => setCropFile(null)}
+          />
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-8 w-full">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h2
+            className="text-xl sm:text-2xl font-extrabold"
+            style={{ fontFamily: "var(--font-display)" }}
+          >
+            Linimasa Pengalaman & Organisasi ({experience.length})
+          </h2>
+          <p
+            className="text-xs sm:text-sm"
+            style={{ color: "var(--ink-secondary)" }}
+          >
+            Rekam jejak program magang, organisasi, dan kepanitiaan.
+          </p>
+        </div>
+
+        <button
+            onClick={handleCreate}
+            className="neo-btn-primary font-bold text-xs sm:text-sm self-start sm:self-auto"
+          >
+            <Icon name="plus" size={16} />
+            Tambah Pengalaman
+          </button>
+      </div>
+
+      {feedback && (
+        <div
+          className="p-4 rounded-xl border-2 text-sm font-bold flex items-center gap-2"
+          style={{
+            backgroundColor:
+              feedback.type === "success"
+                ? "var(--google-green-bg)"
+                : "var(--google-red-bg)",
+            borderColor:
+              feedback.type === "success"
+                ? "var(--google-green)"
+                : "var(--google-red)",
+            color:
+              feedback.type === "success"
+                ? "var(--google-green-text)"
+                : "var(--google-red-text)",
+          }}
+        >
+          <Icon
+            name={feedback.type === "success" ? "check" : "alert"}
+            size={18}
+          />
+          <span>{feedback.text}</span>
+        </div>
       )}
 
       {/* Filter tabs */}

@@ -86,6 +86,7 @@ export default function AdminProjects({
     });
     setBadgesInput((p.badges || []).join(", "));
     setFeedback(null);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleCreate = () => {
@@ -93,6 +94,7 @@ export default function AdminProjects({
     setEditingProject({ ...EMPTY_PROJECT, id: newId, orderIndex: projects.length });
     setBadgesInput("React, Tailwind CSS");
     setFeedback(null);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleDelete = async (id) => {
@@ -167,140 +169,82 @@ export default function AdminProjects({
     }
   };
 
-  return (
-    <div className="space-y-8 w-full">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h2
-            className="text-xl sm:text-2xl font-extrabold"
-            style={{ fontFamily: "var(--font-display)" }}
-          >
-            Portofolio Proyek ({projects.length})
-          </h2>
-          <p
-            className="text-xs sm:text-sm"
-            style={{ color: "var(--ink-secondary)" }}
-          >
-            Kelola karya, arsitektur solusi, dan dokumentasi studi kasus.
-          </p>
-        </div>
-
-        {!editingProject && (
-          <button
-            onClick={handleCreate}
-            className="neo-btn-primary font-bold text-xs sm:text-sm self-start sm:self-auto"
-          >
-            <Icon name="plus" size={16} />
-            Tambah Proyek Baru
-          </button>
-        )}
-      </div>
-
-      {!editingProject && (
-        <Card className="p-4 sm:p-5">
-          <form
-            onSubmit={handleSaveCustomCount}
-            className="flex flex-col sm:flex-row sm:items-center justify-between gap-4"
-          >
-            <div className="flex items-center gap-3">
-              <div
-                className="w-10 h-10 rounded-xl border-2 border-[var(--border)] flex items-center justify-center shrink-0"
-                style={{
-                  backgroundColor: "var(--google-blue-bg)",
-                  color: "var(--google-blue)",
-                }}
-              >
-                <Icon name="folder" size={20} />
-              </div>
-              <div>
-                <h3 className="font-extrabold text-sm sm:text-base">
-                  Kustomisasi Total Proyek Digital (By The Numbers)
-                </h3>
-                <p className="text-xs text-[var(--ink-secondary)]">
-                  Atur angka total proyek pada kartu statistik web (misal &ldquo;15+&rdquo;) jika pernah mengerjakan lebih banyak dari daftar.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2 shrink-0">
-              <input
-                type="text"
-                value={customCountInput}
-                onChange={(e) => setCustomCountInput(e.target.value)}
-                placeholder={`${projects.length}+`}
-                className="w-24 px-3 py-1.5 rounded-xl border-2 font-mono font-bold text-sm text-center"
-                style={{
-                  backgroundColor: "var(--surface-alt)",
-                  borderColor: "var(--border)",
-                }}
-              />
-              <button
-                type="submit"
-                disabled={isSavingCount}
-                className="neo-btn-primary text-xs font-bold py-2 px-3.5 cursor-pointer"
-              >
-                <Icon name="check" size={14} />
-                {isSavingCount ? "Menyimpan..." : "Simpan Angka"}
-              </button>
-            </div>
-          </form>
-
-          {countFeedback && (
-            <div
-              className="mt-3 p-2.5 rounded-xl border-2 text-xs font-bold flex items-center gap-2"
-              style={{
-                backgroundColor:
-                  countFeedback.type === "success"
-                    ? "var(--google-green-bg)"
-                    : "var(--google-red-bg)",
-                borderColor:
-                  countFeedback.type === "success"
-                    ? "var(--google-green)"
-                    : "var(--google-red)",
-                color:
-                  countFeedback.type === "success"
-                    ? "var(--google-green-text)"
-                    : "var(--google-red-text)",
-              }}
-            >
-              <Icon
-                name={countFeedback.type === "success" ? "check" : "alert"}
-                size={14}
-              />
-              <span>{countFeedback.text}</span>
-            </div>
-          )}
-        </Card>
-      )}
-
-      {feedback && (
+    if (editingProject) {
+    const isNew = !projects.some((p) => p.id === editingProject.id);
+    return (
+      <div className="space-y-6 w-full">
+        {/* Dedicated edit header with back button */}
         <div
-          className="p-4 rounded-xl border-2 text-sm font-bold flex items-center gap-2"
-          style={{
-            backgroundColor:
-              feedback.type === "success"
-                ? "var(--google-green-bg)"
-                : "var(--google-red-bg)",
-            borderColor:
-              feedback.type === "success"
-                ? "var(--google-green)"
-                : "var(--google-red)",
-            color:
-              feedback.type === "success"
-                ? "var(--google-green-text)"
-                : "var(--google-red-text)",
-          }}
+          className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b-2"
+          style={{ borderColor: "var(--border)" }}
         >
-          <Icon
-            name={feedback.type === "success" ? "check" : "alert"}
-            size={18}
-          />
-          <span>{feedback.text}</span>
-        </div>
-      )}
+          <div>
+            <button
+              type="button"
+              onClick={() => {
+                setEditingProject(null);
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+              className="neo-btn-secondary text-xs sm:text-sm font-bold inline-flex items-center gap-2 mb-3 cursor-pointer"
+            >
+              <Icon name="arrow-left" size={16} />
+              Kembali ke Daftar Proyek
+            </button>
+            <h2
+              className="text-xl sm:text-2xl font-extrabold"
+              style={{ fontFamily: "var(--font-display)" }}
+            >
+              {isNew
+                ? "Tambah Proyek Baru"
+                : `Edit Proyek: ${editingProject.title || "Tanpa Judul"}`}
+            </h2>
+            <p
+              className="text-xs sm:text-sm"
+              style={{ color: "var(--ink-secondary)" }}
+            >
+              Kelola detail karya, arsitektur solusi, teknologi, dan dokumentasi.
+            </p>
+          </div>
 
-      {/* Editing or creation form */}
-      {editingProject && (
+          <button
+            type="button"
+            onClick={() => {
+              setEditingProject(null);
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+            className="neo-badge text-xs font-bold self-start sm:self-center cursor-pointer"
+          >
+            <Icon name="x" size={14} />
+            Batal
+          </button>
+        </div>
+
+        {feedback && (
+          <div
+            className="p-4 rounded-xl border-2 text-sm font-bold flex items-center gap-2"
+            style={{
+              backgroundColor:
+                feedback.type === "success"
+                  ? "var(--google-green-bg)"
+                  : "var(--google-red-bg)",
+              borderColor:
+                feedback.type === "success"
+                  ? "var(--google-green)"
+                  : "var(--google-red)",
+              color:
+                feedback.type === "success"
+                  ? "var(--google-green-text)"
+                  : "var(--google-red-text)",
+            }}
+          >
+            <Icon
+              name={feedback.type === "success" ? "check" : "alert"}
+              size={18}
+            />
+            <span>{feedback.text}</span>
+          </div>
+        )}
+
         <Card className="p-6 sm:p-8 space-y-6">
           <div className="flex items-center justify-between pb-4 border-b-2">
             <h3
@@ -312,7 +256,7 @@ export default function AdminProjects({
                 : "Tambah Proyek Baru"}
             </h3>
             <button
-              onClick={() => setEditingProject(null)}
+              onClick={() => { setEditingProject(null); window.scrollTo({ top: 0, behavior: "smooth" }); }}
               className="neo-badge text-xs font-bold"
             >
               <Icon name="x" size={14} />
@@ -712,7 +656,7 @@ export default function AdminProjects({
             <div className="flex justify-end gap-3 pt-4 border-t-2">
               <button
                 type="button"
-                onClick={() => setEditingProject(null)}
+                onClick={() => { setEditingProject(null); window.scrollTo({ top: 0, behavior: "smooth" }); }}
                 className="neo-btn-secondary text-sm font-bold"
               >
                 Batal
@@ -728,6 +672,148 @@ export default function AdminProjects({
             </div>
           </form>
         </Card>
+
+        {cropFile && (
+          <ImageCropModal
+            file={cropFile}
+            aspectRatio={16 / 10}
+            title="Sesuaikan Gambar Portofolio Proyek"
+            onConfirm={handleCropConfirm}
+            onCancel={() => setCropFile(null)}
+          />
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-8 w-full">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h2
+            className="text-xl sm:text-2xl font-extrabold"
+            style={{ fontFamily: "var(--font-display)" }}
+          >
+            Portofolio Proyek ({projects.length})
+          </h2>
+          <p
+            className="text-xs sm:text-sm"
+            style={{ color: "var(--ink-secondary)" }}
+          >
+            Kelola karya, arsitektur solusi, dan dokumentasi studi kasus.
+          </p>
+        </div>
+
+        <button
+            onClick={handleCreate}
+            className="neo-btn-primary font-bold text-xs sm:text-sm self-start sm:self-auto"
+          >
+            <Icon name="plus" size={16} />
+            Tambah Proyek Baru
+          </button>
+      </div>
+
+      {!editingProject && (
+        <Card className="p-4 sm:p-5">
+          <form
+            onSubmit={handleSaveCustomCount}
+            className="flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+          >
+            <div className="flex items-center gap-3">
+              <div
+                className="w-10 h-10 rounded-xl border-2 border-[var(--border)] flex items-center justify-center shrink-0"
+                style={{
+                  backgroundColor: "var(--google-blue-bg)",
+                  color: "var(--google-blue)",
+                }}
+              >
+                <Icon name="folder" size={20} />
+              </div>
+              <div>
+                <h3 className="font-extrabold text-sm sm:text-base">
+                  Kustomisasi Total Proyek Digital (By The Numbers)
+                </h3>
+                <p className="text-xs text-[var(--ink-secondary)]">
+                  Atur angka total proyek pada kartu statistik web (misal &ldquo;15+&rdquo;) jika pernah mengerjakan lebih banyak dari daftar.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 shrink-0">
+              <input
+                type="text"
+                value={customCountInput}
+                onChange={(e) => setCustomCountInput(e.target.value)}
+                placeholder={`${projects.length}+`}
+                className="w-24 px-3 py-1.5 rounded-xl border-2 font-mono font-bold text-sm text-center"
+                style={{
+                  backgroundColor: "var(--surface-alt)",
+                  borderColor: "var(--border)",
+                }}
+              />
+              <button
+                type="submit"
+                disabled={isSavingCount}
+                className="neo-btn-primary text-xs font-bold py-2 px-3.5 cursor-pointer"
+              >
+                <Icon name="check" size={14} />
+                {isSavingCount ? "Menyimpan..." : "Simpan Angka"}
+              </button>
+            </div>
+          </form>
+
+          {countFeedback && (
+            <div
+              className="mt-3 p-2.5 rounded-xl border-2 text-xs font-bold flex items-center gap-2"
+              style={{
+                backgroundColor:
+                  countFeedback.type === "success"
+                    ? "var(--google-green-bg)"
+                    : "var(--google-red-bg)",
+                borderColor:
+                  countFeedback.type === "success"
+                    ? "var(--google-green)"
+                    : "var(--google-red)",
+                color:
+                  countFeedback.type === "success"
+                    ? "var(--google-green-text)"
+                    : "var(--google-red-text)",
+              }}
+            >
+              <Icon
+                name={countFeedback.type === "success" ? "check" : "alert"}
+                size={14}
+              />
+              <span>{countFeedback.text}</span>
+            </div>
+          )}
+        </Card>
+      )}
+
+      {feedback && (
+        <div
+          className="p-4 rounded-xl border-2 text-sm font-bold flex items-center gap-2"
+          style={{
+            backgroundColor:
+              feedback.type === "success"
+                ? "var(--google-green-bg)"
+                : "var(--google-red-bg)",
+            borderColor:
+              feedback.type === "success"
+                ? "var(--google-green)"
+                : "var(--google-red)",
+            color:
+              feedback.type === "success"
+                ? "var(--google-green-text)"
+                : "var(--google-red-text)",
+          }}
+        >
+          <Icon
+            name={feedback.type === "success" ? "check" : "alert"}
+            size={18}
+          />
+          <span>{feedback.text}</span>
+        </div>
       )}
 
       {/* Projects list */}

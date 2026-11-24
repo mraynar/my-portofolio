@@ -15,6 +15,7 @@ export default function AdminSkills({ skills = [], onRefresh }) {
     setEditingSkillsList([...(cat.skills || [])]);
     setNewSkillInput("");
     setFeedback(null);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleCreate = () => {
@@ -22,6 +23,7 @@ export default function AdminSkills({ skills = [], onRefresh }) {
     setEditingSkillsList([]);
     setNewSkillInput("");
     setFeedback(null);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleAddSkill = (e) => {
@@ -94,62 +96,82 @@ export default function AdminSkills({ skills = [], onRefresh }) {
     }
   };
 
-  return (
-    <div className="space-y-8 w-full">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h2
-            className="text-xl sm:text-2xl font-extrabold"
-            style={{ fontFamily: "var(--font-display)" }}
-          >
-            Keahlian & Teknologi ({skills.length})
-          </h2>
-          <p
-            className="text-xs sm:text-sm"
-            style={{ color: "var(--ink-secondary)" }}
-          >
-            Kategorisasi teknologi, bahasa pemrograman, dan alat kerja.
-          </p>
-        </div>
-
-        {!editingCat && (
-          <button
-            onClick={handleCreate}
-            className="neo-btn-primary font-bold text-xs sm:text-sm self-start sm:self-auto"
-          >
-            <Icon name="plus" size={16} />
-            Tambah Kategori
-          </button>
-        )}
-      </div>
-
-      {feedback && (
+    if (editingCat) {
+    const isNew = !skills.some((s) => s.id === editingCat.id || s.name === editingCat.name);
+    return (
+      <div className="space-y-6 w-full">
+        {/* Dedicated edit header with back button */}
         <div
-          className="p-4 rounded-xl border-2 text-sm font-bold flex items-center gap-2"
-          style={{
-            backgroundColor:
-              feedback.type === "success"
-                ? "var(--google-green-bg)"
-                : "var(--google-red-bg)",
-            borderColor:
-              feedback.type === "success"
-                ? "var(--google-green)"
-                : "var(--google-red)",
-            color:
-              feedback.type === "success"
-                ? "var(--google-green-text)"
-                : "var(--google-red-text)",
-          }}
+          className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b-2"
+          style={{ borderColor: "var(--border)" }}
         >
-          <Icon
-            name={feedback.type === "success" ? "check" : "alert"}
-            size={18}
-          />
-          <span>{feedback.text}</span>
-        </div>
-      )}
+          <div>
+            <button
+              type="button"
+              onClick={() => {
+                setEditingCat(null);
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+              className="neo-btn-secondary text-xs sm:text-sm font-bold inline-flex items-center gap-2 mb-3 cursor-pointer"
+            >
+              <Icon name="arrow-left" size={16} />
+              Kembali ke Daftar Keahlian
+            </button>
+            <h2
+              className="text-xl sm:text-2xl font-extrabold"
+              style={{ fontFamily: "var(--font-display)" }}
+            >
+              {isNew
+                ? "Tambah Kategori Keahlian"
+                : `Edit Kategori: ${editingCat.name || "Tanpa Nama"}`}
+            </h2>
+            <p
+              className="text-xs sm:text-sm"
+              style={{ color: "var(--ink-secondary)" }}
+            >
+              Kelola nama kategori dan daftar teknologi, tools, atau bahasa pemrograman.
+            </p>
+          </div>
 
-      {editingCat && (
+          <button
+            type="button"
+            onClick={() => {
+              setEditingCat(null);
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+            className="neo-badge text-xs font-bold self-start sm:self-center cursor-pointer"
+          >
+            <Icon name="x" size={14} />
+            Batal
+          </button>
+        </div>
+
+        {feedback && (
+          <div
+            className="p-4 rounded-xl border-2 text-sm font-bold flex items-center gap-2"
+            style={{
+              backgroundColor:
+                feedback.type === "success"
+                  ? "var(--google-green-bg)"
+                  : "var(--google-red-bg)",
+              borderColor:
+                feedback.type === "success"
+                  ? "var(--google-green)"
+                  : "var(--google-red)",
+              color:
+                feedback.type === "success"
+                  ? "var(--google-green-text)"
+                  : "var(--google-red-text)",
+            }}
+          >
+            <Icon
+              name={feedback.type === "success" ? "check" : "alert"}
+              size={18}
+            />
+            <span>{feedback.text}</span>
+          </div>
+        )}
+
         <Card className="p-6 sm:p-8 space-y-6">
           <div className="flex items-center justify-between pb-4 border-b-2">
             <h3
@@ -161,7 +183,7 @@ export default function AdminSkills({ skills = [], onRefresh }) {
                 : "Tambah Kategori Baru"}
             </h3>
             <button
-              onClick={() => setEditingCat(null)}
+              onClick={() => { setEditingCat(null); window.scrollTo({ top: 0, behavior: "smooth" }); }}
               className="neo-badge text-xs font-bold"
             >
               <Icon name="x" size={14} />
@@ -268,7 +290,7 @@ export default function AdminSkills({ skills = [], onRefresh }) {
             <div className="flex justify-end gap-3 pt-4 border-t-2">
               <button
                 type="button"
-                onClick={() => setEditingCat(null)}
+                onClick={() => { setEditingCat(null); window.scrollTo({ top: 0, behavior: "smooth" }); }}
                 className="neo-btn-secondary text-sm font-bold"
               >
                 Batal
@@ -284,6 +306,61 @@ export default function AdminSkills({ skills = [], onRefresh }) {
             </div>
           </form>
         </Card>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-8 w-full">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h2
+            className="text-xl sm:text-2xl font-extrabold"
+            style={{ fontFamily: "var(--font-display)" }}
+          >
+            Keahlian & Teknologi ({skills.length})
+          </h2>
+          <p
+            className="text-xs sm:text-sm"
+            style={{ color: "var(--ink-secondary)" }}
+          >
+            Kategorisasi teknologi, bahasa pemrograman, dan alat kerja.
+          </p>
+        </div>
+
+        <button
+            onClick={handleCreate}
+            className="neo-btn-primary font-bold text-xs sm:text-sm self-start sm:self-auto"
+          >
+            <Icon name="plus" size={16} />
+            Tambah Kategori
+          </button>
+      </div>
+
+      {feedback && (
+        <div
+          className="p-4 rounded-xl border-2 text-sm font-bold flex items-center gap-2"
+          style={{
+            backgroundColor:
+              feedback.type === "success"
+                ? "var(--google-green-bg)"
+                : "var(--google-red-bg)",
+            borderColor:
+              feedback.type === "success"
+                ? "var(--google-green)"
+                : "var(--google-red)",
+            color:
+              feedback.type === "success"
+                ? "var(--google-green-text)"
+                : "var(--google-red-text)",
+          }}
+        >
+          <Icon
+            name={feedback.type === "success" ? "check" : "alert"}
+            size={18}
+          />
+          <span>{feedback.text}</span>
+        </div>
       )}
 
       {/* Categories grid */}
