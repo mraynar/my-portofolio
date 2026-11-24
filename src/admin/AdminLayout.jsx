@@ -211,25 +211,6 @@ export default function AdminLayout({
         }}
       >
         <div className="flex items-center gap-2 sm:gap-4 min-w-0">
-          <button
-            onClick={toggleSidebar}
-            aria-label={
-              isMobileOpen || !isCollapsed ? "Tutup Sidebar" : "Buka Sidebar"
-            }
-            title={
-              isMobileOpen || !isCollapsed ? "Tutup Sidebar" : "Buka Sidebar"
-            }
-            className="neo-btn-secondary !min-h-[36px] p-2 font-bold text-xs flex items-center justify-center cursor-pointer shrink-0"
-            style={{ width: "36px", height: "36px" }}
-          >
-            <Icon
-              name={
-                isMobileOpen || !isCollapsed ? "chevron-left" : "chevron-right"
-              }
-              size={16}
-            />
-          </button>
-
           <Link
             to="/admin"
             className="flex items-center gap-1.5 font-mono font-extrabold text-sm sm:text-base truncate"
