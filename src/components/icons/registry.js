@@ -49,6 +49,7 @@ import {
   Settings,
   Sparkles,
   HelpCircle,
+  LogOut,
 } from "lucide-react";
 import { GithubIcon, LinkedinIcon } from "./custom";
 
@@ -105,6 +106,7 @@ export const ICON_REGISTRY = {
   layout: Layout,
   settings: Settings,
   sparkles: Sparkles,
+  "log-out": LogOut,
 };
 
 // Fallback icon when key is unmapped
