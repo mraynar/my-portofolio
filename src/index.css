@@ -312,10 +312,20 @@ section[id] {
   box-shadow: 6px 6px 0 var(--shadow-color);
 }
 
-/* Static DevFest code tile background */
+/* Static DevFest code symbol watermark pattern */
 .bg-code-tile {
-  background-image: radial-gradient(var(--ink) 1.5px, transparent 1.5px);
-  background-size: 24px 24px;
+  pointer-events: none;
+  background-color: var(--ink);
+  opacity: 0.05;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 18q-8 0-8 8v6q0 6-6 6q6 0 6 6v6q0 8 8 8'/%3E%3Cpath d='M44 18q8 0 8 8v6q0 6 6 6q-6 0-6 6v6q0 8-8 8'/%3E%3Cpath d='M112 24l-14 12l14 12M126 24l14 12l-14 12'/%3E%3Cpath d='M64 118l-10 36'/%3E%3Cpath d='M26 112l-12 10l12 10M40 112l12 10l-12 10'/%3E%3Ccircle cx='128' cy='108' r='2'/%3E%3Cpath d='M128 124q0 8-5 12'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 18q-8 0-8 8v6q0 6-6 6q6 0 6 6v6q0 8 8 8'/%3E%3Cpath d='M44 18q8 0 8 8v6q0 6 6 6q-6 0-6 6v6q0 8-8 8'/%3E%3Cpath d='M112 24l-14 12l14 12M126 24l14 12l-14 12'/%3E%3Cpath d='M64 118l-10 36'/%3E%3Cpath d='M26 112l-12 10l12 10M40 112l12 10l-12 10'/%3E%3Ccircle cx='128' cy='108' r='2'/%3E%3Cpath d='M128 124q0 8-5 12'/%3E%3C/svg%3E");
+  -webkit-mask-size: 160px 160px;
+  mask-size: 160px 160px;
+  -webkit-mask-repeat: repeat;
+  mask-repeat: repeat;
+}
+
+.dark .bg-code-tile {
   opacity: 0.06;
 }
 

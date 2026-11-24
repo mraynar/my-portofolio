@@ -75,10 +75,8 @@ function Hero({ info = PERSONAL_INFO }) {
     <Section
       id="home"
       className="relative min-h-[calc(100dvh-var(--nav-h,64px))] flex items-center justify-center pt-20 sm:pt-24 lg:pt-20 pb-8 sm:pb-12 lg:pb-14"
-      style={{ backgroundColor: "var(--canvas)" }}
+      style={{ backgroundColor: "transparent" }}
     >
-      <div className="bg-code-tile absolute inset-0 pointer-events-none" />
-
       <Container className="relative z-10 w-full">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-stretch">
           {/* Left column: narrative and actions (7 cols) */}
@@ -284,7 +282,7 @@ function About({
   const university = info.university || PERSONAL_INFO.university;
 
   return (
-    <Section id="about" style={{ backgroundColor: "var(--canvas)" }}>
+    <Section id="about" style={{ backgroundColor: "transparent" }}>
       <Container>
         <SectionHeading
           kicker="PROFIL PENGEMBANG"
@@ -549,7 +547,7 @@ function Skills({ categories = SKILL_CATEGORIES }) {
   ];
 
   return (
-    <Section id="skills" style={{ backgroundColor: "var(--canvas)" }}>
+    <Section id="skills" style={{ backgroundColor: "transparent" }}>
       <Container>
         <SectionHeading
           kicker="KOMPETENSI TEKNIS"
@@ -612,7 +610,7 @@ function ProjectsPreview({ projects = PROJECTS, onOpenCaseStudy }) {
     featured.length >= 3 ? featured.slice(0, 3) : projects.slice(0, 3);
 
   return (
-    <Section id="projects" style={{ backgroundColor: "var(--canvas)" }}>
+    <Section id="projects" style={{ backgroundColor: "transparent" }}>
       <Container>
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
           <SectionHeading
@@ -648,7 +646,7 @@ function ProjectsPreview({ projects = PROJECTS, onOpenCaseStudy }) {
 function ExperiencePreview({ experience = EXPERIENCE }) {
   const items = experience.slice(0, 3);
   return (
-    <Section id="experience" style={{ backgroundColor: "var(--canvas)" }}>
+    <Section id="experience" style={{ backgroundColor: "transparent" }}>
       <Container>
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
           <SectionHeading
@@ -691,7 +689,7 @@ function CertificationsSection({ certifications = CERTIFICATIONS }) {
   };
 
   return (
-    <Section id="certifications" style={{ backgroundColor: "var(--canvas)" }}>
+    <Section id="certifications" style={{ backgroundColor: "transparent" }}>
       <Container>
         <SectionHeading
           kicker="KREDENSIAL RESMI"
@@ -836,7 +834,7 @@ function Contact({ info = PERSONAL_INFO }) {
   const status = info.status || PERSONAL_INFO.status;
 
   return (
-    <Section id="contact" style={{ backgroundColor: "var(--canvas)" }}>
+    <Section id="contact" style={{ backgroundColor: "transparent" }}>
       <Container>
         <Card variant="flat" className="p-0 overflow-hidden max-w-5xl mx-auto">
           <div className="google-bar" />
@@ -1111,12 +1109,14 @@ function HomePage({
 function PublicLayout({ dark, toggleDark, children }) {
   return (
     <div
-      className="min-h-screen flex flex-col"
+      className="min-h-screen flex flex-col relative"
       style={{ backgroundColor: "var(--canvas)", color: "var(--ink)" }}
     >
+      {/* DevFest code symbol watermark tile background */}
+      <div className="bg-code-tile fixed inset-0 pointer-events-none z-0" />
       <Navbar />
       <ScrollTopFab dark={dark} toggleDark={toggleDark} />
-      <div className="flex-1">{children}</div>
+      <div className="flex-1 relative z-10">{children}</div>
       <Footer />
     </div>
   );

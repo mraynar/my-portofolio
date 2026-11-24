@@ -49,8 +49,8 @@ export default function ProjectPage({
 
   return (
     <main
-      className="min-h-screen pt-16 sm:pt-20 pb-20"
-      style={{ backgroundColor: "var(--canvas)" }}
+      className="min-h-screen pt-16 sm:pt-20 pb-20 relative"
+      style={{ backgroundColor: "transparent" }}
     >
       {/* Header banner */}
       <section
