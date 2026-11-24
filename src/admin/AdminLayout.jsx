@@ -288,46 +288,47 @@ export default function AdminLayout({
         {/* Sidebar navigation */}
         <aside
           className={`
-            border-r-2 flex flex-col justify-between shrink-0
-            transition-all duration-200 ease-in-out z-30
+            border-r-2 flex flex-col justify-between shrink-0 overflow-hidden
+            transition-[width] duration-300 ease-[cubic-bezier(0.2,0,0,1)] z-30
             ${
               isMobileOpen
                 ? "fixed top-[61px] left-0 bottom-0 w-64 shadow-2xl"
-                : "relative w-16 md:w-auto"
-            }
-            ${
-              !isMobileOpen && isCollapsed
-                ? "md:w-20"
-                : !isMobileOpen && !isCollapsed
-                ? "md:w-64"
-                : ""
+                : !isMobileOpen && isCollapsed
+                ? "w-16 md:w-20"
+                : "w-64"
             }
           `}
           style={{
             backgroundColor: "var(--surface)",
             borderColor: "var(--border)",
+            willChange: "width",
           }}
         >
           {/* Top rail controls and navigation list */}
-          <div className="p-2 sm:p-3 space-y-2">
+          <div className="p-2 sm:p-2.5 space-y-2">
             {/* Sidebar header row */}
             <div
-              className={`
-                flex items-center pb-2 mb-1 border-b-2
-                ${
-                  !isMobileOpen && isCollapsed
-                    ? "justify-center"
-                    : "justify-between px-2"
-                }
-              `}
+              className="flex items-center justify-between h-9 px-2 pb-2 mb-1 border-b-2 overflow-hidden"
               style={{ borderColor: "var(--border)" }}
             >
-              {(isMobileOpen || !isCollapsed) && (
-                <span className="text-[11px] font-extrabold font-mono uppercase tracking-wider text-[var(--ink-secondary)] truncate">
+              <div
+                className={`
+                  flex items-center overflow-hidden
+                  transition-all duration-300 ease-[cubic-bezier(0.2,0,0,1)]
+                  ${
+                    !isMobileOpen && isCollapsed
+                      ? "max-w-0 opacity-0 -translate-x-2"
+                      : "max-w-[140px] opacity-100 translate-x-0"
+                  }
+                `}
+              >
+                <span className="text-[11px] font-extrabold font-mono uppercase tracking-wider text-[var(--ink-secondary)] whitespace-nowrap">
                   NAVIGASI CMS
                 </span>
-              )}
+              </div>
+
               <button
+                type="button"
                 onClick={toggleSidebar}
                 aria-label={
                   isMobileOpen || !isCollapsed
@@ -339,16 +340,15 @@ export default function AdminLayout({
                     ? "Ciutkan Sidebar"
                     : "Perluas Sidebar"
                 }
-                className="p-1 rounded-lg hover:bg-[var(--surface-alt)] cursor-pointer text-[var(--ink-secondary)] transition-colors"
+                className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-[var(--surface-alt)] cursor-pointer text-[var(--ink-secondary)] shrink-0 transition-colors"
               >
-                <Icon
-                  name={
-                    isMobileOpen || !isCollapsed
-                      ? "chevron-left"
-                      : "chevron-right"
-                  }
-                  size={15}
-                />
+                <span
+                  className={`inline-flex transition-transform duration-300 ease-[cubic-bezier(0.2,0,0,1)] ${
+                    !isMobileOpen && isCollapsed ? "rotate-180" : "rotate-0"
+                  }`}
+                >
+                  <Icon name="chevron-left" size={15} />
+                </span>
               </button>
             </div>
 
@@ -365,13 +365,10 @@ export default function AdminLayout({
                     title={isMini ? tab.label : undefined}
                     aria-current={active ? "page" : undefined}
                     className={`
-                      w-full rounded-xl transition-all cursor-pointer font-bold
-                      flex items-center relative
-                      ${
-                        isMini
-                          ? "justify-center p-3"
-                          : "justify-between px-3 py-2.5 text-xs sm:text-sm"
-                      }
+                      w-full h-11 rounded-xl cursor-pointer font-bold relative
+                      flex items-center overflow-hidden select-none
+                      transition-all duration-300 ease-[cubic-bezier(0.2,0,0,1)]
+                      ${isMini ? "px-2 justify-center" : "px-2.5"}
                     `}
                     style={{
                       backgroundColor: active
@@ -386,52 +383,58 @@ export default function AdminLayout({
                         : "none",
                     }}
                   >
+                    {/* Fixed icon container to prevent wobble */}
+                    <div className="w-8 h-8 flex items-center justify-center shrink-0">
+                      <Icon name={tab.icon} size={18} />
+                    </div>
+
+                    {/* Animated label and badge counter */}
                     <div
-                      className={`flex items-center ${
-                        isMini ? "justify-center" : "gap-3 truncate"
-                      }`}
+                      className={`
+                        flex items-center justify-between min-w-0 flex-1 overflow-hidden
+                        transition-all duration-300 ease-[cubic-bezier(0.2,0,0,1)]
+                        ${
+                          isMini
+                            ? "max-w-0 opacity-0 -translate-x-2 pointer-events-none"
+                            : "max-w-[190px] opacity-100 translate-x-0 ml-2"
+                        }
+                      `}
                     >
-                      <Icon
-                        name={tab.icon}
-                        size={isMini ? 20 : 18}
-                        className="shrink-0"
-                      />
-                      {!isMini && (
-                        <span className="truncate text-left">{tab.label}</span>
+                      <span className="truncate text-left whitespace-nowrap text-xs sm:text-sm font-bold">
+                        {tab.label}
+                      </span>
+
+                      {tab.count !== undefined && (
+                        <span
+                          className="text-[11px] font-mono px-2 py-0.5 rounded-full shrink-0 font-bold ml-1.5 whitespace-nowrap"
+                          style={{
+                            backgroundColor: active
+                              ? "rgba(255, 255, 255, 0.25)"
+                              : "var(--surface-alt)",
+                            color: active ? "#ffffff" : "var(--ink-secondary)",
+                            border: active
+                              ? "1px solid rgba(255, 255, 255, 0.4)"
+                              : "1px solid var(--border)",
+                          }}
+                        >
+                          {tab.count}
+                        </span>
                       )}
                     </div>
 
-                    {/* Badge counts */}
-                    {tab.count !== undefined && (
-                      <>
-                        {!isMini ? (
-                          <span
-                            className="text-[11px] font-mono px-2 py-0.5 rounded-full shrink-0 font-bold ml-1.5"
-                            style={{
-                              backgroundColor: active
-                                ? "rgba(255, 255, 255, 0.25)"
-                                : "var(--surface-alt)",
-                              color: active ? "#ffffff" : "var(--ink-secondary)",
-                              border: active
-                                ? "1px solid rgba(255, 255, 255, 0.4)"
-                                : "1px solid var(--border)",
-                            }}
-                          >
-                            {tab.count}
-                          </span>
-                        ) : tab.count > 0 ? (
-                          <span
-                            className="absolute top-1.5 right-1.5 w-2.5 h-2.5 rounded-full"
-                            style={{
-                              backgroundColor:
-                                tab.id === "messages"
-                                  ? "var(--google-red)"
-                                  : "var(--google-blue)",
-                              border: "2px solid var(--surface)",
-                            }}
-                          />
-                        ) : null}
-                      </>
+                    {/* Collapsed unread messages pip */}
+                    {tab.id === "messages" && tab.count > 0 && (
+                      <span
+                        className={`
+                          absolute top-2 right-2 w-2.5 h-2.5 rounded-full
+                          transition-opacity duration-300 ease-[cubic-bezier(0.2,0,0,1)] pointer-events-none
+                          ${isMini ? "opacity-100" : "opacity-0"}
+                        `}
+                        style={{
+                          backgroundColor: "var(--google-red)",
+                          border: "2px solid var(--surface)",
+                        }}
+                      />
                     )}
                   </button>
                 );
@@ -441,36 +444,75 @@ export default function AdminLayout({
 
           {/* Sidebar bottom summary */}
           <div
-            className="p-2 sm:p-3 border-t-2"
+            className="p-2 sm:p-2.5 border-t-2 overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.2,0,0,1)]"
             style={{ borderColor: "var(--border)" }}
           >
-            {isMobileOpen || !isCollapsed ? (
+            <div
+              className={`
+                rounded-xl border-2 overflow-hidden
+                transition-all duration-300 ease-[cubic-bezier(0.2,0,0,1)]
+                ${
+                  !isMobileOpen && isCollapsed
+                    ? "p-2 flex items-center justify-center bg-transparent border-transparent"
+                    : "p-3 space-y-2 bg-[var(--surface-alt)]"
+                }
+              `}
+              style={{
+                backgroundColor:
+                  !isMobileOpen && isCollapsed
+                    ? "transparent"
+                    : "var(--surface-alt)",
+                borderColor:
+                  !isMobileOpen && isCollapsed
+                    ? "transparent"
+                    : "var(--border)",
+              }}
+              title={
+                !isMobileOpen && isCollapsed
+                  ? "Online v2.0 - Muhammad Raynar"
+                  : undefined
+              }
+            >
               <div
-                className="p-3 rounded-xl border-2 space-y-2"
-                style={{
-                  backgroundColor: "var(--surface-alt)",
-                  borderColor: "var(--border)",
-                }}
+                className={`flex items-center ${
+                  !isMobileOpen && isCollapsed
+                    ? "justify-center"
+                    : "justify-between"
+                } text-[11px] font-mono font-bold`}
               >
-                <div className="flex items-center justify-between text-[11px] font-mono font-bold">
-                  <span className="flex items-center gap-1.5 text-[var(--google-green)]">
-                    <span className="w-2 h-2 rounded-full bg-[var(--google-green)] animate-pulse" />
+                <span className="flex items-center gap-1.5 text-[var(--google-green)] shrink-0">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[var(--google-green)] animate-pulse" />
+                  <span
+                    className={`overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.2,0,0,1)] whitespace-nowrap ${
+                      !isMobileOpen && isCollapsed
+                        ? "max-w-0 opacity-0"
+                        : "max-w-[80px] opacity-100"
+                    }`}
+                  >
                     Online
                   </span>
-                  <span className="text-[var(--ink-muted)]">v2.0</span>
-                </div>
-                <div className="text-[11px] text-[var(--ink-secondary)] truncate font-semibold">
-                  Muhammad Raynar
-                </div>
-              </div>
-            ) : (
-              <div className="flex justify-center py-1">
+                </span>
                 <span
-                  className="w-2.5 h-2.5 rounded-full bg-[var(--google-green)]"
-                  title="Sesi Admin Aktif"
-                />
+                  className={`text-[var(--ink-muted)] overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.2,0,0,1)] whitespace-nowrap ${
+                    !isMobileOpen && isCollapsed
+                      ? "max-w-0 opacity-0"
+                      : "max-w-[40px] opacity-100"
+                  }`}
+                >
+                  v2.0
+                </span>
               </div>
-            )}
+
+              <div
+                className={`text-[11px] text-[var(--ink-secondary)] font-semibold overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.2,0,0,1)] whitespace-nowrap ${
+                  !isMobileOpen && isCollapsed
+                    ? "max-h-0 opacity-0 -translate-y-1"
+                    : "max-h-6 opacity-100 translate-y-0"
+                }`}
+              >
+                Muhammad Raynar
+              </div>
+            </div>
           </div>
         </aside>
 
