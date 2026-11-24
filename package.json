@@ -7,9 +7,13 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
+    "check:comments": "node scripts/check-comments.mjs",
+    "check:emoji": "node scripts/check-emoji.mjs",
+    "check:layout": "node scripts/check-layout.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
+    "lucide-react": "^1.79.0",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
     "react-router-dom": "^7.15.0"
@@ -24,6 +28,7 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.5.0",
+    "playwright": "^1.65.1",
     "tailwindcss": "^4.3.0",
     "vite": "^8.0.10"
   }
