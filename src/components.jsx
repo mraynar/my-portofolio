@@ -1187,7 +1187,7 @@ export function Navbar({ info = {} }) {
         <div className="flex items-center gap-2.5 sm:gap-3">
           {/* Language toggle switch (ID / EN) */}
           <div
-            className="inline-flex items-center p-0.5 rounded-full border-2 border-[var(--border)] shadow-[2px_2px_0_var(--shadow-color)]"
+            className="inline-flex items-center p-1 h-[38px] rounded-full border-2 border-[var(--border)] shadow-[2px_2px_0_var(--shadow-color)] box-border"
             style={{ backgroundColor: "var(--surface-alt)" }}
             role="group"
             aria-label="Pilih Bahasa / Select Language"
@@ -1195,7 +1195,7 @@ export function Navbar({ info = {} }) {
             <button
               type="button"
               onClick={() => setLanguage("id")}
-              className={`px-2 py-0.5 rounded-full text-xs font-mono font-extrabold transition-all cursor-pointer ${
+              className={`h-full px-2.5 flex items-center justify-center rounded-full text-xs font-mono font-extrabold transition-all cursor-pointer ${
                 language === "id"
                   ? "bg-[var(--google-blue)] text-white shadow-[1px_1px_0_var(--shadow-color)]"
                   : "text-[var(--ink-secondary)] hover:text-[var(--ink)]"
@@ -1207,7 +1207,7 @@ export function Navbar({ info = {} }) {
             <button
               type="button"
               onClick={() => setLanguage("en")}
-              className={`px-2 py-0.5 rounded-full text-xs font-mono font-extrabold transition-all cursor-pointer ${
+              className={`h-full px-2.5 flex items-center justify-center rounded-full text-xs font-mono font-extrabold transition-all cursor-pointer ${
                 language === "en"
                   ? "bg-[var(--google-blue)] text-white shadow-[1px_1px_0_var(--shadow-color)]"
                   : "text-[var(--ink-secondary)] hover:text-[var(--ink)]"
@@ -1222,7 +1222,7 @@ export function Navbar({ info = {} }) {
             href={cvUrl}
             target="_blank"
             rel="noreferrer"
-            className="hidden sm:inline-flex neo-btn-primary neo-btn-sm font-bold"
+            className="hidden sm:inline-flex neo-btn-primary neo-btn-sm font-bold h-[38px] items-center"
           >
             <Icon name="download" size={14} />
             {t("download_cv")}
@@ -1273,16 +1273,16 @@ export function Navbar({ info = {} }) {
                 Bahasa / Language:
               </span>
               <div
-                className="inline-flex items-center p-0.5 rounded-full border-2 border-[var(--border)] shadow-[2px_2px_0_var(--shadow-color)]"
+                className="inline-flex items-center p-1 h-[38px] rounded-full border-2 border-[var(--border)] shadow-[2px_2px_0_var(--shadow-color)] box-border"
                 style={{ backgroundColor: "var(--surface-alt)" }}
               >
                 <button
                   type="button"
                   onClick={() => setLanguage("id")}
-                  className={`px-2.5 py-0.5 rounded-full text-xs font-mono font-extrabold transition-all cursor-pointer ${
+                  className={`h-full px-2.5 flex items-center justify-center rounded-full text-xs font-mono font-extrabold transition-all cursor-pointer ${
                     language === "id"
-                      ? "bg-[var(--google-blue)] text-white"
-                      : "text-[var(--ink-secondary)]"
+                      ? "bg-[var(--google-blue)] text-white shadow-[1px_1px_0_var(--shadow-color)]"
+                      : "text-[var(--ink-secondary)] hover:text-[var(--ink)]"
                   }`}
                 >
                   ID
@@ -1290,10 +1290,10 @@ export function Navbar({ info = {} }) {
                 <button
                   type="button"
                   onClick={() => setLanguage("en")}
-                  className={`px-2.5 py-0.5 rounded-full text-xs font-mono font-extrabold transition-all cursor-pointer ${
+                  className={`h-full px-2.5 flex items-center justify-center rounded-full text-xs font-mono font-extrabold transition-all cursor-pointer ${
                     language === "en"
-                      ? "bg-[var(--google-blue)] text-white"
-                      : "text-[var(--ink-secondary)]"
+                      ? "bg-[var(--google-blue)] text-white shadow-[1px_1px_0_var(--shadow-color)]"
+                      : "text-[var(--ink-secondary)] hover:text-[var(--ink)]"
                   }`}
                 >
                   EN
