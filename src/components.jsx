@@ -157,14 +157,6 @@ export function SectionHeading({
         <div
           className={`kicker mb-3 text-xs sm:text-sm ${center ? "justify-center" : ""}`}
         >
-          <span
-            style={{
-              width: 20,
-              height: 2.5,
-              background: "var(--google-blue)",
-              display: "inline-block",
-            }}
-          />
           {kicker}
         </div>
       )}

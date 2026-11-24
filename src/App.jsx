@@ -401,14 +401,6 @@ function About({
         >
           <div className="mb-6">
             <div className="kicker mb-2 text-xs sm:text-sm font-extrabold">
-              <span
-                style={{
-                  width: 20,
-                  height: 2.5,
-                  background: "var(--google-blue)",
-                  display: "inline-block",
-                }}
-              />
               BY THE NUMBERS
             </div>
             <h3
@@ -817,14 +809,6 @@ function Contact({ info = PERSONAL_INFO }) {
 
           <div className="p-8 sm:p-12 text-center">
             <div className="kicker mb-3 justify-center text-xs sm:text-sm font-extrabold">
-              <span
-                style={{
-                  width: 20,
-                  height: 2.5,
-                  background: "var(--google-blue)",
-                  display: "inline-block",
-                }}
-              />
               TERBUKA UNTUK KOLABORASI
             </div>
 
