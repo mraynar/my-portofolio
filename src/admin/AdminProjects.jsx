@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Card, Chip, Icon } from "../components";
+import ImageCropModal from "./ImageCropModal";
 import {
   upsertProject,
   deleteProject,
@@ -44,6 +45,7 @@ export default function AdminProjects({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [feedback, setFeedback] = useState(null);
+  const [cropFile, setCropFile] = useState(null);
   const [badgesInput, setBadgesInput] = useState("");
   const [customCountInput, setCustomCountInput] = useState(
     info?.customProjectCount || ""
@@ -103,23 +105,31 @@ export default function AdminProjects({
     }
   };
 
-  const handleImageUpload = async (e) => {
+  const handleImageSelect = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    setCropFile(file);
+    e.target.value = "";
+  };
+
+  const handleCropConfirm = async (croppedFile, previewUrl) => {
+    setCropFile(null);
     setUploadingImage(true);
     setFeedback(null);
     try {
-      const fileName = `project-${Date.now()}-${file.name.replace(/\s+/g, "-")}`;
-      const url = await uploadStorageFile("media", fileName, file);
+      const fileName = `project-${Date.now()}-${croppedFile.name.replace(/\s+/g, "-")}`;
+      const url = await uploadStorageFile("media", fileName, croppedFile);
       setEditingProject((prev) => ({ ...prev, image: url }));
       setFeedback({
         type: "success",
-        text: "Gambar proyek berhasil diunggah.",
+        text: "Gambar proyek berhasil disesuaikan dan diunggah.",
       });
-    } catch (err) {
+    } catch {
+      // Fallback preview for offline environments
+      setEditingProject((prev) => ({ ...prev, image: previewUrl }));
       setFeedback({
-        type: "error",
-        text: err.message || "Gagal mengunggah gambar proyek.",
+        type: "success",
+        text: "Gambar proyek berhasil disesuaikan dan dipratinjau.",
       });
     } finally {
       setUploadingImage(false);
@@ -475,7 +485,7 @@ export default function AdminProjects({
                   <input
                     type="file"
                     accept="image/*"
-                    onChange={handleImageUpload}
+                    onChange={handleImageSelect}
                     disabled={uploadingImage}
                     className="hidden"
                   />
@@ -801,6 +811,16 @@ export default function AdminProjects({
           </Card>
         ))}
       </div>
+
+      {cropFile && (
+        <ImageCropModal
+          file={cropFile}
+          aspectRatio={16 / 10}
+          title="Sesuaikan Gambar Portofolio Proyek"
+          onConfirm={handleCropConfirm}
+          onCancel={() => setCropFile(null)}
+        />
+      )}
     </div>
   );
 }

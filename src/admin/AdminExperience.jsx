@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Card, Chip, Icon } from "../components";
+import ImageCropModal from "./ImageCropModal";
 import {
   upsertExperience,
   deleteExperience,
@@ -33,6 +34,7 @@ export default function AdminExperience({ experience = [], onRefresh }) {
   const [tagsText, setTagsText] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedback, setFeedback] = useState(null);
+  const [cropFile, setCropFile] = useState(null);
 
   const handleEdit = (item) => {
     setEditingItem(item);
@@ -48,23 +50,28 @@ export default function AdminExperience({ experience = [], onRefresh }) {
     setFeedback(null);
   };
 
-  const handleFileUpload = async (e) => {
+  const handleFileSelect = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    setCropFile(file);
+    e.target.value = "";
+  };
+
+  const handleCropConfirm = async (croppedFile, previewUrl) => {
+    setCropFile(null);
     setIsSubmitting(true);
     try {
-      const cleanName = file.name.replace(/[^a-zA-Z0-9._-]/g, "");
+      const cleanName = croppedFile.name.replace(/[^a-zA-Z0-9._-]/g, "");
       const path = `experience/${Date.now()}-${cleanName}`;
-      const url = await uploadStorageFile("media", path, file);
+      const url = await uploadStorageFile("media", path, croppedFile);
       setEditingItem((prev) => ({ ...prev, photo: url }));
       setFeedback({
         type: "success",
-        text: "Foto dokumentasi berhasil diunggah.",
+        text: "Foto dokumentasi berhasil disesuaikan dan diunggah.",
       });
     } catch {
       // Fallback preview for offline environments
-      const localUrl = URL.createObjectURL(file);
-      setEditingItem((prev) => ({ ...prev, photo: localUrl }));
+      setEditingItem((prev) => ({ ...prev, photo: previewUrl }));
     } finally {
       setIsSubmitting(false);
     }
@@ -413,7 +420,7 @@ export default function AdminExperience({ experience = [], onRefresh }) {
                       <input
                         type="file"
                         accept="image/*"
-                        onChange={handleFileUpload}
+                        onChange={handleFileSelect}
                         className="hidden"
                       />
                     </label>
@@ -645,6 +652,16 @@ export default function AdminExperience({ experience = [], onRefresh }) {
             );
           })}
       </div>
+
+      {cropFile && (
+        <ImageCropModal
+          file={cropFile}
+          aspectRatio={16 / 9}
+          title="Sesuaikan Foto Dokumentasi Kegiatan"
+          onConfirm={handleCropConfirm}
+          onCancel={() => setCropFile(null)}
+        />
+      )}
     </div>
   );
 }

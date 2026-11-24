@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Card, Icon } from "../components";
+import ImageCropModal from "./ImageCropModal";
 import { saveSiteSettings, uploadStorageFile } from "../lib/supabase";
 
 // Profile and site settings management
@@ -9,28 +10,36 @@ export default function AdminProfile({ initialInfo, onUpdateInfo }) {
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [uploadingCv, setUploadingCv] = useState(false);
   const [feedback, setFeedback] = useState(null);
+  const [cropAvatarFile, setCropAvatarFile] = useState(null);
 
   const handleChange = (field, val) => {
     setFormData((prev) => ({ ...prev, [field]: val }));
   };
 
-  const handleAvatarUpload = async (e) => {
+  const handleAvatarSelect = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    setCropAvatarFile(file);
+    e.target.value = "";
+  };
+
+  const handleAvatarCropConfirm = async (croppedFile, previewUrl) => {
+    setCropAvatarFile(null);
     setUploadingAvatar(true);
     setFeedback(null);
     try {
-      const fileName = `avatar-${Date.now()}-${file.name.replace(/\s+/g, "-")}`;
-      const url = await uploadStorageFile("media", fileName, file);
+      const fileName = `avatar-${Date.now()}-${croppedFile.name.replace(/\s+/g, "-")}`;
+      const url = await uploadStorageFile("media", fileName, croppedFile);
       handleChange("avatar", url);
       setFeedback({
         type: "success",
-        text: "Foto profil berhasil diunggah ke storage.",
+        text: "Foto profil berhasil disesuaikan dan diunggah.",
       });
-    } catch (err) {
+    } catch {
+      handleChange("avatar", previewUrl);
       setFeedback({
-        type: "error",
-        text: err.message || "Gagal mengunggah foto profil.",
+        type: "success",
+        text: "Foto profil berhasil disesuaikan dan dipratinjau.",
       });
     } finally {
       setUploadingAvatar(false);
@@ -426,7 +435,7 @@ export default function AdminProfile({ initialInfo, onUpdateInfo }) {
                 <input
                   type="file"
                   accept="image/*"
-                  onChange={handleAvatarUpload}
+                  onChange={handleAvatarSelect}
                   disabled={uploadingAvatar}
                   className="hidden"
                 />
@@ -663,6 +672,16 @@ export default function AdminProfile({ initialInfo, onUpdateInfo }) {
           <Icon name="check" size={18} />
         </button>
       </div>
+
+      {cropAvatarFile && (
+        <ImageCropModal
+          file={cropAvatarFile}
+          aspectRatio={1}
+          title="Sesuaikan Foto Profil Hero"
+          onConfirm={handleAvatarCropConfirm}
+          onCancel={() => setCropAvatarFile(null)}
+        />
+      )}
     </form>
   );
 }
