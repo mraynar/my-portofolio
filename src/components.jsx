@@ -6,11 +6,11 @@ import { Icon } from "./components/icons/Icon";
 export { Icon } from "./components/icons/Icon";
 export { ICON_REGISTRY, ICON_KEYS } from "./components/icons/registry.js";
 
-// Strict 1120px max-width container with responsive padding
+// Wide 1360px max-width container with responsive padding
 export function Container({ children, className = "", style = {} }) {
   return (
     <div
-      className={`w-full max-w-[1120px] mx-auto px-4 sm:px-6 lg:px-8 ${className}`}
+      className={`w-full max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 ${className}`}
       style={style}
     >
       {children}
@@ -538,7 +538,7 @@ export function FeaturedHeroCard({ project, onOpenCaseStudy }) {
   );
 }
 
-// Standard project card with uniform vertical height and pinned actions
+// Landscape oriented project card with side-by-side preview and narrative
 export function ProjectCard({ project, onOpenCaseStudy }) {
   const categoryConfig = {
     "Web App": {
@@ -574,132 +574,136 @@ export function ProjectCard({ project, onOpenCaseStudy }) {
   const cfg = categoryConfig[project.label] || categoryConfig["Web App"];
 
   return (
-    <div className="neo-card p-0 flex flex-col h-full overflow-hidden">
-      {/* Top category strip */}
-      <div style={{ height: 6, backgroundColor: cfg.topBorder }} />
-
-      {/* Browser frame titlebar */}
+    <div className="neo-card p-0 flex flex-col md:flex-row h-full overflow-hidden">
+      {/* Visual media preview column (45% on desktop) */}
       <div
-        className="h-10 px-4 flex items-center justify-between border-b-2 flex-shrink-0"
+        className="md:w-5/12 relative border-b-2 md:border-b-0 md:border-r-2 flex flex-col"
         style={{
-          backgroundColor: "var(--surface)",
-          borderColor: "var(--border)",
-        }}
-      >
-        <div className="flex items-center gap-1.5">
-          <span className="w-2.5 h-2.5 rounded-full border border-[var(--border)] bg-[#ea4335]" />
-          <span className="w-2.5 h-2.5 rounded-full border border-[var(--border)] bg-[#fbbc04]" />
-          <span className="w-2.5 h-2.5 rounded-full border border-[var(--border)] bg-[#34a853]" />
-        </div>
-        <Chip variant={cfg.variant}>{project.label}</Chip>
-      </div>
-
-      {/* 16:10 preview media */}
-      <div
-        className="relative w-full border-b-2 overflow-hidden flex-shrink-0"
-        style={{
-          paddingTop: "60%",
           backgroundColor: "var(--canvas)",
           borderColor: "var(--border)",
         }}
       >
-        {project.image ? (
-          <img
-            src={project.image}
-            alt={project.title}
-            className="absolute inset-0 w-full h-full object-cover object-top"
-            loading="lazy"
-          />
-        ) : (
-          <div className="absolute inset-0 flex items-center justify-center font-bold text-base text-gray-500">
-            Preview Proyek
+        {/* Top category strip */}
+        <div style={{ height: 6, backgroundColor: cfg.topBorder }} />
+
+        {/* Browser titlebar */}
+        <div
+          className="h-10 px-3 flex items-center justify-between border-b-2 flex-shrink-0"
+          style={{
+            backgroundColor: "var(--surface)",
+            borderColor: "var(--border)",
+          }}
+        >
+          <div className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-full border border-[var(--border)] bg-[#ea4335]" />
+            <span className="w-2.5 h-2.5 rounded-full border border-[var(--border)] bg-[#fbbc04]" />
+            <span className="w-2.5 h-2.5 rounded-full border border-[var(--border)] bg-[#34a853]" />
           </div>
-        )}
+          <Chip variant={cfg.variant}>{project.label}</Chip>
+        </div>
+
+        {/* Mockup image preview with responsive aspect */}
+        <div className="relative w-full aspect-[4/3] md:aspect-auto md:flex-1 min-h-[220px] overflow-hidden">
+          {project.image ? (
+            <img
+              src={project.image}
+              alt={project.title}
+              className="absolute inset-0 w-full h-full object-cover object-top"
+              loading="lazy"
+            />
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center font-bold text-sm text-gray-500">
+              Preview Proyek
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* Card content with rigid padding */}
-      <div className="p-5 sm:p-6 flex flex-col flex-1 justify-between">
+      {/* Narrative details column (55% on desktop) */}
+      <div className="md:w-7/12 p-5 sm:p-6 flex flex-col justify-between">
         <div>
           <h3
-            className="font-extrabold text-xl sm:text-2xl mb-2.5 leading-snug line-clamp-2"
+            className="font-extrabold text-lg sm:text-xl mb-2 leading-snug line-clamp-2"
             style={{ fontFamily: "var(--font-display)", color: "var(--ink)" }}
           >
             {project.title}
           </h3>
 
           <p
-            className="text-base leading-relaxed mb-4 line-clamp-3"
+            className="text-xs sm:text-sm leading-relaxed mb-3 line-clamp-2"
             style={{ color: "var(--ink-secondary)" }}
           >
             {project.problem}
           </p>
 
           <div
-            className="p-3.5 rounded-xl border-2 mb-4 text-sm font-semibold"
+            className="p-2.5 rounded-xl border-2 mb-3 text-xs font-semibold"
             style={{
               backgroundColor: cfg.impactBg,
               borderColor: cfg.impactBorder,
               color: cfg.impactText,
             }}
           >
-            <div className="font-mono text-xs uppercase tracking-wider font-extrabold mb-1 flex items-center gap-1.5">
-              <Icon name="bolt" size={13} />
+            <div className="font-mono text-[11px] uppercase tracking-wider font-extrabold mb-0.5 flex items-center gap-1">
+              <Icon name="bolt" size={12} />
               DAMPAK UTAMA
             </div>
             <div className="line-clamp-2">{project.impact}</div>
           </div>
 
-          <Cluster gap={8} className="mb-5">
-            {project.badges.slice(0, 4).map((b) => (
+          <Cluster gap={6} className="mb-4">
+            {project.badges.slice(0, 3).map((b) => (
               <Chip key={b} variant="default">
                 {b}
               </Chip>
             ))}
-            {project.badges.length > 4 && (
+            {project.badges.length > 3 && (
               <span
-                className="text-xs px-2 py-1 font-bold"
+                className="text-xs px-2 py-0.5 font-bold font-mono"
                 style={{ color: "var(--ink-muted)" }}
               >
-                +{project.badges.length - 4}
+                +{project.badges.length - 3}
               </span>
             )}
           </Cluster>
         </div>
 
         {/* Pinned action buttons */}
-        <Stack
-          gap={8}
-          className="pt-4 border-t-2 mt-auto"
+        <div
+          className="pt-3 border-t-2 mt-auto space-y-2"
           style={{ borderColor: "var(--border)" }}
         >
-          <button
-            onClick={() => onOpenCaseStudy(project)}
-            className="w-full neo-btn-primary font-bold text-base"
-          >
-            Lihat Studi Kasus
-            <Icon name="arrow-right" size={16} />
-          </button>
-
-          {project.demoUrl && (
-            <a
-              href={project.demoUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="w-full neo-btn-secondary text-sm font-bold text-center"
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => onOpenCaseStudy(project)}
+              className="flex-1 neo-btn-primary font-bold text-xs sm:text-sm py-2 px-3 justify-center"
             >
-              Buka Live Demo
-              <Icon name="external-link" size={14} />
-            </a>
-          )}
+              Lihat Studi Kasus
+              <Icon name="arrow-right" size={14} />
+            </button>
+
+            {project.demoUrl && (
+              <a
+                href={project.demoUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="neo-btn-secondary text-xs font-bold py-2 px-3 text-center"
+                aria-label="Buka Live Demo"
+                title="Buka Live Demo"
+              >
+                <Icon name="external-link" size={14} />
+              </a>
+            )}
+          </div>
 
           <span
-            className="inline-flex items-center justify-center gap-1.5 text-xs text-center font-semibold pt-1"
+            className="inline-flex items-center justify-center gap-1 text-[11px] text-center font-semibold block truncate"
             style={{ color: "var(--ink-muted)" }}
           >
-            <Icon name="lock" size={13} />
+            <Icon name="lock" size={11} />
             {project.repoNotice}
           </span>
-        </Stack>
+        </div>
       </div>
     </div>
   );
