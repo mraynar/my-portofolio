@@ -80,61 +80,63 @@ function Hero({ info = PERSONAL_INFO }) {
       <div className="bg-code-tile absolute inset-0 pointer-events-none" />
 
       <Container className="relative z-10 w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-stretch">
           {/* Left column: narrative and actions (7 cols) */}
-          <div className="lg:col-span-7 flex flex-col items-start">
-            <Cluster gap={8} className="mb-3.5">
-              <Chip variant="blue">{kicker}</Chip>
-              <Chip variant="green">{statusBadge}</Chip>
-            </Cluster>
+          <div className="lg:col-span-7 flex flex-col justify-between">
+            <div>
+              <Cluster gap={8} className="mb-3.5">
+                <Chip variant="blue">{kicker}</Chip>
+                <Chip variant="green">{statusBadge}</Chip>
+              </Cluster>
 
-            {/* Main heading limited to two lines */}
-            <h1
-              className="font-extrabold tracking-tight mb-3.5"
-              style={{
-                fontFamily: "var(--font-display)",
-                fontSize: "clamp(2.3rem, 4.4vw, 3.8rem)",
-                lineHeight: 1.1,
-                color: "var(--ink)",
-              }}
-            >
-              {headline} <br />
-              <span style={{ color: "var(--google-blue)" }}>{headlineAccent}</span>
-            </h1>
-
-            <p
-              className="text-base sm:text-lg leading-relaxed mb-5 font-normal"
-              style={{
-                color: "var(--ink-secondary)",
-                maxWidth: "58ch",
-              }}
-            >
-              {valueProp} Mahasiswa aktif Sistem Informasi di {university}.
-            </p>
-
-            {/* Primary actions */}
-            <Cluster gap={16} className="mb-5">
-              <button
-                onClick={() => scrollToSection("projects")}
-                className="neo-btn-primary font-bold text-base"
+              {/* Main heading limited to two lines */}
+              <h1
+                className="font-extrabold tracking-tight mb-3.5"
+                style={{
+                  fontFamily: "var(--font-display)",
+                  fontSize: "clamp(2.3rem, 4.4vw, 3.8rem)",
+                  lineHeight: 1.1,
+                  color: "var(--ink)",
+                }}
               >
-                Lihat Proyek
-                <Icon name="arrow-right" size={18} />
-              </button>
+                {headline} <br />
+                <span style={{ color: "var(--google-blue)" }}>{headlineAccent}</span>
+              </h1>
 
-              <a
-                href={cvUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="neo-btn-secondary font-bold text-base"
+              <p
+                className="text-base sm:text-lg leading-relaxed mb-5 font-normal"
+                style={{
+                  color: "var(--ink-secondary)",
+                  maxWidth: "58ch",
+                }}
               >
-                <Icon name="download" size={18} />
-                Unduh CV
-              </a>
-            </Cluster>
+                {valueProp} Mahasiswa aktif Sistem Informasi di {university}.
+              </p>
 
-            {/* Social link pills */}
-            <Cluster gap={8} className="pt-0.5">
+              {/* Primary actions */}
+              <Cluster gap={16} className="mb-5">
+                <button
+                  onClick={() => scrollToSection("projects")}
+                  className="neo-btn-primary font-bold text-base"
+                >
+                  Lihat Proyek
+                  <Icon name="arrow-right" size={18} />
+                </button>
+
+                <a
+                  href={cvUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="neo-btn-secondary font-bold text-base"
+                >
+                  <Icon name="download" size={18} />
+                  Unduh CV
+                </a>
+              </Cluster>
+            </div>
+
+            {/* Social link pills aligned with card baseline */}
+            <Cluster gap={8} className="pt-2 lg:pt-0">
               <span
                 className="text-xs sm:text-sm font-bold uppercase tracking-wider font-mono mr-1"
                 style={{ color: "var(--ink-muted)" }}
@@ -185,10 +187,10 @@ function Hero({ info = PERSONAL_INFO }) {
 
           {/* Right column: profile photo card (5 cols) */}
           <div className="lg:col-span-5 flex justify-center lg:justify-end">
-            <div className="w-full max-w-[360px] lg:max-w-[380px]">
-              <Card variant="flat" className="p-0 overflow-hidden">
+            <div className="w-full max-w-[360px] lg:max-w-[380px] h-full">
+              <Card variant="flat" className="p-0 overflow-hidden h-full flex flex-col">
                 <div
-                  className="h-10 px-3.5 flex items-center justify-between border-b-2"
+                  className="h-9 sm:h-10 px-3.5 flex items-center justify-between border-b-2 flex-shrink-0"
                   style={{
                     backgroundColor: "var(--surface-alt)",
                     borderColor: "var(--border)",
@@ -208,16 +210,16 @@ function Hero({ info = PERSONAL_INFO }) {
                   <Chip variant="green" className="text-[11px] py-0.5 px-2">Online</Chip>
                 </div>
 
-                <div className="p-3.5 sm:p-4">
+                <div className="p-3 sm:p-3.5 flex-1 flex flex-col justify-between min-h-0">
                   <div
-                    className="w-full aspect-[4/4.5] max-h-[350px] rounded-2xl overflow-hidden border-2 relative"
+                    className="w-full h-[190px] sm:h-[220px] lg:h-auto lg:flex-1 min-h-[160px] rounded-xl overflow-hidden border-2 relative"
                     style={{
                       backgroundColor: "var(--canvas)",
                       borderColor: "var(--border)",
                     }}
                   >
                     <img
-                      src={avatar}
+                      src={avatar || PERSONAL_INFO.avatar}
                       alt={`Foto Profil ${info.name || "Muhammad Raynar Hammam"}`}
                       className="w-full h-full object-cover object-top"
                       loading="eager"
@@ -225,7 +227,7 @@ function Hero({ info = PERSONAL_INFO }) {
                   </div>
 
                   <div
-                    className="mt-4 p-3.5 sm:p-4 rounded-xl border-2 flex flex-col gap-2.5"
+                    className="mt-3 p-3 rounded-xl border-2 flex flex-col gap-2 flex-shrink-0"
                     style={{
                       backgroundColor: "var(--surface-alt)",
                       borderColor: "var(--border)",
@@ -233,7 +235,7 @@ function Hero({ info = PERSONAL_INFO }) {
                   >
                     <div className="flex flex-col gap-0.5">
                       <div
-                        className="font-extrabold text-sm sm:text-base font-mono tracking-tight"
+                        className="font-extrabold text-sm font-mono tracking-tight"
                         style={{ color: "var(--ink)" }}
                       >
                         {displayName}
@@ -247,10 +249,10 @@ function Hero({ info = PERSONAL_INFO }) {
                     </div>
 
                     <div
-                      className="pt-2.5 border-t border-[var(--border)] flex items-center"
+                      className="pt-2 border-t border-[var(--border)] flex items-center"
                     >
                       <span
-                        className="neo-badge text-[11px] sm:text-xs font-bold px-2.5 sm:px-3 py-1 inline-flex items-center gap-1.5 max-w-full"
+                        className="neo-badge text-[11px] font-bold px-2.5 py-0.5 inline-flex items-center gap-1.5 max-w-full"
                         style={{
                           backgroundColor: "var(--google-blue-bg)",
                           color: "var(--google-blue-text)",
@@ -836,220 +838,237 @@ function Contact({ info = PERSONAL_INFO }) {
   return (
     <Section id="contact" style={{ backgroundColor: "var(--canvas)" }}>
       <Container>
-        <Card variant="flat" className="p-0 overflow-hidden max-w-3xl mx-auto">
+        <Card variant="flat" className="p-0 overflow-hidden max-w-5xl mx-auto">
           <div className="google-bar" />
 
-          <div className="p-8 sm:p-12 text-center">
-            <div className="kicker mb-3 justify-center text-xs sm:text-sm font-extrabold">
-              TERBUKA UNTUK KOLABORASI
-            </div>
+          <div className="p-6 sm:p-8 lg:p-10">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-stretch">
+              {/* Left column: narrative and direct channels (5 cols) */}
+              <div className="lg:col-span-5 flex flex-col justify-between">
+                <div>
+                  <div className="kicker mb-3 text-xs sm:text-sm font-extrabold">
+                    TERBUKA UNTUK KOLABORASI
+                  </div>
 
-            <h2
-              className="font-extrabold tracking-tight mb-4"
-              style={{
-                fontFamily: "var(--font-display)",
-                fontSize: "clamp(2.2rem, 4.4vw, 3.2rem)",
-                color: "var(--ink)",
-              }}
-            >
-              Mari Membangun{" "}
-              <span style={{ color: "var(--google-blue)" }}>
-                Sesuatu Bersama
-              </span>
-            </h2>
+                  <h2
+                    className="font-extrabold tracking-tight mb-3.5 leading-tight"
+                    style={{
+                      fontFamily: "var(--font-display)",
+                      fontSize: "clamp(1.8rem, 3.2vw, 2.5rem)",
+                      color: "var(--ink)",
+                    }}
+                  >
+                    Mari Membangun{" "}
+                    <span style={{ color: "var(--google-blue)" }}>
+                      Sesuatu Bersama
+                    </span>
+                  </h2>
 
-            <p
-              className="text-base sm:text-lg mb-8 mx-auto leading-relaxed"
-              style={{
-                color: "var(--ink-secondary)",
-                maxWidth: "56ch",
-              }}
-            >
-              Memiliki peluang magang, proyek rekayasa perangkat lunak, atau
-              diskusi seputar sistem informasi? Jangan ragu untuk menghubungi
-              saya.
-            </p>
+                  <p
+                    className="text-sm sm:text-base mb-6 leading-relaxed"
+                    style={{ color: "var(--ink-secondary)" }}
+                  >
+                    Memiliki peluang magang, proyek rekayasa perangkat lunak, atau
+                    diskusi seputar sistem informasi? Jangan ragu untuk menghubungi
+                    saya.
+                  </p>
 
-            <Cluster gap={16} className="justify-center mb-8">
-              <a
-                href={`mailto:${email}`}
-                className="neo-btn-primary font-bold text-base"
+                  <div className="space-y-3 mb-6">
+                    <a
+                      href={`mailto:${email}`}
+                      className="neo-btn-primary font-bold text-sm w-full justify-center"
+                      style={{
+                        backgroundColor: "var(--google-red)",
+                        borderColor: "var(--border)",
+                      }}
+                    >
+                      <Icon name="mail" size={18} />
+                      {email}
+                    </a>
+
+                    <a
+                      href={linkedin}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="neo-btn-secondary font-bold text-sm w-full justify-center"
+                    >
+                      Hubungi via LinkedIn
+                      <Icon name="external-link" size={15} />
+                    </a>
+                  </div>
+                </div>
+
+                {/* Status and location badges */}
+                <div
+                  className="pt-4 border-t-2 flex flex-wrap gap-2 text-xs font-semibold"
+                  style={{
+                    borderColor: "var(--border)",
+                    color: "var(--ink-muted)",
+                  }}
+                >
+                  <span className="neo-badge text-xs font-mono">
+                    <Icon name="map-pin" size={12} className="mr-1" />
+                    {location}
+                  </span>
+                  <span className="neo-badge text-xs font-mono">
+                    {timezone}
+                  </span>
+                  <span
+                    className="neo-badge text-xs font-mono max-w-full text-left"
+                    style={{
+                      backgroundColor: "var(--google-green-bg)",
+                      color: "var(--google-green-text)",
+                      borderColor: "var(--google-green)",
+                      whiteSpace: "normal",
+                    }}
+                  >
+                    {status}
+                  </span>
+                </div>
+              </div>
+
+              {/* Right column: interactive contact form (7 cols) */}
+              <div
+                className="lg:col-span-7 p-5 sm:p-6 rounded-2xl border-2 flex flex-col justify-between"
                 style={{
-                  backgroundColor: "var(--google-red)",
+                  backgroundColor: "var(--surface-alt)",
                   borderColor: "var(--border)",
                 }}
               >
-                <Icon name="mail" size={20} />
-                {email}
-              </a>
+                <form onSubmit={handleSubmit} className="space-y-3.5 text-left">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    <div>
+                      <label
+                        className="block text-xs font-bold font-mono uppercase mb-1"
+                        style={{ color: "var(--ink-secondary)" }}
+                      >
+                        Nama Lengkap
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={formData.name}
+                        onChange={(e) =>
+                          setFormData({ ...formData, name: e.target.value })
+                        }
+                        placeholder="Nama Anda"
+                        className="w-full px-3 py-2 rounded-xl border-2 font-medium text-sm transition-all"
+                        style={{
+                          backgroundColor: "var(--surface)",
+                          borderColor: "var(--border)",
+                          color: "var(--ink)",
+                        }}
+                      />
+                    </div>
+                    <div>
+                      <label
+                        className="block text-xs font-bold font-mono uppercase mb-1"
+                        style={{ color: "var(--ink-secondary)" }}
+                      >
+                        Alamat Email
+                      </label>
+                      <input
+                        type="email"
+                        required
+                        value={formData.email}
+                        onChange={(e) =>
+                          setFormData({ ...formData, email: e.target.value })
+                        }
+                        placeholder="email@domain.com"
+                        className="w-full px-3 py-2 rounded-xl border-2 font-medium text-sm transition-all"
+                        style={{
+                          backgroundColor: "var(--surface)",
+                          borderColor: "var(--border)",
+                          color: "var(--ink)",
+                        }}
+                      />
+                    </div>
+                  </div>
 
-              <a
-                href={linkedin}
-                target="_blank"
-                rel="noreferrer"
-                className="neo-btn-secondary font-bold text-base"
-              >
-                Hubungi via LinkedIn
-                <Icon name="external-link" size={16} />
-              </a>
-            </Cluster>
+                  <div>
+                    <label
+                      className="block text-xs font-bold font-mono uppercase mb-1"
+                      style={{ color: "var(--ink-secondary)" }}
+                    >
+                      Subjek / Topik
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.subject}
+                      onChange={(e) =>
+                        setFormData({ ...formData, subject: e.target.value })
+                      }
+                      placeholder="Peluang magang / diskusi proyek"
+                      className="w-full px-3 py-2 rounded-xl border-2 font-medium text-sm transition-all"
+                      style={{
+                        backgroundColor: "var(--surface)",
+                        borderColor: "var(--border)",
+                        color: "var(--ink)",
+                      }}
+                    />
+                  </div>
 
-            {/* Interactive contact submission form */}
-            <form
-              onSubmit={handleSubmit}
-              className="mb-8 text-left space-y-4 max-w-xl mx-auto pt-8 border-t-2"
-              style={{ borderColor: "var(--border)" }}
-            >
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label
-                    className="block text-xs font-bold font-mono uppercase mb-1.5"
-                    style={{ color: "var(--ink-secondary)" }}
+                  <div>
+                    <label
+                      className="block text-xs font-bold font-mono uppercase mb-1"
+                      style={{ color: "var(--ink-secondary)" }}
+                    >
+                      Pesan
+                    </label>
+                    <textarea
+                      rows={3}
+                      required
+                      value={formData.message}
+                      onChange={(e) =>
+                        setFormData({ ...formData, message: e.target.value })
+                      }
+                      placeholder="Tuliskan pesan atau detail kolaborasi di sini..."
+                      className="w-full px-3 py-2 rounded-xl border-2 font-medium text-sm transition-all resize-y"
+                      style={{
+                        backgroundColor: "var(--surface)",
+                        borderColor: "var(--border)",
+                        color: "var(--ink)",
+                      }}
+                    />
+                  </div>
+
+                  {feedback && (
+                    <div
+                      className="p-3 rounded-xl border-2 text-xs font-bold flex items-center gap-2"
+                      style={{
+                        backgroundColor:
+                          feedback.type === "success"
+                            ? "var(--google-green-bg)"
+                            : "var(--google-red-bg)",
+                        borderColor:
+                          feedback.type === "success"
+                            ? "var(--google-green)"
+                            : "var(--google-red)",
+                        color:
+                          feedback.type === "success"
+                            ? "var(--google-green-text)"
+                            : "var(--google-red-text)",
+                      }}
+                    >
+                      <Icon
+                        name={feedback.type === "success" ? "check" : "alert"}
+                        size={16}
+                      />
+                      <span>{feedback.text}</span>
+                    </div>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="neo-btn-primary font-bold text-sm w-full sm:w-auto"
                   >
-                    Nama Lengkap
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, name: e.target.value })
-                    }
-                    placeholder="Nama Anda"
-                    className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm transition-all"
-                    style={{
-                      backgroundColor: "var(--surface-alt)",
-                      borderColor: "var(--border)",
-                      color: "var(--ink)",
-                    }}
-                  />
-                </div>
-                <div>
-                  <label
-                    className="block text-xs font-bold font-mono uppercase mb-1.5"
-                    style={{ color: "var(--ink-secondary)" }}
-                  >
-                    Alamat Email
-                  </label>
-                  <input
-                    type="email"
-                    required
-                    value={formData.email}
-                    onChange={(e) =>
-                      setFormData({ ...formData, email: e.target.value })
-                    }
-                    placeholder="email@domain.com"
-                    className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm transition-all"
-                    style={{
-                      backgroundColor: "var(--surface-alt)",
-                      borderColor: "var(--border)",
-                      color: "var(--ink)",
-                    }}
-                  />
-                </div>
+                    {isSubmitting ? "Mengirim..." : "Kirim Pesan"}
+                    <Icon name="arrow-right" size={15} />
+                  </button>
+                </form>
               </div>
-              <div>
-                <label
-                  className="block text-xs font-bold font-mono uppercase mb-1.5"
-                  style={{ color: "var(--ink-secondary)" }}
-                >
-                  Subjek / Topik
-                </label>
-                <input
-                  type="text"
-                  value={formData.subject}
-                  onChange={(e) =>
-                    setFormData({ ...formData, subject: e.target.value })
-                  }
-                  placeholder="Peluang magang / diskusi proyek"
-                  className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm transition-all"
-                  style={{
-                    backgroundColor: "var(--surface-alt)",
-                    borderColor: "var(--border)",
-                    color: "var(--ink)",
-                  }}
-                />
-              </div>
-              <div>
-                <label
-                  className="block text-xs font-bold font-mono uppercase mb-1.5"
-                  style={{ color: "var(--ink-secondary)" }}
-                >
-                  Pesan
-                </label>
-                <textarea
-                  rows={4}
-                  required
-                  value={formData.message}
-                  onChange={(e) =>
-                    setFormData({ ...formData, message: e.target.value })
-                  }
-                  placeholder="Tuliskan pesan atau detail kolaborasi di sini..."
-                  className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm transition-all resize-y"
-                  style={{
-                    backgroundColor: "var(--surface-alt)",
-                    borderColor: "var(--border)",
-                    color: "var(--ink)",
-                  }}
-                />
-              </div>
-
-              {feedback && (
-                <div
-                  className="p-3.5 rounded-xl border-2 text-sm font-bold flex items-center gap-2"
-                  style={{
-                    backgroundColor:
-                      feedback.type === "success"
-                        ? "var(--google-green-bg)"
-                        : "var(--google-red-bg)",
-                    borderColor:
-                      feedback.type === "success"
-                        ? "var(--google-green)"
-                        : "var(--google-red)",
-                    color:
-                      feedback.type === "success"
-                        ? "var(--google-green-text)"
-                        : "var(--google-red-text)",
-                  }}
-                >
-                  <Icon
-                    name={feedback.type === "success" ? "check" : "alert"}
-                    size={18}
-                  />
-                  <span>{feedback.text}</span>
-                </div>
-              )}
-
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="neo-btn-primary font-bold text-sm w-full sm:w-auto"
-              >
-                {isSubmitting ? "Mengirim..." : "Kirim Pesan"}
-                <Icon name="arrow-right" size={16} />
-              </button>
-            </form>
-
-            <Cluster
-              gap={16}
-              className="pt-6 border-t-2 justify-center text-sm font-semibold"
-              style={{
-                borderColor: "var(--border)",
-                color: "var(--ink-muted)",
-              }}
-            >
-              <span className="inline-flex items-center gap-1.5">
-                <Icon name="map-pin" size={15} />
-                {location}
-              </span>
-              <span className="inline-flex items-center gap-1.5">
-                <Icon name="clock" size={15} />
-                {timezone}
-              </span>
-              <span className="text-green-600 dark:text-green-400 font-bold">
-                {status}
-              </span>
-            </Cluster>
+            </div>
           </div>
         </Card>
       </Container>

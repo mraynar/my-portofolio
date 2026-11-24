@@ -12,7 +12,7 @@ export const PERSONAL_INFO = {
   linkedin: "https://linkedin.com/in/mraynar",
   instagram: "https://instagram.com/mraynarr",
   cvUrl: "https://drive.google.com/file/d/1pq52Be_s4RBNsxYBBS2YEAFgtYxQjrbi/view?usp=sharing",
-  avatar: "/images/about/Profile Utama.PNG",
+  avatar: "/images/about/profile-utama.png",
   valueProp: "Mengembangkan aplikasi web dan mobile berbasis sistem informasi yang terukur, fungsional, dan berorientasi pada efisiensi operasional.",
 };
 
