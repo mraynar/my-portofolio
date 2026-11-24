@@ -114,7 +114,7 @@ body {
 
 /* Section scroll anchor clearance for sticky navbar */
 section[id] {
-  scroll-margin-top: calc(var(--nav-h) + 16px);
+  scroll-margin-top: var(--nav-h, 64px);
 }
 
 /* Neo-brutalist card base */

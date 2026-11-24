@@ -20,8 +20,8 @@ export const NAV_LINKS = [
   { id: "home", label: "Beranda", href: "/#home" },
   { id: "about", label: "Tentang", href: "/#about" },
   { id: "skills", label: "Keahlian", href: "/#skills" },
-  { id: "projects", label: "Proyek", href: "/projects" },
-  { id: "experience", label: "Pengalaman", href: "/experience" },
+  { id: "projects", label: "Proyek", href: "/#projects" },
+  { id: "experience", label: "Pengalaman", href: "/#experience" },
   { id: "contact", label: "Kontak", href: "/#contact" },
 ];
 

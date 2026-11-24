@@ -43,12 +43,24 @@ import ExperiencePage from "./ExperiencePage";
 import AdminLogin from "./admin/AdminLogin";
 import AdminLayout from "./admin/AdminLayout";
 
-// Scroll to top on route change
+// Scroll to target hash or top on route change
 function ScrollToTop() {
-  const { pathname } = useLocation();
+  const { pathname, hash } = useLocation();
+
   useEffect(() => {
+    if (hash) {
+      const targetId = hash.replace("#", "");
+      const targetEl = document.getElementById(targetId);
+      if (targetEl) {
+        setTimeout(() => {
+          targetEl.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 80);
+        return;
+      }
+    }
     window.scrollTo(0, 0);
-  }, [pathname]);
+  }, [pathname, hash]);
+
   return null;
 }
 
@@ -56,7 +68,7 @@ function ScrollToTop() {
 function scrollToSection(id) {
   const el = document.getElementById(id);
   if (el) {
-    el.scrollIntoView({ behavior: "smooth" });
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 }
 
@@ -84,7 +96,7 @@ function Hero({ info = PERSONAL_INFO }) {
   return (
     <Section
       id="home"
-      className="relative min-h-[calc(100dvh-var(--nav-h,64px))] flex items-center justify-center pt-20 sm:pt-24 lg:pt-20 pb-8 sm:pb-12 lg:pb-14"
+      className="relative min-h-[calc(100dvh-var(--nav-h,64px))] flex items-center justify-center py-8 sm:py-10 lg:py-12"
       style={{ backgroundColor: "transparent" }}
     >
       <Container className="relative z-10 w-full">
