@@ -1,553 +1,1060 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import { PERSONAL_INFO } from "./data";
+import { Icon } from "./components/icons/Icon";
 
-/* ─── LAYOUT CONSTANTS ──────────────────────────────────── */
-export const SECTION_MAX_W = 1320;
-export const SECTION_PX = "clamp(16px, 3vw, 56px)";
-export const SECTION_PY = "120px";
+export { Icon } from "./components/icons/Icon";
+export { ICON_REGISTRY, ICON_KEYS } from "./components/icons/registry.js";
 
-/* ─── TYPOGRAPHY ────────────────────────────────────────── */
-export const F = {
-  display: "'Plus Jakarta Sans', sans-serif",
-  body: "'Outfit', sans-serif",
-};
-
-/* ─── THEME ─────────────────────────────────────────────── */
-export const T = {
-  bg:    (d) => (d ? "#060d1f" : "#ffffff"),
-  bg2:   (d) => (d ? "#0d1b3e" : "#f0f4ff"),
-  text:  (d) => (d ? "#e8f1ff" : "#0f1f4f"),
-  text2: (d) => (d ? "#c3d8ff" : "#374151"),
-  text3: (d) => (d ? "#93afd8" : "#6b7280"),
-  card:  (d) => (d ? "#0d1b3e" : "#ffffff"),
-  navBg: (d) => (d ? "rgba(6,13,31,0.96)" : "rgba(255,255,255,0.96)"),
-};
-export const BORDER = "rgba(59,130,246,.2)";
-
-/* ─── HOOKS ─────────────────────────────────────────────── */
-export function useReveal() {
-  const ref = useRef(null);
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(
-      ([e]) => { if (e.isIntersecting) { setVisible(true); obs.unobserve(el); } },
-      { threshold: 0.06 }
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, []);
-  return [ref, visible];
-}
-
-export function useDarkMode() {
-  const [dark, setDark] = useState(() => {
-    try { return localStorage.getItem("theme") === "dark"; } catch { return false; }
-  });
-  useEffect(() => {
-    try { localStorage.setItem("theme", dark ? "dark" : "light"); } catch {}
-  }, [dark]);
-  return [dark, () => setDark((d) => !d)];
-}
-
-/* ─── CONTAINER ─────────────────────────────────────────── */
-export function Container({ children, style = {}, className = "" }) {
+// Strict 1120px max-width container with responsive padding
+export function Container({ children, className = "", style = {} }) {
   return (
-    <div className={className} style={{ width: "100%", maxWidth: SECTION_MAX_W, marginLeft: "auto", marginRight: "auto", ...style }}>
+    <div
+      className={`w-full max-w-[1120px] mx-auto px-4 sm:px-6 lg:px-8 ${className}`}
+      style={style}
+    >
       {children}
     </div>
   );
 }
 
-/* ─── REVEAL ─────────────────────────────────────────────── */
-export function Reveal({ children, className = "", delay = 0 }) {
-  const [ref, visible] = useReveal();
+// Section wrapper with sticky navbar clearance and padding
+export function Section({ id, children, className = "", style = {} }) {
   return (
-    <div ref={ref} style={{ transitionDelay: `${delay}ms`, height: "100%", display: "flex", flexDirection: "column", }}
-      className={`transition-all duration-700 ease-out ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"} ${className}`}>
+    <section
+      id={id}
+      className={`py-16 sm:py-24 lg:py-32 border-b-2 ${className}`}
+      style={{
+        borderColor: "var(--border)",
+        scrollMarginTop: "calc(var(--nav-h) + 16px)",
+        ...style,
+      }}
+    >
+      {children}
+    </section>
+  );
+}
+
+// Vertical flex stack with token gaps
+export function Stack({ children, gap = 16, className = "", style = {} }) {
+  const gapClasses = {
+    4: "gap-1",
+    8: "gap-2",
+    12: "gap-3",
+    16: "gap-4",
+    24: "gap-6",
+    32: "gap-8",
+    48: "gap-12",
+    64: "gap-16",
+  };
+
+  return (
+    <div
+      className={`flex flex-col ${gapClasses[gap] || "gap-4"} ${className}`}
+      style={style}
+    >
       {children}
     </div>
   );
 }
 
-/* ─── DECORATIVE ELEMENTS ────────────────────────────────── */
-export function DotsGrid({ cols, rows, dotColor = "#1e3a8a", opacity = 0.7, style = {} }) {
+// Horizontal wrapping cluster with token gaps
+export function Cluster({ children, gap = 8, className = "", style = {} }) {
+  const gapClasses = {
+    4: "gap-1",
+    8: "gap-2",
+    12: "gap-3",
+    16: "gap-4",
+    24: "gap-6",
+    32: "gap-8",
+  };
+
   return (
-    <div className="absolute pointer-events-none grid"
-      style={{ gridTemplateColumns: `repeat(${cols},1fr)`, gap: 10, opacity, ...style }}>
-      {Array.from({ length: cols * rows }).map((_, i) => (
-        <span key={i} style={{ width: 6, height: 6, borderRadius: "50%", background: dotColor, display: "block" }} />
-      ))}
+    <div
+      className={`flex flex-wrap items-center ${gapClasses[gap] || "gap-2"} ${className}`}
+      style={style}
+    >
+      {children}
     </div>
   );
 }
 
-export function Star4({ size = 28, fill = "#2563eb", opacity = 1, style = {} }) {
+// Chip tag component with guaranteed min height and padding
+export function Chip({
+  children,
+  variant = "default",
+  className = "",
+  style = {},
+}) {
+  const variantStyles = {
+    default: {
+      backgroundColor: "var(--surface-alt)",
+      color: "var(--ink)",
+      borderColor: "var(--border)",
+    },
+    blue: {
+      backgroundColor: "var(--google-blue-bg)",
+      color: "var(--google-blue-text)",
+      borderColor: "var(--google-blue)",
+    },
+    green: {
+      backgroundColor: "var(--google-green-bg)",
+      color: "var(--google-green-text)",
+      borderColor: "var(--google-green)",
+    },
+    yellow: {
+      backgroundColor: "var(--google-yellow-bg)",
+      color: "var(--google-yellow-text)",
+      borderColor: "var(--google-yellow)",
+    },
+    red: {
+      backgroundColor: "var(--google-red-bg)",
+      color: "var(--google-red-text)",
+      borderColor: "var(--google-red)",
+    },
+  };
+
   return (
-    <svg className="absolute pointer-events-none"
-      style={{ width: size, height: size, animation: "spinStar 10s linear infinite", ...style }}
-      viewBox="0 0 24 24">
-      <path d="M12 2L13.5 9.5L21 11L13.5 12.5L12 20L10.5 12.5L3 11L10.5 9.5Z" fill={fill} opacity={opacity} />
-    </svg>
+    <span
+      className={`neo-badge text-xs sm:text-sm font-bold ${className}`}
+      style={{ ...(variantStyles[variant] || variantStyles.default), ...style }}
+    >
+      {children}
+    </span>
   );
 }
 
-export function FloatDot({ size, color, style = {} }) {
+// Neo-brutalist card with rigid responsive padding
+export function Card({
+  children,
+  variant = "interactive",
+  className = "",
+  style = {},
+}) {
+  const baseClass = variant === "flat" ? "neo-card-flat" : "neo-card";
+
   return (
-    <div className="absolute rounded-full pointer-events-none"
-      style={{ width: size, height: size, background: color, animation: "floatY 6s ease-in-out infinite", ...style }} />
+    <div className={`${baseClass} ${className}`} style={style}>
+      {children}
+    </div>
   );
 }
 
-export function DiamondShape({ size = 32, color = "#2563eb", opacity = 0.45, style = {} }) {
+// Section title with uppercase blue eyebrow kicker
+export function SectionHeading({
+  kicker,
+  title,
+  accent,
+  subtitle,
+  center = false,
+}) {
   return (
-    <div className="absolute pointer-events-none"
-      style={{ width: size, height: size, background: color, opacity, transform: "rotate(45deg)", borderRadius: 3, ...style }} />
-  );
-}
-
-export function RingShape({ size = 60, color = "#2563eb", opacity = 0.35, strokeW = 3, style = {} }) {
-  return (
-    <div className="absolute pointer-events-none rounded-full"
-      style={{ width: size, height: size, border: `${strokeW}px solid ${color}`, opacity, ...style }} />
-  );
-}
-
-/* ─── SECTION HEADING ────────────────────────────────────── */
-export function SectionHeading({ title, accent, subtitle, dark }) {
-  return (
-    <Reveal className="text-center mb-16">
-      <h2 style={{ fontFamily: F.display, fontWeight: 800, fontSize: "clamp(2rem,4vw,3.2rem)", letterSpacing: "-.6px", color: T.text(dark), lineHeight: 1.18, marginBottom: ".6rem" }}>
-        {title} <span style={{ color: "#2563eb" }}>{accent}</span>
+    <div
+      className={`mb-10 sm:mb-14 ${center ? "text-center mx-auto" : ""}`}
+      style={{ maxWidth: center ? "800px" : "100%" }}
+    >
+      {kicker && (
+        <div
+          className={`kicker mb-3 text-xs sm:text-sm ${center ? "justify-center" : ""}`}
+        >
+          <span
+            style={{
+              width: 20,
+              height: 2.5,
+              background: "var(--google-blue)",
+              display: "inline-block",
+            }}
+          />
+          {kicker}
+        </div>
+      )}
+      <h2
+        className="font-extrabold tracking-tight"
+        style={{
+          fontFamily: "var(--font-display)",
+          fontSize: "clamp(2.2rem, 4.4vw, 3.4rem)",
+          lineHeight: 1.15,
+          color: "var(--ink)",
+        }}
+      >
+        {title}{" "}
+        {accent && <span style={{ color: "var(--google-blue)" }}>{accent}</span>}
       </h2>
       {subtitle && (
-        <p style={{ color: T.text3(dark), fontSize: "1.05rem", fontFamily: F.body, lineHeight: 1.75, marginTop: ".4rem", marginBottom: "2.8rem" }}>
+        <p
+          className="mt-3.5 text-base sm:text-lg leading-relaxed font-normal"
+          style={{
+            color: "var(--ink-secondary)",
+            maxWidth: "65ch",
+          }}
+        >
           {subtitle}
         </p>
       )}
-    </Reveal>
+    </div>
   );
 }
 
-/* ─── PROJECT CARD ───────────────────────────────────────── */
-export function ProjectCard({ p, dark }) {
-  const RATIO = "53.125%";
-  const thumbBg = dark ? "#0d1b3e" : "#1d4ed8";
-  const repoBgDefault = dark ? "#1e40af" : "#1d4ed8";
+// Case study modal dialog
+export function CaseStudyModal({ project, onClose }) {
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = "auto";
+    };
+  }, [onClose]);
+
+  if (!project) return null;
+  const cs = project.caseStudy;
 
   return (
-    <div style={{
-      background: T.card(dark),
-      border: `1.5px solid ${dark ? "rgba(59,130,246,.35)" : BORDER}`,  // ← samakan dengan ExpCard
-      borderRadius: 20, overflow: "hidden", display: "flex", flexDirection: "column", height: "100%",
-      transition: "transform .28s ease, box-shadow .28s ease, border-color .28s ease",  // ← durasi .28s sama ExpCard
-      boxShadow: dark
-        ? "0 0 0 1px rgba(59,130,246,.2), 0 0 20px rgba(37,99,235,.25), 0 4px 24px rgba(37,99,235,.15)"
-        : "none",
-    }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.transform = "translateY(-8px)";           // ← dari -10px ke -8px
-        e.currentTarget.style.borderColor = dark ? "#60a5fa" : "rgba(37,99,235,.5)";
-        e.currentTarget.style.boxShadow = dark
-          ? "0 0 0 1.5px rgba(96,165,250,.6), 0 0 40px rgba(37,99,235,.55), 0 0 80px rgba(37,99,235,.25), 0 16px 48px rgba(37,99,235,.3)"
-          : "0 24px 60px rgba(37,99,235,.22)";
+    <div
+      className="fixed inset-0 z-[999] flex items-center justify-center p-4 sm:p-6"
+      style={{
+        background: "rgba(0, 0, 0, 0.7)",
+        backdropFilter: "blur(4px)",
       }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.transform = "translateY(0)";
-        e.currentTarget.style.borderColor = dark ? "rgba(59,130,246,.35)" : BORDER;  // ← pakai BORDER constant
-        e.currentTarget.style.boxShadow = dark
-          ? "0 0 0 1px rgba(59,130,246,.2), 0 0 20px rgba(37,99,235,.25), 0 4px 24px rgba(37,99,235,.15)"
-          : "none";
-      }}>
+      onClick={onClose}
+    >
+      <div
+        className="neo-card-flat relative w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 sm:p-8"
+        style={{ backgroundColor: "var(--surface)" }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Top Google accent bar */}
+        <div className="google-bar -mx-6 sm:-mx-8 -mt-6 sm:-mt-8 mb-6" />
 
-      <div style={{ position: "relative", width: "100%", paddingTop: RATIO, overflow: "hidden", flexShrink: 0, background: thumbBg }}>
-        {p.image ? (
-          <img src={p.image} alt={p.title} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "top center", display: "block" }} />
-        ) : (
-          <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", background: thumbBg }}>
-            <span style={{ fontSize: "3rem", lineHeight: 1 }}>📁</span>
+        {/* Modal header */}
+        <div
+          className="flex items-start justify-between gap-4 border-b-2 pb-5"
+          style={{ borderColor: "var(--border)" }}
+        >
+          <div>
+            <Cluster gap={8} className="mb-2">
+              <Chip variant="blue">{project.label}</Chip>
+              {cs?.duration && (
+                <span
+                  className="text-xs sm:text-sm font-semibold"
+                  style={{ color: "var(--ink-muted)" }}
+                >
+                  - {cs.duration}
+                </span>
+              )}
+            </Cluster>
+            <h3
+              className="text-2xl sm:text-3xl font-extrabold"
+              style={{
+                fontFamily: "var(--font-display)",
+                color: "var(--ink)",
+              }}
+            >
+              {project.title}
+            </h3>
+            {cs?.role && (
+              <p
+                className="text-sm sm:text-base font-semibold mt-1"
+                style={{ color: "var(--google-blue)" }}
+              >
+                Peran: {cs.role} {cs.client ? `| Klien: ${cs.client}` : ""}
+              </p>
+            )}
           </div>
-        )}
-        <span style={{ position: "absolute", top: 12, left: 12, zIndex: 2, fontSize: ".62rem", fontWeight: 700, letterSpacing: ".1em", textTransform: "uppercase", color: "#fff", background: "rgba(0,0,0,.5)", backdropFilter: "blur(6px)", WebkitBackdropFilter: "blur(6px)", borderRadius: 99, padding: "5px 12px", fontFamily: F.body, lineHeight: 1 }}>
-          {p.label}
-        </span>
-      </div>
-
-      <div style={{ padding: "1.6rem 1.8rem 2rem", flex: 1, display: "flex", flexDirection: "column" }}>
-        <h3 style={{ fontFamily: F.display, fontWeight: 700, fontSize: "1.08rem", color: T.text(dark), marginBottom: ".5rem", lineHeight: 1.35 }}>{p.title}</h3>
-        <p style={{ fontSize: ".92rem", lineHeight: 1.78, color: T.text3(dark), marginBottom: "1.2rem", fontFamily: F.body, flex: 1, minHeight: "5rem"}}>{p.desc}</p>
-
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: "1.2rem" }}>
-          {p.badges.map((b) => (
-            <span key={b} style={{ fontSize: ".72rem", fontWeight: 600, padding: "5px 13px", borderRadius: 99, background: dark ? "rgba(30,64,175,.35)" : "#e8f1ff", color: dark ? "#c3d8ff" : "#1e40af", border: "1px solid rgba(37,99,235,.3)", fontFamily: F.body, lineHeight: 1 }}>
-              {b}
-            </span>
-          ))}
+          <button
+            onClick={onClose}
+            className="neo-badge cursor-pointer p-2 hover:opacity-80"
+            style={{
+              backgroundColor: "var(--surface-alt)",
+              color: "var(--ink)",
+            }}
+            aria-label="Tutup dialog"
+          >
+            <Icon name="x" size={20} />
+          </button>
         </div>
 
-        {p.repo ? (
-          <a href={p.repo} target="_blank" rel="noreferrer"
-            style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none", borderRadius: 12, background: repoBgDefault, color: "#fff", padding: "10px 16px", fontFamily: F.body, fontWeight: 600, fontSize: "clamp(.65rem, 2vw, .82rem)", lineHeight: 1, letterSpacing: ".03em", transition: "transform .2s ease" }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = dark ? "#2563eb" : "#1e3a8a"; e.currentTarget.style.transform = "translateY(-2px)"; }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = repoBgDefault; e.currentTarget.style.transform = "translateY(0)"; }}>
-            <svg viewBox="0 0 24 24" fill="currentColor" width="15" height="15">
-              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
-            </svg>
-            View Repository
-          </a>
-        ) : (
-          <div style={{ display: "flex", alignItems: "center", gap: 8, borderRadius: 12, background: dark ? "rgba(30,64,175,.25)" : "rgba(37,99,235,.1)", border: `1.5px solid ${dark ? "rgba(96,165,250,.3)" : "rgba(37,99,235,.4)"}`, padding: "10px 16px", cursor: "not-allowed", userSelect: "none" }}>
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={dark ? "#60a5fa" : "#2563eb"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />
-            </svg>
-            <span style={{ fontSize: ".78rem", fontWeight: 600, color: dark ? "#93c5fd" : "#1e40af", fontFamily: F.body, lineHeight: 1, letterSpacing: ".03em" }}>
-              Private Repository
+        {/* Modal body */}
+        <div className="space-y-6 pt-5">
+          <div>
+            <h4
+              className="text-xs sm:text-sm font-bold font-mono uppercase tracking-wider mb-2"
+              style={{ color: "var(--google-red)" }}
+            >
+              01. Latar Belakang & Masalah
+            </h4>
+            <p
+              className="text-base leading-relaxed"
+              style={{ color: "var(--ink-secondary)" }}
+            >
+              {cs?.background || project.problem}
+            </p>
+          </div>
+
+          <div>
+            <h4
+              className="text-xs sm:text-sm font-bold font-mono uppercase tracking-wider mb-2"
+              style={{ color: "var(--google-blue)" }}
+            >
+              02. Pendekatan Solusi
+            </h4>
+            <p
+              className="text-base leading-relaxed"
+              style={{ color: "var(--ink-secondary)" }}
+            >
+              {cs?.solution || project.solution}
+            </p>
+          </div>
+
+          <div>
+            <h4
+              className="text-xs sm:text-sm font-bold font-mono uppercase tracking-wider mb-2"
+              style={{ color: "var(--google-yellow)" }}
+            >
+              03. Arsitektur & Teknologi
+            </h4>
+            <p
+              className="text-base leading-relaxed mb-3"
+              style={{ color: "var(--ink-secondary)" }}
+            >
+              {cs?.architecture ||
+                "Arsitektur modular memisahkan lapisan antarmuka pengguna, logika bisnis, dan basis data."}
+            </p>
+            <Cluster gap={8}>
+              {project.badges.map((b) => (
+                <Chip key={b} variant="default">
+                  {b}
+                </Chip>
+              ))}
+            </Cluster>
+          </div>
+
+          <div
+            className="p-4 sm:p-5 rounded-xl border-2"
+            style={{
+              backgroundColor: "var(--google-green-bg)",
+              borderColor: "var(--google-green)",
+            }}
+          >
+            <h4
+              className="text-xs sm:text-sm font-bold font-mono uppercase tracking-wider mb-1"
+              style={{ color: "var(--google-green-text)" }}
+            >
+              04. Dampak Konkret
+            </h4>
+            <p
+              className="text-base sm:text-lg font-bold"
+              style={{ color: "var(--google-green-text)" }}
+            >
+              {cs?.impact || project.impact}
+            </p>
+          </div>
+
+          <div
+            className="p-4 rounded-xl border-2 text-xs sm:text-sm"
+            style={{
+              backgroundColor: "var(--canvas)",
+              borderColor: "var(--border)",
+            }}
+          >
+            <span className="font-bold">Status Repositori: </span>
+            <span style={{ color: "var(--ink-secondary)" }}>
+              {project.repoReason || project.repoNotice}
             </span>
           </div>
-        )}
+
+          <Cluster gap={12} className="justify-end pt-4 border-t-2" style={{ borderColor: "var(--border)" }}>
+            {project.demoUrl && (
+              <a
+                href={project.demoUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="neo-btn-primary text-sm sm:text-base font-bold"
+              >
+                Kunjungi Live Demo
+                <Icon name="external-link" size={16} />
+              </a>
+            )}
+            <button
+              onClick={onClose}
+              className="neo-btn-secondary text-sm sm:text-base font-bold"
+            >
+              Tutup
+            </button>
+          </Cluster>
+        </div>
       </div>
     </div>
   );
 }
 
-/* ─── EXPERIENCE CARD ────────────────────────────────────── */
-export function ExpCard({ c, dark, style = {} }) {
+// Featured hero project card with balanced two-column layout
+export function FeaturedHeroCard({ project, onOpenCaseStudy }) {
   return (
-    <div style={{
-    background: T.card(dark),
-    border: `${c.featured ? "2px" : "1.5px"} solid ${c.featured ? "#2563eb" : dark ? "rgba(59,130,246,.35)" : BORDER}`,
-    borderRadius: 22, overflow: "hidden", position: "relative",
-    transition: "transform .28s ease, box-shadow .28s ease, border-color .28s ease",
-    display: "flex", flexDirection: "column",
-    height: "100%",
-    boxShadow: dark
-      ? `0 0 0 1px rgba(59,130,246,.2), 0 0 20px rgba(37,99,235,.25), 0 4px 24px rgba(37,99,235,.15)`
-      : "none",
-    ...style,
-  }}
-    onMouseEnter={(e) => {
-      e.currentTarget.style.transform = "translateY(-8px)";
-      e.currentTarget.style.borderColor = dark ? "#60a5fa" : "rgba(37,99,235,.5)";
-      e.currentTarget.style.boxShadow = dark
-        ? "0 0 0 1.5px rgba(96,165,250,.6), 0 0 40px rgba(37,99,235,.55), 0 0 80px rgba(37,99,235,.25), 0 16px 48px rgba(37,99,235,.3)"
-        : "0 24px 60px rgba(37,99,235,.22)";
-    }}
-    onMouseLeave={(e) => {
-      e.currentTarget.style.transform = "translateY(0)";
-      e.currentTarget.style.borderColor = c.featured ? "#2563eb" : dark ? "rgba(59,130,246,.35)" : BORDER;
-      e.currentTarget.style.boxShadow = dark
-        ? "0 0 0 1px rgba(59,130,246,.2), 0 0 20px rgba(37,99,235,.25), 0 4px 24px rgba(37,99,235,.15)"
-        : "none";
-    }}>
-
-      {c.featured && (
-        <div style={{ position: "absolute", top: 20, right: -28, transform: "rotate(45deg)", background: "#2563eb", color: "#fff", fontSize: ".6rem", fontWeight: 700, padding: "4px 38px", fontFamily: F.body, letterSpacing: ".1em", zIndex: 10 }}>
-          CURRENT
-        </div>
-      )}
-
-      <div style={{ position: "relative", height: 240, flexShrink: 0, overflow: "hidden", background: dark ? "linear-gradient(135deg,#0d1b3e,#1e3a6e)" : "linear-gradient(135deg,#e8f1ff,#dbeafe)" }}>
-        {c.photo ? (
-          <img src={c.photo} alt={c.photoAlt || c.title} style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center top", display: "block" }} />
-        ) : (
-          <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 10 }}>
-            <div style={{ width: 56, height: 56, borderRadius: "50%", background: dark ? "rgba(37,99,235,.25)" : "rgba(37,99,235,.12)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={dark ? "#93afd8" : "#2563eb"} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" /><circle cx="12" cy="13" r="4" />
-              </svg>
-            </div>
-            <p style={{ fontSize: ".8rem", fontWeight: 600, color: dark ? "#93afd8" : "#2563eb", fontFamily: F.body }}>Add Activity Photo</p>
+    <div
+      className="neo-card-flat grid grid-cols-1 lg:grid-cols-12 mb-12 p-0 overflow-hidden"
+      style={{
+        borderWidth: "3px",
+      }}
+    >
+      {/* Visual media frame (7 cols) */}
+      <div
+        className="lg:col-span-7 relative border-b-2 lg:border-b-0 lg:border-r-2 flex flex-col"
+        style={{
+          backgroundColor: "var(--canvas)",
+          borderColor: "var(--border)",
+        }}
+      >
+        <div
+          className="h-11 px-4 flex items-center justify-between border-b-2 flex-shrink-0"
+          style={{
+            backgroundColor: "var(--surface)",
+            borderColor: "var(--border)",
+          }}
+        >
+          <div className="flex items-center gap-2">
+            <span className="w-3 h-3 rounded-full border border-[var(--border)] bg-[#ea4335]" />
+            <span className="w-3 h-3 rounded-full border border-[var(--border)] bg-[#fbbc04]" />
+            <span className="w-3 h-3 rounded-full border border-[var(--border)] bg-[#34a853]" />
+            <span
+              className="text-xs font-mono ml-2 font-bold truncate max-w-[200px]"
+              style={{ color: "var(--ink)" }}
+            >
+              {project.title}
+            </span>
           </div>
-        )}
-        <span style={{ position: "absolute", bottom: 12, left: 14, background: dark ? "rgba(37,99,235,.55)" : "#2563eb", color: "#fff", fontSize: ".72rem", fontWeight: 700, fontFamily: F.body, padding: "5px 12px", borderRadius: 99, lineHeight: 1.5, backdropFilter: "blur(6px)", WebkitBackdropFilter: "blur(6px)", letterSpacing: ".03em", boxShadow: "0 2px 8px rgba(37,99,235,.35)" }}>
-          {c.date}
-        </span>
+          <Chip variant="blue">{project.label}</Chip>
+        </div>
+
+        <div className="relative w-full aspect-[16/10] overflow-hidden flex-1">
+          {project.image ? (
+            <img
+              src={project.image}
+              alt={project.title}
+              className="absolute inset-0 w-full h-full object-cover object-top"
+              loading="lazy"
+            />
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center font-bold text-base text-gray-500">
+              Preview Proyek
+            </div>
+          )}
+        </div>
       </div>
 
-      <div style={{ padding: "1.2rem 1.5rem 1.5rem", display: "flex", flexDirection: "column", flex: 1 }}>
-        <div style={{ marginBottom: ".8rem" }}>
-          <span style={{ fontSize: ".68rem", fontWeight: 700, letterSpacing: ".07em", textTransform: "uppercase", padding: "4px 12px", borderRadius: 99, background: c.badgeColor.bg, color: c.badgeColor.color, fontFamily: F.body, lineHeight: 1.5 }}>
-            {c.badge}
+      {/* Narrative details (5 cols) with guaranteed padding */}
+      <div className="lg:col-span-5 p-6 sm:p-8 lg:p-10 flex flex-col justify-between">
+        <div>
+          <div className="mb-3">
+            <Chip variant="blue">
+              <Icon name="star" size={14} className="mr-1.5" />
+              PROYEK UNGGULAN
+            </Chip>
+          </div>
+
+          <h3
+            className="font-extrabold text-2xl sm:text-3xl mb-3 leading-snug"
+            style={{ fontFamily: "var(--font-display)", color: "var(--ink)" }}
+          >
+            {project.title}
+          </h3>
+
+          <p
+            className="text-base sm:text-lg leading-relaxed mb-5"
+            style={{ color: "var(--ink-secondary)" }}
+          >
+            {project.problem}
+          </p>
+
+          <div
+            className="p-4 rounded-xl border-2 mb-5"
+            style={{
+              backgroundColor: "var(--google-blue-bg)",
+              borderColor: "var(--google-blue)",
+            }}
+          >
+            <div
+              className="text-xs font-bold font-mono uppercase tracking-wider mb-1 flex items-center gap-1.5"
+              style={{ color: "var(--google-blue-text)" }}
+            >
+              <Icon name="bolt" size={14} />
+              DAMPAK BISNIS NYATA
+            </div>
+            <div
+              className="text-base sm:text-lg font-bold"
+              style={{ color: "var(--google-blue-text)" }}
+            >
+              {project.impact}
+            </div>
+          </div>
+
+          <Cluster gap={8} className="mb-6">
+            {project.badges.map((b) => (
+              <Chip key={b} variant="default">
+                {b}
+              </Chip>
+            ))}
+          </Cluster>
+        </div>
+
+        <Stack
+          gap={12}
+          className="pt-4 border-t-2"
+          style={{ borderColor: "var(--border)" }}
+        >
+          <button
+            onClick={() => onOpenCaseStudy(project)}
+            className="w-full neo-btn-primary font-bold text-base"
+          >
+            Lihat Studi Kasus Lengkap
+            <Icon name="arrow-right" size={18} />
+          </button>
+
+          {project.demoUrl && (
+            <a
+              href={project.demoUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="w-full neo-btn-secondary font-bold text-base text-center"
+            >
+              Buka Live Demo
+              <Icon name="external-link" size={16} />
+            </a>
+          )}
+
+          <span
+            className="inline-flex items-center justify-center gap-1.5 text-xs text-center font-semibold"
+            style={{ color: "var(--ink-muted)" }}
+          >
+            <Icon name="lock" size={13} />
+            {project.repoNotice}
           </span>
-        </div>
-        <h3 style={{ fontFamily: F.display, fontSize: "1.08rem", fontWeight: 800, color: "#2563eb", lineHeight: 1.3, marginBottom: ".35rem", letterSpacing: "-.2px" }}>{c.title}</h3>
-        <p style={{ fontSize: ".85rem", color: T.text2(dark), fontWeight: 600, marginBottom: ".9rem", fontFamily: F.body, lineHeight: 1.5, opacity: 0.85 }}>{c.org}</p>
-
-        <ul style={{ paddingLeft: "1.1rem", marginBottom: "1rem", flex: 1 }}>
-          {c.items.map((item) => (
-            <li key={item} style={{ fontSize: ".84rem", color: T.text3(dark), lineHeight: 1.72, marginBottom: 5, fontFamily: F.body }}>{item}</li>
-          ))}
-        </ul>
-
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: "auto" }}>
-          {c.tags.map((t) => (
-            <span key={t} style={{ fontSize: ".68rem", fontWeight: 600, padding: "4px 11px", borderRadius: 7, background: dark ? "rgba(37,99,235,.2)" : "rgba(37,99,235,.09)", color: dark ? "#93c5fd" : "#1d4ed8", fontFamily: F.body, lineHeight: 1.5, border: `1px solid ${dark ? "rgba(96,165,250,.2)" : "rgba(37,99,235,.18)"}` }}>
-              {t}
-            </span>
-          ))}
-        </div>
+        </Stack>
       </div>
     </div>
   );
 }
 
-/* ─── NAVBAR ────────────────────────────────────────────── */
+// Standard project card with uniform vertical height and pinned actions
+export function ProjectCard({ project, onOpenCaseStudy }) {
+  const categoryConfig = {
+    "Web App": {
+      variant: "blue",
+      topBorder: "#1a73e8",
+      impactBg: "var(--google-blue-bg)",
+      impactText: "var(--google-blue-text)",
+      impactBorder: "var(--google-blue)",
+    },
+    "Mobile App": {
+      variant: "yellow",
+      topBorder: "#f29900",
+      impactBg: "var(--google-yellow-bg)",
+      impactText: "var(--google-yellow-text)",
+      impactBorder: "var(--google-yellow)",
+    },
+    "UI/UX Design": {
+      variant: "red",
+      topBorder: "#ea4335",
+      impactBg: "var(--google-red-bg)",
+      impactText: "var(--google-red-text)",
+      impactBorder: "var(--google-red)",
+    },
+    "Data Analyst": {
+      variant: "green",
+      topBorder: "#188038",
+      impactBg: "var(--google-green-bg)",
+      impactText: "var(--google-green-text)",
+      impactBorder: "var(--google-green)",
+    },
+  };
+
+  const cfg = categoryConfig[project.label] || categoryConfig["Web App"];
+
+  return (
+    <div className="neo-card p-0 flex flex-col h-full overflow-hidden">
+      {/* Top category strip */}
+      <div style={{ height: 6, backgroundColor: cfg.topBorder }} />
+
+      {/* Browser frame titlebar */}
+      <div
+        className="h-10 px-4 flex items-center justify-between border-b-2 flex-shrink-0"
+        style={{
+          backgroundColor: "var(--surface)",
+          borderColor: "var(--border)",
+        }}
+      >
+        <div className="flex items-center gap-1.5">
+          <span className="w-2.5 h-2.5 rounded-full border border-[var(--border)] bg-[#ea4335]" />
+          <span className="w-2.5 h-2.5 rounded-full border border-[var(--border)] bg-[#fbbc04]" />
+          <span className="w-2.5 h-2.5 rounded-full border border-[var(--border)] bg-[#34a853]" />
+        </div>
+        <Chip variant={cfg.variant}>{project.label}</Chip>
+      </div>
+
+      {/* 16:10 preview media */}
+      <div
+        className="relative w-full border-b-2 overflow-hidden flex-shrink-0"
+        style={{
+          paddingTop: "60%",
+          backgroundColor: "var(--canvas)",
+          borderColor: "var(--border)",
+        }}
+      >
+        {project.image ? (
+          <img
+            src={project.image}
+            alt={project.title}
+            className="absolute inset-0 w-full h-full object-cover object-top"
+            loading="lazy"
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center font-bold text-base text-gray-500">
+            Preview Proyek
+          </div>
+        )}
+      </div>
+
+      {/* Card content with rigid padding */}
+      <div className="p-5 sm:p-6 flex flex-col flex-1 justify-between">
+        <div>
+          <h3
+            className="font-extrabold text-xl sm:text-2xl mb-2.5 leading-snug line-clamp-2"
+            style={{ fontFamily: "var(--font-display)", color: "var(--ink)" }}
+          >
+            {project.title}
+          </h3>
+
+          <p
+            className="text-base leading-relaxed mb-4 line-clamp-3"
+            style={{ color: "var(--ink-secondary)" }}
+          >
+            {project.problem}
+          </p>
+
+          <div
+            className="p-3.5 rounded-xl border-2 mb-4 text-sm font-semibold"
+            style={{
+              backgroundColor: cfg.impactBg,
+              borderColor: cfg.impactBorder,
+              color: cfg.impactText,
+            }}
+          >
+            <div className="font-mono text-xs uppercase tracking-wider font-extrabold mb-1 flex items-center gap-1.5">
+              <Icon name="bolt" size={13} />
+              DAMPAK UTAMA
+            </div>
+            <div className="line-clamp-2">{project.impact}</div>
+          </div>
+
+          <Cluster gap={8} className="mb-5">
+            {project.badges.slice(0, 4).map((b) => (
+              <Chip key={b} variant="default">
+                {b}
+              </Chip>
+            ))}
+            {project.badges.length > 4 && (
+              <span
+                className="text-xs px-2 py-1 font-bold"
+                style={{ color: "var(--ink-muted)" }}
+              >
+                +{project.badges.length - 4}
+              </span>
+            )}
+          </Cluster>
+        </div>
+
+        {/* Pinned action buttons */}
+        <Stack
+          gap={8}
+          className="pt-4 border-t-2 mt-auto"
+          style={{ borderColor: "var(--border)" }}
+        >
+          <button
+            onClick={() => onOpenCaseStudy(project)}
+            className="w-full neo-btn-primary font-bold text-base"
+          >
+            Lihat Studi Kasus
+            <Icon name="arrow-right" size={16} />
+          </button>
+
+          {project.demoUrl && (
+            <a
+              href={project.demoUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="w-full neo-btn-secondary text-sm font-bold text-center"
+            >
+              Buka Live Demo
+              <Icon name="external-link" size={14} />
+            </a>
+          )}
+
+          <span
+            className="inline-flex items-center justify-center gap-1.5 text-xs text-center font-semibold pt-1"
+            style={{ color: "var(--ink-muted)" }}
+          >
+            <Icon name="lock" size={13} />
+            {project.repoNotice}
+          </span>
+        </Stack>
+      </div>
+    </div>
+  );
+}
+
+// Experience card with internal number badge and padded media layout
+export function ExpCard({ item, index = 0 }) {
+  const numberThemes = [
+    { bg: "var(--google-blue)", text: "#ffffff" },
+    { bg: "var(--google-green)", text: "#ffffff" },
+    { bg: "var(--google-yellow)", text: "#1f1f1f" },
+    { bg: "var(--google-red)", text: "#ffffff" },
+  ];
+  const numColor = numberThemes[index % 4];
+
+  return (
+    <div className="neo-card p-6 sm:p-8 flex flex-col md:flex-row gap-6 relative">
+      {/* Left column: step number and photo */}
+      <div className="flex md:flex-col items-center justify-between md:justify-start gap-4 flex-shrink-0">
+        <div
+          className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl border-2 border-[var(--border)] flex items-center justify-center font-extrabold font-mono text-lg sm:text-xl shadow-[3px_3px_0_var(--shadow-color)]"
+          style={{ backgroundColor: numColor.bg, color: numColor.text }}
+        >
+          {String(index + 1).padStart(2, "0")}
+        </div>
+
+        {item.photo && (
+          <div
+            className="w-24 h-24 md:w-44 md:h-36 rounded-xl overflow-hidden border-2 flex-shrink-0"
+            style={{
+              borderColor: "var(--border)",
+              backgroundColor: "var(--canvas)",
+            }}
+          >
+            <img
+              src={item.photo}
+              alt={item.photoAlt || item.role}
+              className="w-full h-full object-cover object-center"
+              loading="lazy"
+            />
+          </div>
+        )}
+      </div>
+
+      {/* Right column: content */}
+      <div className="flex-1 flex flex-col justify-between">
+        <div>
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+            <Cluster gap={8}>
+              <Chip variant="default">{item.type}</Chip>
+              {item.current && <Chip variant="green">Sekarang</Chip>}
+            </Cluster>
+            <span
+              className="text-xs sm:text-sm font-bold font-mono tracking-wider"
+              style={{ color: "var(--ink-muted)" }}
+            >
+              {item.period}
+            </span>
+          </div>
+
+          <h3
+            className="text-2xl sm:text-3xl font-extrabold mb-1"
+            style={{ fontFamily: "var(--font-display)", color: "var(--ink)" }}
+          >
+            {item.role}
+          </h3>
+          <p
+            className="text-base sm:text-lg font-bold mb-4"
+            style={{ color: "var(--google-blue)" }}
+          >
+            {item.org}
+          </p>
+
+          <ul
+            className="space-y-2.5 mb-5 text-base sm:text-lg leading-relaxed"
+            style={{ color: "var(--ink-secondary)" }}
+          >
+            {item.bullets.map((b, idx) => (
+              <li key={idx} className="flex items-start gap-3">
+                <span
+                  className="mt-1 flex-shrink-0"
+                  style={{ color: "var(--google-blue)" }}
+                >
+                  <Icon name="chevron-right" size={16} />
+                </span>
+                <span>{b}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <Cluster
+          gap={8}
+          className="pt-4 border-t-2"
+          style={{ borderColor: "var(--border)" }}
+        >
+          {item.tags.map((t) => (
+            <Chip key={t} variant="default">
+              {t}
+            </Chip>
+          ))}
+        </Cluster>
+      </div>
+    </div>
+  );
+}
+
+// Sticky header navbar with 1px border and clean wordmark
 export function Navbar({ dark, toggleDark }) {
   const [open, setOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+  const location = useLocation();
 
-  useEffect(() => {
-    const handler = () => setScrolled(window.scrollY > 10);
-    window.addEventListener("scroll", handler, { passive: true });
-    return () => window.removeEventListener("scroll", handler);
-  }, []);
-
-  const label = { home: "Home", about: "About", projects: "Projects", experience: "Experience", contact: "Contact" };
-  const navItems = ["home", "about", "projects", "experience", "contact"];
+  const navLinks = [
+    { label: "Beranda", href: "/#home" },
+    { label: "Tentang", href: "/#about" },
+    { label: "Keahlian", href: "/#skills" },
+    { label: "Proyek", href: "/projects" },
+    { label: "Pengalaman", href: "/experience" },
+    { label: "Kontak", href: "/#contact" },
+  ];
 
   return (
-    <>
-      <nav style={{ background: T.navBg(dark), borderBottom: `1px solid ${scrolled ? BORDER : "transparent"}`, backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)", transition: "border-color .3s ease" }}
-        className="fixed top-0 left-0 right-0 z-[200] h-20">
-        <Container className="flex items-center justify-between h-full" style={{ paddingLeft: SECTION_PX, paddingRight: SECTION_PX }}>
-          <a href="/" style={{ fontFamily: F.display, fontWeight: 800, fontSize: "1.5rem", color: "#2563eb", letterSpacing: "-.4px", lineHeight: 1, textDecoration: "none" }}>
-            mraynar
+    <header
+      className="fixed top-0 left-0 right-0 z-50 h-[var(--nav-h)] border-b"
+      style={{
+        backgroundColor: "var(--surface)",
+        borderColor: "var(--border)",
+      }}
+    >
+      <Container className="h-full flex items-center justify-between">
+        {/* Clean brand wordmark */}
+        <a
+          href="/#home"
+          className="font-extrabold text-2xl tracking-tight no-underline flex items-center gap-1.5"
+          style={{ fontFamily: "var(--font-display)", color: "var(--ink)" }}
+        >
+          <span>mraynar</span>
+          <span
+            className="w-2.5 h-2.5 rounded-full inline-block"
+            style={{ backgroundColor: "var(--google-blue)" }}
+          />
+        </a>
+
+        {/* Desktop links */}
+        <nav className="hidden md:flex items-center gap-6 lg:gap-8">
+          {navLinks.map((item) => {
+            const isInternal = item.href.startsWith("/#");
+            const isActive = isInternal
+              ? location.pathname === "/" &&
+                location.hash === item.href.replace("/", "")
+              : location.pathname === item.href;
+
+            return (
+              <a
+                key={item.label}
+                href={item.href}
+                className="text-base font-bold no-underline transition-colors py-1 hover:text-[var(--google-blue)]"
+                style={{
+                  color: isActive
+                    ? "var(--google-blue)"
+                    : "var(--ink-secondary)",
+                  borderBottom: isActive
+                    ? "2px solid var(--google-blue)"
+                    : "2px solid transparent",
+                }}
+              >
+                {item.label}
+              </a>
+            );
+          })}
+        </nav>
+
+        {/* Action buttons */}
+        <div className="flex items-center gap-3">
+          <a
+            href={PERSONAL_INFO.cvUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="hidden sm:inline-flex neo-btn-primary text-sm sm:text-base font-bold"
+          >
+            <Icon name="download" size={16} />
+            Unduh CV
           </a>
 
-          <div className="hidden md:flex gap-10 items-center">
-            {navItems.map((id) => (
-              <a key={id} href={id === "home" ? "/" : id === "projects" ? "/projects" : id === "experience" ? "/experience" : `/#${id}`}
-                style={{ fontSize: "1rem", color: T.text2(dark), fontFamily: F.body, lineHeight: 1, letterSpacing: ".01em", textDecoration: "none", fontWeight: 600, transition: "color .2s ease" }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = "#2563eb")}
-                onMouseLeave={(e) => (e.currentTarget.style.color = T.text2(dark))}>
-                {label[id]}
-              </a>
-            ))}
-          </div>
+          <button
+            onClick={toggleDark}
+            className="flex items-center justify-center w-10 h-10 rounded-full border-2 border-[var(--border)] bg-[var(--surface)] shadow-[2px_2px_0_var(--shadow-color)] hover:translate-x-[-1px] hover:translate-y-[-1px] cursor-pointer"
+            aria-label={
+              dark ? "Beralih ke mode terang" : "Beralih ke mode gelap"
+            }
+            title={dark ? "Mode Terang" : "Mode Gelap"}
+          >
+            <Icon name={dark ? "sun" : "moon"} size={20} />
+          </button>
 
-          <div className="flex items-center gap-3">
-            <button onClick={toggleDark} className="border-none cursor-pointer flex items-center justify-center rounded-full" style={{ width: 42, height: 42, background: dark ? "#1e40af" : "#2563eb", boxShadow: "0 2px 12px rgba(37,99,235,.4)" }}>
-              {dark ? (
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5" /><line x1="12" y1="1" x2="12" y2="3" /><line x1="12" y1="21" x2="12" y2="23" /><line x1="4.22" y1="4.22" x2="5.64" y2="5.64" /><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" /><line x1="1" y1="12" x2="3" y2="12" /><line x1="21" y1="12" x2="23" y2="12" /><line x1="4.22" y1="19.78" x2="5.64" y2="18.36" /><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" /></svg>
-              ) : (
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" /></svg>
-              )}
-            </button>
-            <button onClick={() => setOpen(true)} className="md:hidden flex flex-col gap-[6px] border-none bg-transparent cursor-pointer p-1">
-              {[0, 1, 2].map((i) => (<span key={i} style={{ width: 24, height: 2.5, background: T.text(dark), borderRadius: 99, display: "block" }} />))}
-            </button>
-          </div>
-        </Container>
-      </nav>
+          <button
+            onClick={() => setOpen(!open)}
+            className="md:hidden flex items-center justify-center w-10 h-10 rounded-full border-2 border-[var(--border)] bg-[var(--surface)] shadow-[2px_2px_0_var(--shadow-color)] hover:translate-x-[-1px] hover:translate-y-[-1px] cursor-pointer"
+            aria-label={open ? "Tutup menu" : "Buka menu"}
+            aria-expanded={open}
+          >
+            <Icon name={open ? "x" : "menu"} size={22} />
+          </button>
+        </div>
+      </Container>
 
+      {/* Mobile drawer */}
       {open && (
-        <>
-          <div onClick={() => setOpen(false)}
-            style={{ position: "fixed", inset: 0, zIndex: 290, background: "rgba(0,0,0,.3)", backdropFilter: "blur(4px)", WebkitBackdropFilter: "blur(4px)" }} />
-          <div className="md:hidden" style={{
-            position: "fixed", top: 12, left: 12, right: 12, zIndex: 300,
-            borderRadius: 24,
-            background: dark
-              ? "linear-gradient(135deg, rgba(6,13,31,.97) 0%, rgba(13,27,62,.97) 100%)"
-              : "linear-gradient(135deg, rgba(255,255,255,.98) 0%, rgba(240,244,255,.98) 100%)",
-            border: dark ? "1.5px solid rgba(59,130,246,.35)" : "1.5px solid rgba(37,99,235,.15)",
-            boxShadow: dark
-              ? "0 0 0 1px rgba(59,130,246,.2), 0 8px 40px rgba(37,99,235,.35), 0 32px 80px rgba(0,0,0,.6)"
-              : "0 8px 40px rgba(37,99,235,.18), 0 32px 80px rgba(0,0,0,.15)",
-            overflow: "hidden",
-            animation: "slideDown .3s ease forwards",
-          }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "18px 22px 16px", borderBottom: dark ? "1px solid rgba(59,130,246,.2)" : "1px solid rgba(37,99,235,.1)", background: dark ? "linear-gradient(90deg, rgba(37,99,235,.2), rgba(99,102,241,.1))" : "linear-gradient(90deg, rgba(37,99,235,.08), rgba(99,102,241,.04))" }}>
-              <span style={{ fontFamily: F.display, fontWeight: 800, fontSize: "1.2rem", color: "#2563eb", letterSpacing: "-.3px" }}>mraynar</span>
-              <button onClick={() => setOpen(false)}
-                style={{ width: 34, height: 34, borderRadius: "50%", border: dark ? "1.5px solid rgba(59,130,246,.4)" : "1.5px solid rgba(37,99,235,.25)", background: dark ? "rgba(37,99,235,.2)" : "rgba(37,99,235,.08)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: dark ? "#93c5fd" : "#2563eb" }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12" /></svg>
-              </button>
-            </div>
-            <div style={{ padding: "10px 14px 14px" }}>
-              {navItems.map((id, i) => (
-                <a key={id}
-                  href={id === "home" ? "/" : id === "projects" ? "/projects" : id === "experience" ? "/experience" : `/#${id}`}
-                  onClick={() => setOpen(false)}
-                  style={{ display: "flex", alignItems: "center", gap: 14, padding: "13px 14px", borderRadius: 14, textDecoration: "none", fontFamily: F.display, fontWeight: 700, fontSize: "1rem", color: dark ? "#e8f1ff" : "#0f1f4f", transition: "all .18s ease", marginBottom: i < navItems.length - 1 ? 4 : 0 }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = dark ? "rgba(37,99,235,.25)" : "rgba(37,99,235,.09)";
-                    e.currentTarget.style.color = "#2563eb";
-                    e.currentTarget.querySelector(".nav-dot").style.background = "#2563eb";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = "transparent";
-                    e.currentTarget.style.color = dark ? "#e8f1ff" : "#0f1f4f";
-                    e.currentTarget.querySelector(".nav-dot").style.background = dark ? "rgba(37,99,235,.4)" : "rgba(37,99,235,.25)";
-                  }}>
-                  <span className="nav-dot" style={{ width: 7, height: 7, borderRadius: "50%", background: dark ? "rgba(37,99,235,.4)" : "rgba(37,99,235,.25)", flexShrink: 0, transition: "background .18s ease" }} />
-                  {label[id]}
-                  <svg style={{ marginLeft: "auto", opacity: 0.4 }} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
-                </a>
-              ))}
-            </div>
-            <div style={{ padding: "12px 22px 16px", borderTop: dark ? "1px solid rgba(59,130,246,.15)" : "1px solid rgba(37,99,235,.08)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <span style={{ fontFamily: F.body, fontSize: ".8rem", color: dark ? "#93afd8" : "#6b7280", fontWeight: 500 }}>
-                {dark ? "Dark Mode" : "Light Mode"}
-              </span>
-              <button onClick={() => { toggleDark(); }}
-                style={{ display: "flex", alignItems: "center", gap: 8, padding: "7px 14px", borderRadius: 99, border: dark ? "1.5px solid rgba(59,130,246,.35)" : "1.5px solid rgba(37,99,235,.2)", background: dark ? "rgba(37,99,235,.2)" : "rgba(37,99,235,.08)", cursor: "pointer", fontFamily: F.body, fontSize: ".8rem", fontWeight: 600, color: dark ? "#93c5fd" : "#2563eb" }}>
-                {dark ? (
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5" /><line x1="12" y1="1" x2="12" y2="3" /><line x1="12" y1="21" x2="12" y2="23" /><line x1="4.22" y1="4.22" x2="5.64" y2="5.64" /><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" /><line x1="1" y1="12" x2="3" y2="12" /><line x1="21" y1="12" x2="23" y2="12" /><line x1="4.22" y1="19.78" x2="5.64" y2="18.36" /><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" /></svg>
-                ) : (
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" /></svg>
-                )}
-                Switch
-              </button>
-            </div>
+        <div
+          className="md:hidden border-b-2 px-6 py-6 space-y-4"
+          style={{
+            backgroundColor: "var(--surface)",
+            borderColor: "var(--border)",
+          }}
+        >
+          {navLinks.map((item) => (
+            <a
+              key={item.label}
+              href={item.href}
+              onClick={() => setOpen(false)}
+              className="block text-lg font-bold py-1 no-underline"
+              style={{ color: "var(--ink)" }}
+            >
+              {item.label}
+            </a>
+          ))}
+          <div
+            className="pt-4 border-t-2"
+            style={{ borderColor: "var(--border)" }}
+          >
+            <a
+              href={PERSONAL_INFO.cvUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="w-full neo-btn-primary text-center font-bold block"
+            >
+              <Icon name="download" size={16} className="mr-1.5" />
+              Unduh CV
+            </a>
           </div>
-        </>
+        </div>
       )}
-    </>
+    </header>
   );
 }
 
-/* ─── FOOTER ─────────────────────────────────────────────── */
-export function Footer({ dark }) {
+// Footer with contact links
+export function Footer() {
   return (
-    <footer style={{
-      background: dark ? "#060d1f" : "#0f1f4f",
-      borderTop: dark ? "1px solid rgba(37,99,235,.2)" : "none",
-    }}>
-      {/* Top divider bar */}
-      <div style={{ height: 3, background: "linear-gradient(90deg, #1d4ed8, #3b82f6, #60a5fa, #3b82f6, #1d4ed8)" }} />
+    <footer
+      className="border-t-2"
+      style={{
+        backgroundColor: "var(--surface)",
+        borderColor: "var(--border)",
+      }}
+    >
+      <div className="google-bar" />
 
-      <div style={{ maxWidth: SECTION_MAX_W, margin: "0 auto", padding: "2.4rem clamp(16px,3vw,56px)", display: "flex", flexDirection: "column", alignItems: "center", gap: "1rem" }}>
-        {/* Logo */}
-        <span style={{ fontFamily: F.display, fontWeight: 800, fontSize: "1.4rem", color: "#3b82f6", letterSpacing: "-.3px" }}>mraynar</span>
+      <Container className="py-12">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-6 text-center sm:text-left">
+          <div>
+            <div
+              className="font-extrabold text-xl tracking-tight mb-1"
+              style={{ fontFamily: "var(--font-display)", color: "var(--ink)" }}
+            >
+              {PERSONAL_INFO.name}
+            </div>
+            <p
+              className="text-sm font-semibold"
+              style={{ color: "var(--ink-muted)" }}
+            >
+              Mahasiswa Sistem Informasi - {PERSONAL_INFO.university}
+            </p>
+          </div>
 
-        {/* Nav links */}
-        <div style={{ display: "flex", gap: "clamp(.6rem, 2vw, 1.8rem)", flexWrap: "nowrap", justifyContent: "center" }}>
-          {["Home", "About", "Projects", "Experience", "Contact"].map((item) => (
-            <a key={item}
-              href={item === "Home" ? "/" : item === "Projects" ? "/projects" : item === "Experience" ? "/experience" : `/#${item.toLowerCase()}`}
-              style={{ fontFamily: F.body, fontSize: ".82rem", fontWeight: 500, color: "rgba(148,163,184,.65)", textDecoration: "none", letterSpacing: ".03em", transition: "color .2s ease" }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = "#93c5fd")}
-              onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(148,163,184,.65)")}>
-              {item}
+          <Cluster gap={8} className="justify-center">
+            <a
+              href={PERSONAL_INFO.github}
+              target="_blank"
+              rel="noreferrer"
+              className="neo-badge text-xs sm:text-sm font-bold"
+              style={{
+                backgroundColor: "var(--surface)",
+                color: "var(--ink)",
+              }}
+            >
+              GitHub
+              <Icon name="external-link" size={13} />
             </a>
-          ))}
+            <a
+              href={PERSONAL_INFO.linkedin}
+              target="_blank"
+              rel="noreferrer"
+              className="neo-badge text-xs sm:text-sm font-bold"
+              style={{
+                backgroundColor: "var(--google-blue-bg)",
+                color: "var(--google-blue-text)",
+                borderColor: "var(--google-blue)",
+              }}
+            >
+              LinkedIn
+              <Icon name="external-link" size={13} />
+            </a>
+            <a
+              href={`mailto:${PERSONAL_INFO.email}`}
+              className="neo-badge text-xs sm:text-sm font-bold"
+              style={{
+                backgroundColor: "var(--google-red-bg)",
+                color: "var(--google-red-text)",
+                borderColor: "var(--google-red)",
+              }}
+            >
+              Email
+              <Icon name="mail" size={13} />
+            </a>
+          </Cluster>
         </div>
 
-        {/* Divider */}
-        <div style={{ width: "100%", maxWidth: 320, height: 1, background: "rgba(37,99,235,.25)", borderRadius: 99 }} />
-
-        {/* Copyright */}
-        <p style={{ fontFamily: F.body, fontSize: ".8rem", color: "rgba(148,163,184,.5)", textAlign: "center", lineHeight: 1.8, letterSpacing: ".02em" }}>
-          &copy; 2026 <strong style={{ color: "rgba(147,197,253,.75)", fontWeight: 600 }}>Muhammad Raynar Hammam</strong>. All rights reserved.
-        </p>
-        <p style={{ fontFamily: F.body, fontSize: ".75rem", color: "rgba(148,163,184,.35)", letterSpacing: ".04em", textTransform: "uppercase" }}>
-          Designed &amp; Developed in Surabaya, Indonesia
-        </p>
-      </div>
+        <div
+          className="mt-8 pt-6 border-t-2 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs sm:text-sm font-semibold"
+          style={{ borderColor: "var(--border)", color: "var(--ink-muted)" }}
+        >
+          <div>
+            Copyright (c) {new Date().getFullYear()} Muhammad Raynar Hammam. All
+            rights reserved.
+          </div>
+          <div>Bahasa Visual: Neo-Brutalism Google Event Surabaya</div>
+        </div>
+      </Container>
     </footer>
   );
 }
 
-/* ─── SCROLL TO TOP FAB ──────────────────────────────────── */
-export function ScrollTopFab({ dark }) {
-  const [show, setShow] = useState(false);
+// Floating back-to-top button
+export function ScrollTopFab() {
+  const [visible, setVisible] = useState(false);
+
   useEffect(() => {
-    const h = () => setShow(window.scrollY > 300);
-    window.addEventListener("scroll", h, { passive: true });
-    return () => window.removeEventListener("scroll", h);
+    const onScroll = () => {
+      setVisible(window.scrollY > 400);
+    };
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  if (!visible) return null;
+
   return (
-    <button onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-      aria-label="Scroll to top"
-      style={{ position: "fixed", bottom: 28, right: 28, zIndex: 500, width: 52, height: 52, borderRadius: "50%", border: `2px solid ${dark ? "rgba(147,175,216,.35)" : "rgba(37,99,235,.2)"}`, background: T.card(dark), boxShadow: "0 4px 16px rgba(0,0,0,.12)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "transform .2s ease, opacity .3s ease", opacity: show ? 1 : 0, pointerEvents: show ? "auto" : "none", transform: show ? "translateY(0)" : "translateY(12px)" }}
-      onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.12)")}
-      onMouseLeave={(e) => (e.currentTarget.style.transform = show ? "scale(1)" : "translateY(12px)")}>
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={dark ? "#c3d8ff" : "#2563eb"} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 19V5M5 12l7-7 7 7" />
-      </svg>
+    <button
+      onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+      className="fixed bottom-6 right-6 z-40 flex items-center justify-center w-12 h-12 rounded-full border-2 border-[var(--border)] bg-[var(--surface)] shadow-[3px_3px_0_var(--shadow-color)] hover:translate-x-[-1px] hover:translate-y-[-1px] cursor-pointer"
+      aria-label="Kembali ke atas"
+      title="Kembali ke atas"
+    >
+      <Icon name="chevron-up" size={22} />
     </button>
   );
 }
-
-/* ─── GLOBAL CSS ─────────────────────────────────────────── */
-export const GLOBAL_CSS = `
-  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@300;400;500;600;700&display=swap');
- 
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; }
-  body { font-family: 'Outfit', sans-serif; overflow-x: hidden; }
- 
-  .overflow-x-auto::-webkit-scrollbar { display: none; }
-  .overflow-x-auto { scrollbar-width: none; }
- 
-  @keyframes fadeUp      { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:translateY(0)} }
-  @keyframes scaleIn     { from{opacity:0;transform:scale(.86)} to{opacity:1;transform:scale(1)} }
-  @keyframes floatY      { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-14px)} }
-  @keyframes spinStar    { 0%{transform:rotate(0deg) scale(1)} 50%{transform:rotate(180deg) scale(1.15)} 100%{transform:rotate(360deg)} }
-  @keyframes fabPulse    { 0%,100%{box-shadow:0 4px 24px rgba(37,99,235,.55),0 0 0 0 rgba(37,99,235,.3)} 50%{box-shadow:0 4px 24px rgba(37,99,235,.55),0 0 0 14px rgba(37,99,235,0)} }
-  @keyframes fadeIn      { from{opacity:0} to{opacity:1} }
-  @keyframes slideDown   { from{opacity:0;transform:translateY(-18px)} to{opacity:1;transform:translateY(0)} }
- 
-  @keyframes slideInLeft {
-    from { opacity: 0; transform: translateX(-56px); }
-    to   { opacity: 1; transform: translateX(0); }
-  }
- 
-  @keyframes slideInBottom {
-    from { opacity: 0; transform: translateY(80px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  @keyframes heroPhotoIn {
-    0%   { opacity: 0; transform: translateY(100px) scale(.96); }
-    60%  { opacity: 1; }
-    80%  { transform: translateY(-12px) scale(1.01); }
-    100% { opacity: 1; transform: translateY(0) scale(1); }
-  }
-
-  @keyframes popIn {
-    0%   { opacity: 0; transform: scale(0) translateY(10px); }
-    70%  { transform: scale(1.18) translateY(-4px); }
-    100% { opacity: 1; transform: scale(1) translateY(0); }
-  }
- 
-  nav { animation: slideDown .7s .1s both; }
- 
-  .hero-photo-wrapper {
-    width: min(380px, 32vw);
-    height: calc(100vh - 96px);
-    position: relative;
-    overflow: visible;
-    margin-right: 6vw;
-  }
- 
-  @media (max-width: 768px) {
-    .hero-photo-wrapper {
-      position: absolute !important;
-      right: -14vw !important;
-      bottom: 0 !important;
-      width: 64vw !important;
-      height: calc(100vh - 96px) !important;
-      margin-right: 0 !important;
-      z-index: 1 !important;
-      opacity: 1 !important;
-      pointer-events: none !important;
-    }
-    .hero-photo-wrapper img { height: 72vh !important; }
-    .hero-photo-wrapper > div:first-child { width: 130% !important; height: 65% !important; }
-    .hero-photo-wrapper > div:nth-child(2) { width: 145% !important; height: 70% !important; }
-    #home > div { align-items: center !important; padding-top: 0 !important; }
-    #home > div > div:first-child {
-      z-index: 2 !important; position: relative !important; max-width: 58% !important;
-      padding-right: 0.5rem !important; margin-top: 0 !important; align-self: center !important;
-      display: flex !important; flex-direction: column !important;
-    }
-    .hero-hi { font-size: 1.1rem !important; margin-bottom: 0.35rem !important; gap: 8px !important; order: 1 !important; margin-top: -11rem !important; }
-    .hero-hi span { width: 24px !important; height: 2.5px !important; }
-    #home > div > div:first-child h1 { font-size: clamp(2.1rem, 9vw, 3.2rem) !important; letter-spacing: -1px !important; line-height: 1.05 !important; margin-bottom: 0.5rem !important; order: 2 !important; }
-    #home > div > div:first-child p:nth-child(3) { font-size: .8rem !important; letter-spacing: .12em !important; margin-bottom: 0 !important; order: 3 !important; }
-    #home > div > div:first-child > div { order: 4 !important; margin-top: 2rem !important; }
-    #home > div > div:first-child a { font-size: 0.92rem !important; padding: 16px 26px !important; white-space: nowrap !important; gap: 10px !important; }
-  }
-`;
