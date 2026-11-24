@@ -278,110 +278,129 @@ function About({
           subtitle="Latar belakang akademik, rekayasa perangkat lunak, dan pendekatan praktis dalam membangun sistem informasi bisnis."
         />
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start mb-16">
-          {/* Narrative text with 65ch line width constraint */}
-          <div
-            className="lg:col-span-7 space-y-4 text-base sm:text-lg leading-relaxed"
-            style={{ color: "var(--ink-secondary)", maxWidth: "65ch" }}
-          >
-            <p>
-              {info.aboutP1 ? (
-                info.aboutP1
-              ) : (
-                <>
-                  Saya adalah mahasiswa{" "}
-                  <strong className="font-bold text-blue-600 dark:text-blue-400">
-                    Sistem Informasi di {university}
-                  </strong>{" "}
-                  dengan fokus rekayasa perangkat lunak web full-stack, solusi
-                  mobile lintas platform, dan pemodelan basis data relasional.
-                </>
-              )}
-            </p>
-            <p>
-              {info.aboutP2 ||
-                "Perjalanan teknis saya berakar dari pendidikan kejuruan di SMK Negeri 2 Surabaya (Jurusan Rekayasa Perangkat Lunak). Di sana saya membangun fondasi pemrograman terstruktur, algoritma, serta arsitektur aplikasi berbasis web modern."}
-            </p>
-            <p>
-              {info.aboutP3 ? (
-                info.aboutP3
-              ) : (
-                <>
-                  Dalam setiap proyek, saya mengutamakan{" "}
-                  <strong className="font-bold" style={{ color: "var(--ink)" }}>
-                    fungsionalitas dan efisiensi operasional
-                  </strong>
-                  : memetakan alur proses bisnis riil ke dalam antarmuka yang
-                  intuitif dan sistem backend yang tangguh.
-                </>
-              )}
-            </p>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-stretch mb-16">
+          {/* Narrative description and engineering philosophy */}
+          <div className="flex flex-col justify-between">
+            <div
+              className="space-y-4 text-base sm:text-lg leading-relaxed mb-6"
+              style={{ color: "var(--ink-secondary)" }}
+            >
+              <p>
+                {info.aboutP1 ? (
+                  info.aboutP1
+                ) : (
+                  <>
+                    Saya adalah mahasiswa{" "}
+                    <strong className="font-bold text-blue-600 dark:text-blue-400">
+                      Sistem Informasi di {university}
+                    </strong>{" "}
+                    dengan fokus rekayasa perangkat lunak web full-stack, solusi
+                    mobile lintas platform, dan pemodelan basis data relasional.
+                  </>
+                )}
+              </p>
+              <p>
+                {info.aboutP2 ||
+                  "Perjalanan teknis saya berakar dari pendidikan kejuruan di SMK Negeri 2 Surabaya (Jurusan Rekayasa Perangkat Lunak). Di sana saya membangun fondasi pemrograman terstruktur, algoritma, serta arsitektur aplikasi berbasis web modern."}
+              </p>
+              <p>
+                {info.aboutP3 ? (
+                  info.aboutP3
+                ) : (
+                  <>
+                    Dalam setiap proyek, saya mengutamakan{" "}
+                    <strong className="font-bold" style={{ color: "var(--ink)" }}>
+                      fungsionalitas dan efisiensi operasional
+                    </strong>
+                    : memetakan alur proses bisnis riil ke dalam antarmuka yang
+                    intuitif dan sistem backend yang tangguh.
+                  </>
+                )}
+              </p>
+            </div>
+
+            {/* Engineering principle quote card */}
+            <div
+              className="neo-card p-5 sm:p-6 border-2"
+              style={{
+                backgroundColor: "var(--google-blue-bg)",
+                borderColor: "var(--google-blue)",
+              }}
+            >
+              <div
+                className="text-xs font-extrabold font-mono uppercase tracking-wider mb-2 flex items-center gap-1.5"
+                style={{ color: "var(--google-blue-text)" }}
+              >
+                <Icon name="bolt" size={14} />
+                {info.principleTitle || "PRINSIP REKAYASA (KEY POINT)"}
+              </div>
+              <blockquote
+                className="text-base sm:text-lg font-bold leading-snug"
+                style={{ color: "var(--google-blue-text)" }}
+              >
+                &ldquo;
+                {info.principleQuote ||
+                  "Menghubungkan proses bisnis nyata dengan arsitektur perangkat lunak yang fungsional, terukur, dan efisien."}
+                &rdquo;
+              </blockquote>
+            </div>
           </div>
 
-          {/* Principle card and education items in vertical stack */}
-          <div className="lg:col-span-5">
-            <Stack gap={16}>
-              <div
-                className="neo-card p-5 sm:p-6 border-2"
-                style={{
-                  backgroundColor: "var(--google-blue-bg)",
-                  borderColor: "var(--google-blue)",
-                }}
+          {/* Formal education cards */}
+          <div className="flex flex-col justify-between">
+            <div className="flex items-center gap-2 mb-3">
+              <Icon
+                name="education"
+                size={16}
+                style={{ color: "var(--google-blue)" }}
+              />
+              <span
+                className="text-xs font-extrabold font-mono uppercase tracking-wider"
+                style={{ color: "var(--ink-muted)" }}
               >
-                <div
-                  className="text-xs font-extrabold font-mono uppercase tracking-wider mb-2 flex items-center gap-1.5"
-                  style={{ color: "var(--google-blue-text)" }}
-                >
-                  <Icon name="bolt" size={14} />
-                  {info.principleTitle || "PRINSIP REKAYASA (KEY POINT)"}
-                </div>
-                <blockquote
-                  className="text-base sm:text-lg font-bold leading-snug"
-                  style={{ color: "var(--google-blue-text)" }}
-                >
-                  &ldquo;
-                  {info.principleQuote ||
-                    "Menghubungkan proses bisnis nyata dengan arsitektur perangkat lunak yang fungsional, terukur, dan efisien."}
-                  &rdquo;
-                </blockquote>
-              </div>
+                RIWAYAT PENDIDIKAN FORMAL
+              </span>
+            </div>
 
+            <div className="flex flex-col justify-between gap-4 h-full">
               {education.map((edu, idx) => (
                 <div
                   key={edu.school + edu.degree}
-                  className="neo-card-flat p-4 sm:p-5 border-l-4"
+                  className="neo-card-flat p-5 sm:p-6 border-l-4 flex-1 flex flex-col justify-between"
                   style={{
                     borderLeftColor:
                       idx === 0 ? "var(--google-blue)" : "var(--google-green)",
                   }}
                 >
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span
-                      className="text-xs font-bold font-mono"
-                      style={{ color: "var(--ink-muted)" }}
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span
+                        className="text-xs font-bold font-mono"
+                        style={{ color: "var(--ink-muted)" }}
+                      >
+                        {edu.period}
+                      </span>
+                      {edu.active && <Chip variant="green">Aktif</Chip>}
+                    </div>
+                    <h4
+                      className="font-extrabold text-lg sm:text-xl mb-1"
+                      style={{
+                        color: "var(--ink)",
+                        fontFamily: "var(--font-display)",
+                      }}
                     >
-                      {edu.period}
-                    </span>
-                    {edu.active && <Chip variant="green">Aktif</Chip>}
+                      {edu.degree}
+                    </h4>
+                    <p
+                      className="text-sm font-bold mb-2"
+                      style={{
+                        color:
+                          idx === 0 ? "var(--google-blue)" : "var(--google-green)",
+                      }}
+                    >
+                      {edu.school}
+                    </p>
                   </div>
-                  <h4
-                    className="font-extrabold text-base sm:text-lg"
-                    style={{
-                      color: "var(--ink)",
-                      fontFamily: "var(--font-display)",
-                    }}
-                  >
-                    {edu.degree}
-                  </h4>
-                  <p
-                    className="text-xs sm:text-sm font-bold mb-1.5"
-                    style={{
-                      color:
-                        idx === 0 ? "var(--google-blue)" : "var(--google-green)",
-                    }}
-                  >
-                    {edu.school}
-                  </p>
                   <p
                     className="text-xs sm:text-sm leading-relaxed"
                     style={{ color: "var(--ink-secondary)" }}
@@ -390,7 +409,7 @@ function About({
                   </p>
                 </div>
               ))}
-            </Stack>
+            </div>
           </div>
         </div>
 
