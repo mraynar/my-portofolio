@@ -1,0 +1,11 @@
+---
+description: Core repository rules and standards
+globs: *
+alwaysApply: true
+---
+
+# Repository Rules & Guidelines
+All development in this repository must strictly adhere to the guidelines, absolute rules, design tokens, and architecture specified in:
+- @AGENTS.md
+- @docs/DESIGN.md
+- @docs/RULES.md
