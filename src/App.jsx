@@ -3,12 +3,10 @@ import { BrowserRouter, Routes, Route, Link, useLocation } from "react-router-do
 import {
   Container,
   Section,
-  Stack,
   Cluster,
   Card,
   Chip,
   SectionHeading,
-  FeaturedHeroCard,
   ProjectCard,
   ExpCard,
   CaseStudyModal,
@@ -607,10 +605,9 @@ function Skills({ categories = SKILL_CATEGORIES }) {
 
 // Projects preview
 function ProjectsPreview({ projects = PROJECTS, onOpenCaseStudy }) {
-  const featuredHero = projects.find((p) => p.featured) || projects[0];
-  const secondaryFeatured = projects.filter(
-    (p) => p.featured && p.id !== featuredHero?.id
-  );
+  const featured = projects.filter((p) => p.featured);
+  const displayProjects =
+    featured.length >= 3 ? featured.slice(0, 3) : projects.slice(0, 3);
 
   return (
     <Section id="projects" style={{ backgroundColor: "var(--canvas)" }}>
@@ -631,15 +628,8 @@ function ProjectsPreview({ projects = PROJECTS, onOpenCaseStudy }) {
           </Link>
         </div>
 
-        {featuredHero && (
-          <FeaturedHeroCard
-            project={featuredHero}
-            onOpenCaseStudy={onOpenCaseStudy}
-          />
-        )}
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {secondaryFeatured.map((project) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+          {displayProjects.map((project) => (
             <ProjectCard
               key={project.id}
               project={project}
@@ -654,6 +644,7 @@ function ProjectsPreview({ projects = PROJECTS, onOpenCaseStudy }) {
 
 // Experience preview
 function ExperiencePreview({ experience = EXPERIENCE }) {
+  const items = experience.slice(0, 3);
   return (
     <Section id="experience" style={{ backgroundColor: "var(--canvas)" }}>
       <Container>
@@ -673,11 +664,16 @@ function ExperiencePreview({ experience = EXPERIENCE }) {
           </Link>
         </div>
 
-        <Stack gap={24}>
-          {experience.slice(0, 3).map((item, idx) => (
-            <ExpCard key={item.role + item.org} item={item} index={idx} />
+        <div className="max-w-4xl mx-auto relative">
+          {items.map((item, idx) => (
+            <ExpCard
+              key={item.role + item.org}
+              item={item}
+              index={idx}
+              isLast={idx === items.length - 1}
+            />
           ))}
-        </Stack>
+        </div>
       </Container>
     </Section>
   );

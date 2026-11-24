@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Container, ExpCard, Stack, Cluster, Card, Chip, Icon } from "./components";
+import { Container, ExpCard, Cluster, Card, Chip, Icon } from "./components";
 import { EXPERIENCE, EDUCATION } from "./data";
 
 export default function ExperiencePage({
@@ -68,16 +68,21 @@ export default function ExperiencePage({
         <div className="max-w-4xl mx-auto space-y-12">
           <div className="space-y-6">
             <h2
-              className="text-xs sm:text-sm font-bold tracking-wider font-mono uppercase"
+              className="text-xs sm:text-sm font-bold tracking-wider font-mono uppercase mb-6"
               style={{ color: "var(--google-blue)" }}
             >
               Pengalaman Profesional & Organisasi
             </h2>
-            <Stack gap={24}>
+            <div className="relative">
               {experience.map((item, idx) => (
-                <ExpCard key={item.role + item.org} item={item} index={idx} />
+                <ExpCard
+                  key={item.role + item.org}
+                  item={item}
+                  index={idx}
+                  isLast={idx === experience.length - 1}
+                />
               ))}
-            </Stack>
+            </div>
           </div>
 
           {/* Education section */}

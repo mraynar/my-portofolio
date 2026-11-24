@@ -530,7 +530,7 @@ export function FeaturedHeroCard({ project, onOpenCaseStudy }) {
   );
 }
 
-// Landscape oriented project card with side-by-side preview and narrative
+// Landscape oriented project card with vertical deck layout
 export function ProjectCard({ project, onOpenCaseStudy }) {
   const categoryConfig = {
     "Web App": {
@@ -566,53 +566,50 @@ export function ProjectCard({ project, onOpenCaseStudy }) {
   const cfg = categoryConfig[project.label] || categoryConfig["Web App"];
 
   return (
-    <div className="neo-card p-0 flex flex-col md:flex-row h-full overflow-hidden">
-      {/* Visual media preview column (45% on desktop) */}
+    <div className="neo-card p-0 flex flex-col h-full overflow-hidden">
+      {/* Top category strip */}
+      <div style={{ height: 6, backgroundColor: cfg.topBorder }} />
+
+      {/* Browser titlebar */}
       <div
-        className="md:w-5/12 relative border-b-2 md:border-b-0 md:border-r-2 flex flex-col"
+        className="h-10 px-3 flex items-center justify-between border-b-2 flex-shrink-0"
         style={{
-          backgroundColor: "var(--canvas)",
+          backgroundColor: "var(--surface)",
           borderColor: "var(--border)",
         }}
       >
-        {/* Top category strip */}
-        <div style={{ height: 6, backgroundColor: cfg.topBorder }} />
-
-        {/* Browser titlebar */}
-        <div
-          className="h-10 px-3 flex items-center justify-between border-b-2 flex-shrink-0"
-          style={{
-            backgroundColor: "var(--surface)",
-            borderColor: "var(--border)",
-          }}
-        >
-          <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full border border-[var(--border)] bg-[#ea4335]" />
-            <span className="w-2.5 h-2.5 rounded-full border border-[var(--border)] bg-[#fbbc04]" />
-            <span className="w-2.5 h-2.5 rounded-full border border-[var(--border)] bg-[#34a853]" />
-          </div>
-          <Chip variant={cfg.variant}>{project.label}</Chip>
+        <div className="flex items-center gap-1.5">
+          <span className="w-2.5 h-2.5 rounded-full border border-[var(--border)] bg-[#ea4335]" />
+          <span className="w-2.5 h-2.5 rounded-full border border-[var(--border)] bg-[#fbbc04]" />
+          <span className="w-2.5 h-2.5 rounded-full border border-[var(--border)] bg-[#34a853]" />
         </div>
-
-        {/* Mockup image preview with responsive aspect */}
-        <div className="relative w-full aspect-[4/3] md:aspect-auto md:flex-1 min-h-[220px] overflow-hidden">
-          {project.image ? (
-            <img
-              src={project.image}
-              alt={project.title}
-              className="absolute inset-0 w-full h-full object-cover object-top"
-              loading="lazy"
-            />
-          ) : (
-            <div className="absolute inset-0 flex items-center justify-center font-bold text-sm text-gray-500">
-              Preview Proyek
-            </div>
-          )}
-        </div>
+        <Chip variant={cfg.variant}>{project.label}</Chip>
       </div>
 
-      {/* Narrative details column (55% on desktop) */}
-      <div className="md:w-7/12 p-5 sm:p-6 flex flex-col justify-between">
+      {/* Landscape media frame (16:10 aspect ratio) */}
+      <div
+        className="relative w-full aspect-[16/10] overflow-hidden border-b-2 flex-shrink-0"
+        style={{
+          borderColor: "var(--border)",
+          backgroundColor: "var(--canvas)",
+        }}
+      >
+        {project.image ? (
+          <img
+            src={project.image}
+            alt={project.title}
+            className="w-full h-full object-cover object-top"
+            loading="lazy"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center font-bold text-sm text-gray-500">
+            Preview Proyek
+          </div>
+        )}
+      </div>
+
+      {/* Narrative details column */}
+      <div className="p-5 sm:p-6 flex-1 flex flex-col justify-between">
         <div>
           <h3
             className="font-extrabold text-lg sm:text-xl mb-2 leading-snug line-clamp-2"
@@ -701,8 +698,8 @@ export function ProjectCard({ project, onOpenCaseStudy }) {
   );
 }
 
-// Experience card with prominent top-left number badge and expanded media
-export function ExpCard({ item, index = 0 }) {
+// Progressive career journey milestone card with wide landscape media
+export function ExpCard({ item, index = 0, isLast = false }) {
   const numberThemes = [
     { bg: "var(--google-blue)", text: "#ffffff" },
     { bg: "var(--google-green)", text: "#ffffff" },
@@ -712,57 +709,73 @@ export function ExpCard({ item, index = 0 }) {
   const numColor = numberThemes[index % 4];
 
   return (
-    <div className="neo-card p-6 sm:p-8 flex flex-col md:flex-row gap-6 lg:gap-8 relative mt-3 sm:mt-4">
-      {/* Prominent embossed number badge perched at top-left */}
+    <div className="relative pl-10 sm:pl-14 lg:pl-16 mb-8 sm:mb-12 last:mb-0">
+      {/* Connected vertical journey line linking milestones */}
+      {!isLast && (
+        <div
+          className="absolute left-3.5 sm:left-5 lg:left-6 top-10 bottom-[-2rem] sm:bottom-[-3rem] w-1"
+          style={{
+            backgroundColor: "var(--border)",
+          }}
+        />
+      )}
+
+      {/* Embossed milestone step badge directly on the spine */}
       <div
-        className="absolute -top-3.5 -left-3.5 sm:-top-4 sm:-left-4 w-11 h-11 sm:w-14 sm:h-14 rounded-2xl border-2 border-[var(--border)] flex items-center justify-center font-extrabold font-mono text-base sm:text-xl shadow-[3px_3px_0_var(--shadow-color)] z-10"
+        className="absolute left-0 sm:left-1 lg:left-2 top-2 w-8 h-8 sm:w-10 sm:h-10 rounded-xl border-2 border-[var(--border)] flex items-center justify-center font-extrabold font-mono text-xs sm:text-sm shadow-[2px_2px_0_var(--shadow-color)] z-10"
         style={{ backgroundColor: numColor.bg, color: numColor.text }}
       >
         {String(index + 1).padStart(2, "0")}
       </div>
 
-      {/* Spacious photo block */}
-      {item.photo && (
-        <div
-          className="w-full md:w-72 lg:w-80 h-52 sm:h-60 md:h-auto min-h-[220px] rounded-2xl overflow-hidden border-2 flex-shrink-0 shadow-[2px_2px_0_var(--shadow-color)]"
-          style={{
-            borderColor: "var(--border)",
-            backgroundColor: "var(--canvas)",
-          }}
-        >
-          <img
-            src={item.photo}
-            alt={item.photoAlt || item.role}
-            className="w-full h-full object-cover object-center"
-            loading="lazy"
-          />
-        </div>
-      )}
+      {/* Card with wide landscape photo banner and contained width */}
+      <div className="neo-card p-0 overflow-hidden relative">
+        {item.photo && (
+          <div
+            className="w-full aspect-[16/9] sm:aspect-[16/8] lg:aspect-[16/7] relative overflow-hidden border-b-2"
+            style={{
+              borderColor: "var(--border)",
+              backgroundColor: "var(--canvas)",
+            }}
+          >
+            <img
+              src={item.photo}
+              alt={item.photoAlt || item.role}
+              className="w-full h-full object-cover object-center"
+              loading="lazy"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+            <div className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-4 flex items-center justify-between gap-2">
+              <span className="neo-badge text-xs font-bold px-2.5 py-1 bg-white/95 dark:bg-black/85 text-[var(--ink)] border-2 border-[var(--border)] backdrop-blur-sm">
+                {item.type || item.category || "Organisasi"}
+              </span>
+              <span className="neo-badge text-xs font-mono font-bold px-2.5 py-1 bg-white/95 dark:bg-black/85 text-[var(--ink)] border-2 border-[var(--border)] backdrop-blur-sm">
+                {item.period}
+              </span>
+            </div>
+          </div>
+        )}
 
-      {/* Right column: content */}
-      <div className="flex-1 flex flex-col justify-between">
-        <div>
-          <div className="flex items-center justify-between gap-2 mb-2">
-            {item.category ? (
+        <div className="p-5 sm:p-7">
+          {!item.photo && (
+            <div className="flex items-center justify-between gap-2 mb-3">
               <span
                 className="text-xs font-bold font-mono uppercase tracking-wider"
                 style={{ color: "var(--ink-muted)" }}
               >
-                {item.category}
+                {item.type || item.category || "Organisasi"}
               </span>
-            ) : (
-              <span />
-            )}
-            <span
-              className="text-xs sm:text-sm font-bold font-mono tracking-wider"
-              style={{ color: "var(--ink-muted)" }}
-            >
-              {item.period}
-            </span>
-          </div>
+              <span
+                className="text-xs sm:text-sm font-bold font-mono tracking-wider"
+                style={{ color: "var(--ink-muted)" }}
+              >
+                {item.period}
+              </span>
+            </div>
+          )}
 
           <h3
-            className="text-2xl sm:text-3xl font-extrabold mb-1"
+            className="text-xl sm:text-2xl font-extrabold mb-1 leading-snug"
             style={{ fontFamily: "var(--font-display)", color: "var(--ink)" }}
           >
             {item.role}
@@ -776,37 +789,37 @@ export function ExpCard({ item, index = 0 }) {
 
           {item.bullets && item.bullets.length > 0 && (
             <ul
-              className="space-y-2.5 mb-5 text-base sm:text-lg leading-relaxed"
+              className="space-y-2.5 mb-5 text-sm sm:text-base leading-relaxed"
               style={{ color: "var(--ink-secondary)" }}
             >
               {item.bullets.map((b, idx) => (
-                <li key={idx} className="flex items-start gap-3">
+                <li key={idx} className="flex items-start gap-2.5">
                   <span
                     className="mt-1 flex-shrink-0"
                     style={{ color: "var(--google-blue)" }}
                   >
-                    <Icon name="chevron-right" size={16} />
+                    <Icon name="chevron-right" size={15} />
                   </span>
                   <span>{b}</span>
                 </li>
               ))}
             </ul>
           )}
-        </div>
 
-        {item.tags && item.tags.length > 0 && (
-          <Cluster
-            gap={8}
-            className="pt-4 border-t-2"
-            style={{ borderColor: "var(--border)" }}
-          >
-            {item.tags.map((t) => (
-              <Chip key={t} variant="default">
-                {t}
-              </Chip>
-            ))}
-          </Cluster>
-        )}
+          {item.tags && item.tags.length > 0 && (
+            <Cluster
+              gap={8}
+              className="pt-4 border-t-2"
+              style={{ borderColor: "var(--border)" }}
+            >
+              {item.tags.map((t) => (
+                <Chip key={t} variant="default">
+                  {t}
+                </Chip>
+              ))}
+            </Cluster>
+          )}
+        </div>
       </div>
     </div>
   );
