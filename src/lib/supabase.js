@@ -467,6 +467,59 @@ export async function deleteExperience(id) {
   notifyDataChanged();
 }
 
+// Reorder experiences array and persist new order_index
+export async function reorderExperience(orderedList = []) {
+  const updated = orderedList.map((item, idx) => ({
+    ...item,
+    order_index: idx + 1,
+  }));
+
+  try {
+    localStorage.setItem(
+      CACHE_KEYS.EXPERIENCE,
+      JSON.stringify(updated)
+    );
+  } catch {
+    // Ignore
+  }
+
+  if (supabase) {
+    try {
+      const updates = updated.map((item) => {
+        const isUuid =
+          item.id &&
+          /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+            item.id
+          );
+        return {
+          ...(isUuid ? { id: item.id } : {}),
+          role: item.role,
+          org: item.org,
+          period: item.period,
+          type: item.type || item.category || "Organisasi",
+          current: Boolean(item.active ?? item.current ?? false),
+          bullets: Array.isArray(item.bullets) ? item.bullets : [],
+          tags: Array.isArray(item.tags) ? item.tags : [],
+          photo: item.photo || "",
+          photo_alt: item.photo_alt || item.photoAlt || "",
+          order_index: item.order_index,
+        };
+      });
+
+      await Promise.all(
+        updates.map((dbPayload) =>
+          supabase.from("experience").upsert(dbPayload)
+        )
+      );
+    } catch {
+      // Retain local state
+    }
+  }
+
+  notifyDataChanged();
+  return updated;
+}
+
 // Fetch skill categories with dynamic persistence
 export async function getSkillCategories() {
   if (supabase) {

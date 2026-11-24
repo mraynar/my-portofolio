@@ -329,9 +329,16 @@ export function parseExperienceDate(item) {
   };
 }
 
-// Sort experience list reverse-chronologically with latest on top
+// Sort experience list by custom order_index with date fallback
 export function sortExperiencesLatestFirst(list = []) {
   return [...list].sort((a, b) => {
+    const hasOrderA = typeof a.order_index === "number" && a.order_index > 0;
+    const hasOrderB = typeof b.order_index === "number" && b.order_index > 0;
+
+    if (hasOrderA && hasOrderB && a.order_index !== b.order_index) {
+      return a.order_index - b.order_index;
+    }
+
     const keyA = parseExperienceDate(a);
     const keyB = parseExperienceDate(b);
 

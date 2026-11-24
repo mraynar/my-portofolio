@@ -5,6 +5,7 @@ import {
   upsertExperience,
   deleteExperience,
   uploadStorageFile,
+  reorderExperience,
 } from "../lib/supabase";
 import {
   isInternshipExperience,
@@ -35,6 +36,9 @@ export default function AdminExperience({ experience = [], onRefresh }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedback, setFeedback] = useState(null);
   const [cropFile, setCropFile] = useState(null);
+  const [draggedIdx, setDraggedIdx] = useState(null);
+  const [dragOverIdx, setDragOverIdx] = useState(null);
+  const [isReordering, setIsReordering] = useState(false);
 
   const handleEdit = (item) => {
     setEditingItem(item);
@@ -95,6 +99,53 @@ export default function AdminExperience({ experience = [], onRefresh }) {
         type: "error",
         text: err.message || "Gagal menghapus pengalaman.",
       });
+    }
+  };
+
+  // Reorder experience item to a new position
+  const handleMove = async (fromIdx, toIdx) => {
+    if (fromIdx === toIdx || isReordering) return;
+    const currentList = sortExperiencesLatestFirst(experience);
+    const displayedList = currentList.filter((item) => {
+      if (filterType === "magang") return isInternshipExperience(item);
+      if (filterType === "organisasi") return !isInternshipExperience(item);
+      return true;
+    });
+
+    const itemA = displayedList[fromIdx];
+    const itemB = displayedList[toIdx];
+    if (!itemA || !itemB) return;
+
+    const masterFromIdx = currentList.findIndex(
+      (it) => it.id === itemA.id || it.role === itemA.role
+    );
+    const masterToIdx = currentList.findIndex(
+      (it) => it.id === itemB.id || it.role === itemB.role
+    );
+
+    if (masterFromIdx === -1 || masterToIdx === -1) return;
+
+    const newMaster = [...currentList];
+    const [moved] = newMaster.splice(masterFromIdx, 1);
+    newMaster.splice(masterToIdx, 0, moved);
+
+    setIsReordering(true);
+    try {
+      await reorderExperience(newMaster);
+      setFeedback({
+        type: "success",
+        text: `Urutan disimpan: ${moved.role} kini di posisi #${toIdx + 1}.`,
+      });
+      await onRefresh();
+    } catch (err) {
+      setFeedback({
+        type: "error",
+        text: err.message || "Gagal memperbarui urutan pengalaman.",
+      });
+    } finally {
+      setIsReordering(false);
+      setDraggedIdx(null);
+      setDragOverIdx(null);
     }
   };
 
@@ -596,148 +647,249 @@ export default function AdminExperience({ experience = [], onRefresh }) {
         </div>
       )}
 
-      {/* Filter tabs */}
-      <div className="flex flex-wrap gap-2 pb-2">
-        {[
-          { key: "all", label: "Semua Pengalaman" },
-          { key: "magang", label: "Magang & Profesional" },
-          { key: "organisasi", label: "Organisasi & Kepemimpinan" },
-        ].map((tab) => (
-          <button
-            key={tab.key}
-            type="button"
-            onClick={() => setFilterType(tab.key)}
-            className="px-3.5 py-1.5 rounded-xl border-2 text-xs font-bold transition-all"
-            style={{
-              backgroundColor:
-                filterType === tab.key ? "var(--ink)" : "var(--surface)",
-              color:
-                filterType === tab.key ? "var(--canvas)" : "var(--ink)",
-              borderColor: "var(--border)",
-            }}
-          >
-            {tab.label}
-          </button>
-        ))}
+      {/* Filter tabs and reorder instructions */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2">
+        <div className="flex flex-wrap gap-2">
+          {[
+            { key: "all", label: "Semua Pengalaman" },
+            { key: "magang", label: "Magang & Profesional" },
+            { key: "organisasi", label: "Organisasi & Kepemimpinan" },
+          ].map((tab) => (
+            <button
+              key={tab.key}
+              type="button"
+              onClick={() => setFilterType(tab.key)}
+              className="px-3.5 py-1.5 rounded-xl border-2 text-xs font-bold transition-all cursor-pointer"
+              style={{
+                backgroundColor:
+                  filterType === tab.key ? "var(--ink)" : "var(--surface)",
+                color:
+                  filterType === tab.key ? "var(--canvas)" : "var(--ink)",
+                borderColor: "var(--border)",
+              }}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        <div
+          className="text-xs font-mono font-medium flex items-center gap-1.5"
+          style={{ color: "var(--ink-muted)" }}
+        >
+          <Icon name="info" size={14} />
+          <span>Tarik kartu atau klik panah untuk mengatur posisi urutan.</span>
+        </div>
       </div>
 
-      {/* Experience list */}
+      {/* Experience list with drag-and-drop reordering */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-stretch">
-        {sortExperiencesLatestFirst(experience)
-          .filter((item) => {
-            if (filterType === "magang") return isInternshipExperience(item);
-            if (filterType === "organisasi")
-              return !isInternshipExperience(item);
-            return true;
-          })
-          .map((item, idx) => {
+        {(() => {
+          const displayedList = sortExperiencesLatestFirst(experience).filter(
+            (item) => {
+              if (filterType === "magang") return isInternshipExperience(item);
+              if (filterType === "organisasi")
+                return !isInternshipExperience(item);
+              return true;
+            }
+          );
+
+          return displayedList.map((item, idx) => {
             const isMagang = isInternshipExperience(item);
+            const isDragging = draggedIdx === idx;
+            const isOver = dragOverIdx === idx;
+
             return (
-              <Card key={item.id || item.role + idx} className="p-5">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3 pb-3 border-b-2">
-                  <div className="flex items-center gap-3">
-                    {item.photo && (
-                      <div
-                        className="w-16 h-12 rounded-lg overflow-hidden border-2 shrink-0"
-                        style={{ borderColor: "var(--border)" }}
-                      >
-                        <img
-                          src={item.photo}
-                          alt={item.photoAlt || item.role}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                    )}
-                    <div>
-                      <div className="flex items-center gap-2 mb-1 flex-wrap">
+              <div
+                key={item.id || item.role + idx}
+                draggable={!isReordering}
+                onDragStart={(e) => {
+                  setDraggedIdx(idx);
+                  e.dataTransfer.effectAllowed = "move";
+                  e.dataTransfer.setData("text/plain", String(idx));
+                }}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  e.dataTransfer.dropEffect = "move";
+                  if (dragOverIdx !== idx) setDragOverIdx(idx);
+                }}
+                onDragLeave={() => {
+                  if (dragOverIdx === idx) setDragOverIdx(null);
+                }}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  if (draggedIdx !== null && draggedIdx !== idx) {
+                    handleMove(draggedIdx, idx);
+                  }
+                }}
+                onDragEnd={() => {
+                  setDraggedIdx(null);
+                  setDragOverIdx(null);
+                }}
+                className={`transition-all duration-200 ${
+                  isDragging ? "opacity-40 scale-[0.98]" : "opacity-100"
+                }`}
+              >
+                <Card
+                  className={`p-5 h-full flex flex-col justify-between transition-all relative ${
+                    isOver
+                      ? "ring-4 ring-[var(--google-blue)] border-[var(--google-blue)] shadow-[0_0_15px_rgba(26,115,232,0.25)]"
+                      : ""
+                  }`}
+                >
+                  <div>
+                    {/* Top toolbar: reorder controls and actions */}
+                    <div className="flex flex-wrap items-center justify-between gap-2 mb-3 pb-3 border-b-2">
+                      <div className="flex items-center gap-2">
+                        <div
+                          className="cursor-grab active:cursor-grabbing p-1.5 rounded-lg border-2 border-[var(--border)] bg-[var(--surface-alt)] hover:bg-[var(--google-blue-bg)] hover:text-[var(--google-blue)] transition-colors shadow-[1px_1px_0_var(--shadow-color)]"
+                          title="Tarik kartu untuk mengatur urutan posisi"
+                        >
+                          <Icon name="grip" size={15} />
+                        </div>
                         <span
-                          className="neo-badge text-[11px] font-bold px-2 py-0.5"
+                          className="neo-badge text-xs font-mono font-extrabold px-2.5 py-1"
                           style={{
-                            backgroundColor: isMagang
-                              ? "var(--google-blue-bg)"
-                              : "var(--google-green-bg)",
-                            color: isMagang
-                              ? "var(--google-blue-text)"
-                              : "var(--google-green-text)",
-                            borderColor: isMagang
-                              ? "var(--google-blue)"
-                              : "var(--google-green)",
+                            backgroundColor: "var(--surface)",
+                            borderColor: "var(--border)",
                           }}
                         >
-                          {isMagang
-                            ? "Magang & Profesional"
-                            : "Organisasi & Kampus"}
+                          Posisi #{idx + 1}
                         </span>
-                        <span
-                          className="text-xs font-mono font-bold"
-                          style={{ color: "var(--ink-muted)" }}
-                        >
-                          {item.period}
-                        </span>
-                        {item.category && (
-                          <Chip variant="default">{item.category}</Chip>
-                        )}
-                        {(item.active || item.current) && (
-                          <Chip variant="green">Aktif</Chip>
-                        )}
+                        <div className="flex items-center gap-1">
+                          <button
+                            type="button"
+                            disabled={idx === 0 || isReordering}
+                            onClick={() => handleMove(idx, idx - 1)}
+                            className="p-1 rounded-lg border-2 border-[var(--border)] bg-[var(--surface)] hover:bg-[var(--surface-alt)] disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer shadow-[1px_1px_0_var(--shadow-color)]"
+                            title="Geser posisi ke atas"
+                            aria-label="Geser posisi ke atas"
+                          >
+                            <Icon name="arrow-up" size={13} />
+                          </button>
+                          <button
+                            type="button"
+                            disabled={
+                              idx === displayedList.length - 1 || isReordering
+                            }
+                            onClick={() => handleMove(idx, idx + 1)}
+                            className="p-1 rounded-lg border-2 border-[var(--border)] bg-[var(--surface)] hover:bg-[var(--surface-alt)] disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer shadow-[1px_1px_0_var(--shadow-color)]"
+                            title="Geser posisi ke bawah"
+                            aria-label="Geser posisi ke bawah"
+                          >
+                            <Icon name="arrow-down" size={13} />
+                          </button>
+                        </div>
                       </div>
-                      <h4
-                        className="text-base sm:text-lg font-extrabold"
-                        style={{ fontFamily: "var(--font-display)" }}
-                      >
-                        {item.role}
-                      </h4>
-                      <div
-                        className="text-xs sm:text-sm font-bold"
-                        style={{ color: "var(--ink-secondary)" }}
-                      >
-                        {item.org}
+
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => handleEdit(item)}
+                          className="neo-btn-secondary text-xs font-bold py-1.5 px-2.5 cursor-pointer"
+                        >
+                          <Icon name="edit" size={13} />
+                          Edit
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDelete(item.id || item.role)}
+                          className="neo-badge text-xs font-bold py-1.5 px-2.5 cursor-pointer"
+                          style={{
+                            backgroundColor: "var(--google-red-bg)",
+                            color: "var(--google-red-text)",
+                            borderColor: "var(--google-red)",
+                          }}
+                          aria-label={`Hapus ${item.role}`}
+                        >
+                          <Icon name="trash" size={13} />
+                        </button>
                       </div>
                     </div>
+
+                    {/* Experience item details */}
+                    <div className="flex items-start gap-3 mb-3">
+                      {item.photo && (
+                        <div
+                          className="w-16 h-12 rounded-lg overflow-hidden border-2 shrink-0"
+                          style={{ borderColor: "var(--border)" }}
+                        >
+                          <img
+                            src={item.photo}
+                            alt={item.photoAlt || item.role}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      )}
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1 flex-wrap">
+                          <span
+                            className="neo-badge text-[11px] font-bold px-2 py-0.5"
+                            style={{
+                              backgroundColor: isMagang
+                                ? "var(--google-blue-bg)"
+                                : "var(--google-green-bg)",
+                              color: isMagang
+                                ? "var(--google-blue-text)"
+                                : "var(--google-green-text)",
+                              borderColor: isMagang
+                                ? "var(--google-blue)"
+                                : "var(--google-green)",
+                            }}
+                          >
+                            {isMagang
+                              ? "Magang & Profesional"
+                              : "Organisasi & Kampus"}
+                          </span>
+                          <span
+                            className="text-xs font-mono font-bold"
+                            style={{ color: "var(--ink-muted)" }}
+                          >
+                            {item.period}
+                          </span>
+                          {item.category && (
+                            <Chip variant="default">{item.category}</Chip>
+                          )}
+                          {(item.active || item.current) && (
+                            <Chip variant="green">Aktif</Chip>
+                          )}
+                        </div>
+                        <h4
+                          className="text-base sm:text-lg font-extrabold"
+                          style={{ fontFamily: "var(--font-display)" }}
+                        >
+                          {item.role}
+                        </h4>
+                        <div
+                          className="text-xs sm:text-sm font-bold"
+                          style={{ color: "var(--ink-secondary)" }}
+                        >
+                          {item.org}
+                        </div>
+                      </div>
+                    </div>
+
+                    <ul className="list-disc pl-5 space-y-1 mb-4 text-xs sm:text-sm">
+                      {(item.bullets || []).map((b, i) => (
+                        <li key={i} style={{ color: "var(--ink-secondary)" }}>
+                          {b}
+                        </li>
+                      ))}
+                    </ul>
                   </div>
 
-                  <div className="flex items-center gap-2 self-start sm:self-auto">
-                    <button
-                      onClick={() => handleEdit(item)}
-                      className="neo-btn-secondary text-xs font-bold py-1.5 px-2.5"
-                    >
-                      <Icon name="edit" size={13} />
-                      Edit
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleDelete(item.id || item.role)}
-                      className="neo-badge text-xs font-bold py-1.5 px-2.5"
-                      style={{
-                        backgroundColor: "var(--google-red-bg)",
-                        color: "var(--google-red-text)",
-                        borderColor: "var(--google-red)",
-                      }}
-                      aria-label={`Hapus ${item.role}`}
-                    >
-                      <Icon name="trash" size={13} />
-                    </button>
+                  <div className="flex flex-wrap gap-2 pt-2 border-t border-[var(--border)]">
+                    {(item.tags || []).map((tag) => (
+                      <Chip key={tag} variant="default">
+                        {tag}
+                      </Chip>
+                    ))}
                   </div>
-                </div>
-
-                <ul className="list-disc pl-5 space-y-1 mb-4 text-xs sm:text-sm">
-                  {(item.bullets || []).map((b, i) => (
-                    <li key={i} style={{ color: "var(--ink-secondary)" }}>
-                      {b}
-                    </li>
-                  ))}
-                </ul>
-
-                <div className="flex flex-wrap gap-2">
-                  {(item.tags || []).map((tag) => (
-                    <Chip key={tag} variant="default">
-                      {tag}
-                    </Chip>
-                  ))}
-                </div>
-              </Card>
+                </Card>
+              </div>
             );
-          })}
+          });
+        })()}
       </div>
 
       {cropFile && (
