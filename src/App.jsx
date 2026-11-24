@@ -10,6 +10,7 @@ import {
   ProjectCard,
   ExpCard,
   CareerPathwayBridge,
+  RoadTrack,
   CaseStudyModal,
   Navbar,
   Footer,
@@ -700,7 +701,7 @@ function ExperiencePreview({ experience = EXPERIENCE }) {
           </Link>
         </div>
 
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-5xl mx-auto">
           {/* Internship and professional experience placed first */}
           <div className="mb-6">
             <div
@@ -752,13 +753,13 @@ function ExperiencePreview({ experience = EXPERIENCE }) {
             </div>
 
             <div className="relative">
+              <RoadTrack />
               {internships.map((item, idx) => (
                 <ExpCard
                   key={item.id || item.role + item.org}
                   item={item}
                   index={idx}
-                  isLast={idx === internships.length - 1}
-                  connectToNext={true}
+                  isLeft={idx % 2 === 0}
                   customIndex={idx + 1}
                 />
               ))}
@@ -823,12 +824,13 @@ function ExperiencePreview({ experience = EXPERIENCE }) {
             </div>
 
             <div className="relative">
+              <RoadTrack />
               {organizations.map((item, idx) => (
                 <ExpCard
                   key={item.id || item.role + item.org}
                   item={item}
                   index={idx}
-                  isLast={idx === organizations.length - 1}
+                  isLeft={idx % 2 === 0}
                   customIndex={internships.length + idx + 1}
                 />
               ))}

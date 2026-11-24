@@ -3,6 +3,7 @@ import {
   Container,
   ExpCard,
   CareerPathwayBridge,
+  RoadTrack,
   Cluster,
   Card,
   Chip,
@@ -81,7 +82,7 @@ export default function ExperiencePage({
 
       {/* Experience list */}
       <Container>
-        <div className="max-w-4xl mx-auto space-y-12">
+        <div className="max-w-5xl mx-auto space-y-12">
           {/* Internship and professional experience placed first */}
           <div className="space-y-6">
             <div
@@ -133,13 +134,13 @@ export default function ExperiencePage({
             </div>
 
             <div className="relative">
+              <RoadTrack />
               {internships.map((item, idx) => (
                 <ExpCard
                   key={item.id || item.role + item.org}
                   item={item}
                   index={idx}
-                  isLast={idx === internships.length - 1}
-                  connectToNext={true}
+                  isLeft={idx % 2 === 0}
                   customIndex={idx + 1}
                 />
               ))}
@@ -204,12 +205,13 @@ export default function ExperiencePage({
             </div>
 
             <div className="relative">
+              <RoadTrack />
               {organizations.map((item, idx) => (
                 <ExpCard
                   key={item.id || item.role + item.org}
                   item={item}
                   index={idx}
-                  isLast={idx === organizations.length - 1}
+                  isLeft={idx % 2 === 0}
                   customIndex={internships.length + idx + 1}
                 />
               ))}

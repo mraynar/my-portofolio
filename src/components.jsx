@@ -722,6 +722,40 @@ export function ProjectCard({ project, onOpenCaseStudy }) {
   );
 }
 
+// Stylized road track background running vertically through timeline
+export function RoadTrack() {
+  return (
+    <>
+      {/* Desktop central road running down the center */}
+      <div className="hidden md:block absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-8 lg:w-9 z-0 pointer-events-none">
+        <div
+          className="absolute inset-y-0 w-full rounded-full border-x-2 border-[var(--border)] overflow-hidden"
+          style={{ backgroundColor: "var(--surface-alt)" }}
+        >
+          {/* Dashed center lane divider on the road */}
+          <div
+            className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-0 border-l-2 border-dashed opacity-60"
+            style={{ borderColor: "var(--ink-muted)" }}
+          />
+        </div>
+      </div>
+
+      {/* Mobile road track aligned on the left */}
+      <div className="md:hidden absolute left-4 sm:left-6 -translate-x-1/2 top-0 bottom-0 w-7 sm:w-8 z-0 pointer-events-none">
+        <div
+          className="absolute inset-y-0 w-full rounded-full border-x-2 border-[var(--border)] overflow-hidden"
+          style={{ backgroundColor: "var(--surface-alt)" }}
+        >
+          <div
+            className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-0 border-l-2 border-dashed opacity-60"
+            style={{ borderColor: "var(--ink-muted)" }}
+          />
+        </div>
+      </div>
+    </>
+  );
+}
+
 // Pathway bridge between internship and organization milestones
 export function CareerPathwayBridge({
   kicker = "KONEKSI JEJAK KARIR",
@@ -729,80 +763,96 @@ export function CareerPathwayBridge({
   description = "Landasan kepemimpinan, riset organisasi, dan kolaborasi tim di kampus menjadi akselerator dalam mengeksekusi proyek rekayasa perangkat lunak di dunia industri.",
 }) {
   return (
-    <div className="relative pl-10 sm:pl-14 lg:pl-16 my-8 sm:my-12">
-      {/* Central continuous spine line running through */}
-      <div
-        className="absolute left-3.5 sm:left-5 lg:left-6 top-[-2.5rem] bottom-[-2.5rem] w-1"
-        style={{ backgroundColor: "var(--border)" }}
-      />
-
-      {/* Junction node on the spine */}
-      <div
-        className="absolute left-0 sm:left-1 lg:left-2 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 rounded-xl border-2 border-[var(--border)] flex items-center justify-center font-extrabold text-xs sm:text-sm shadow-[2px_2px_0_var(--shadow-color)] z-10"
-        style={{
-          backgroundColor: "var(--surface)",
-          color: "var(--google-blue)",
-        }}
-      >
-        <Icon name="git-branch" size={18} />
+    <div className="relative my-8 sm:my-12 z-20">
+      {/* Road track continuation running under the bridge */}
+      <div className="absolute inset-0 pointer-events-none">
+        <RoadTrack />
       </div>
 
-      {/* Pathway card with circuit track styling */}
-      <div
-        className="p-5 sm:p-6 rounded-2xl border-2 relative overflow-hidden"
-        style={{
-          backgroundColor: "var(--surface-alt)",
-          borderColor: "var(--border)",
-          boxShadow: "3px 3px 0 var(--shadow-color)",
-        }}
-      >
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-2">
-          <div className="flex items-center gap-2">
+      {/* Central highway gantry road sign spanning across the road */}
+      <div className="max-w-xl mx-auto px-2 sm:px-0 relative z-10">
+        <div
+          className="p-4 sm:p-5 rounded-2xl border-2 relative overflow-hidden text-center"
+          style={{
+            backgroundColor: "var(--surface)",
+            borderColor: "var(--border)",
+            boxShadow: "3px 3px 0 var(--shadow-color)",
+          }}
+        >
+          {/* Top route milestone pill */}
+          <div
+            className="inline-flex items-center gap-1.5 mb-2.5 px-3 py-1 rounded-full border-2 text-xs font-mono font-bold"
+            style={{
+              backgroundColor: "var(--google-blue-bg)",
+              borderColor: "var(--google-blue)",
+              color: "var(--google-blue-text)",
+            }}
+          >
+            <Icon name="git-branch" size={13} />
+            <span>{kicker}</span>
+          </div>
+
+          <h4
+            className="text-base sm:text-lg font-extrabold mb-1.5"
+            style={{ fontFamily: "var(--font-display)", color: "var(--ink)" }}
+          >
+            {title}
+          </h4>
+
+          <p
+            className="text-xs sm:text-sm leading-relaxed max-w-lg mx-auto mb-3.5"
+            style={{ color: "var(--ink-secondary)" }}
+          >
+            {description}
+          </p>
+
+          {/* Road highway direction signs */}
+          <div
+            className="pt-3 border-t-2 flex items-center justify-center gap-2 sm:gap-3 text-xs font-mono font-bold flex-wrap"
+            style={{ borderColor: "var(--border)" }}
+          >
             <span
-              className="text-xs font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded border"
+              className="px-2.5 py-1 rounded-lg border flex items-center gap-1.5"
+              style={{
+                backgroundColor: "var(--surface-alt)",
+                borderColor: "var(--border)",
+                color: "var(--ink-muted)",
+              }}
+            >
+              <Icon name="users" size={13} />
+              <span>Organisasi Kampus</span>
+            </span>
+
+            <Icon
+              name="arrow-right"
+              size={14}
+              style={{ color: "var(--google-blue)" }}
+            />
+
+            <span
+              className="px-2.5 py-1 rounded-lg border flex items-center gap-1.5"
               style={{
                 backgroundColor: "var(--google-blue-bg)",
                 borderColor: "var(--google-blue)",
                 color: "var(--google-blue-text)",
               }}
             >
-              {kicker}
+              <Icon name="briefcase" size={13} />
+              <span>Praktik Magang</span>
             </span>
           </div>
-          <div
-            className="flex items-center gap-1.5 text-xs font-mono font-bold"
-            style={{ color: "var(--ink-muted)" }}
-          >
-            <span>Organisasi Kampus</span>
-            <Icon name="arrow-right" size={14} />
-            <span style={{ color: "var(--google-blue)" }}>Praktik Magang</span>
-          </div>
         </div>
-
-        <h4
-          className="text-base sm:text-lg font-extrabold mb-1.5"
-          style={{ fontFamily: "var(--font-display)", color: "var(--ink)" }}
-        >
-          {title}
-        </h4>
-        <p
-          className="text-xs sm:text-sm leading-relaxed"
-          style={{ color: "var(--ink-secondary)" }}
-        >
-          {description}
-        </p>
       </div>
     </div>
   );
 }
 
-// Progressive career journey milestone card with wide landscape media
+// Compact alternating road milestone card component
 export function ExpCard({
   item,
   index = 0,
-  isLast = false,
-  connectToNext = false,
   customIndex,
+  isLeft = true,
 }) {
   const numberThemes = [
     { bg: "var(--google-blue)", text: "#ffffff" },
@@ -813,118 +863,194 @@ export function ExpCard({
   const numColor = numberThemes[index % 4];
   const displayNum =
     typeof customIndex === "number" ? customIndex : index + 1;
+  const isMagang =
+    item.type === "Magang" ||
+    String(item.category || "").toLowerCase().includes("magang") ||
+    String(item.role || "").toLowerCase().includes("intern");
 
   return (
-    <div className="relative pl-10 sm:pl-14 lg:pl-16 mb-8 sm:mb-12 last:mb-0">
-      {/* Connected vertical journey line linking milestones */}
-      {(!isLast || connectToNext) && (
+    <div className="relative mb-7 sm:mb-10 last:mb-0">
+      {/* Desktop center milestone marker on the road */}
+      <div className="hidden md:flex absolute left-1/2 -translate-x-1/2 top-4 z-20 items-center justify-center">
+        {/* Horizontal connector spur to left card */}
+        {isLeft && (
+          <div
+            className="absolute right-full top-1/2 -translate-y-1/2 w-4 lg:w-6 h-0.5 border-t-2 border-dashed"
+            style={{ borderColor: "var(--border)" }}
+          />
+        )}
+        {/* Horizontal connector spur to right card */}
+        {!isLeft && (
+          <div
+            className="absolute left-full top-1/2 -translate-y-1/2 w-4 lg:w-6 h-0.5 border-t-2 border-dashed"
+            style={{ borderColor: "var(--border)" }}
+          />
+        )}
+        {/* Embossed road milestone badge */}
         <div
-          className="absolute left-3.5 sm:left-5 lg:left-6 top-10 bottom-[-2.5rem] sm:bottom-[-3.5rem] w-1"
-          style={{
-            backgroundColor: "var(--border)",
-          }}
-        />
-      )}
-
-      {/* Embossed milestone step badge directly on the spine */}
-      <div
-        className="absolute left-0 sm:left-1 lg:left-2 top-2 w-8 h-8 sm:w-10 sm:h-10 rounded-xl border-2 border-[var(--border)] flex items-center justify-center font-extrabold font-mono text-xs sm:text-sm shadow-[2px_2px_0_var(--shadow-color)] z-10"
-        style={{ backgroundColor: numColor.bg, color: numColor.text }}
-      >
-        {String(displayNum).padStart(2, "0")}
+          className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl border-2 border-[var(--border)] flex items-center justify-center font-extrabold font-mono text-xs sm:text-sm shadow-[2px_2px_0_var(--shadow-color)]"
+          style={{ backgroundColor: numColor.bg, color: numColor.text }}
+        >
+          {String(displayNum).padStart(2, "0")}
+        </div>
       </div>
 
-      {/* Card with wide landscape photo banner and contained width */}
-      <div className="neo-card p-0 overflow-hidden relative">
-        {item.photo && (
+      {/* Mobile left-aligned milestone marker */}
+      <div className="md:hidden absolute left-4 sm:left-6 -translate-x-1/2 top-4 z-20 flex items-center justify-center">
+        <div
+          className="absolute left-full top-1/2 -translate-y-1/2 w-3 sm:w-4 h-0.5 border-t-2 border-dashed"
+          style={{ borderColor: "var(--border)" }}
+        />
+        <div
+          className="w-8 h-8 rounded-xl border-2 border-[var(--border)] flex items-center justify-center font-extrabold font-mono text-xs shadow-[2px_2px_0_var(--shadow-color)]"
+          style={{ backgroundColor: numColor.bg, color: numColor.text }}
+        >
+          {String(displayNum).padStart(2, "0")}
+        </div>
+      </div>
+
+      {/* Card placement: Alternating left/right on desktop */}
+      <div
+        className={`w-full md:w-[calc(50%-2.25rem)] lg:md:w-[calc(50%-2.5rem)] ${
+          isLeft ? "md:mr-auto" : "md:ml-auto"
+        } pl-11 sm:pl-14 md:pl-0`}
+      >
+        <div
+          className="rounded-2xl border-2 overflow-hidden relative transition-all duration-200 hover:translate-x-[-1px] hover:translate-y-[-1px]"
+          style={{
+            backgroundColor: "var(--surface)",
+            borderColor: "var(--border)",
+            boxShadow: "3px 3px 0 var(--shadow-color)",
+          }}
+        >
+          {/* Top route colored strip */}
           <div
-            className="w-full aspect-[16/9] sm:aspect-[16/8] lg:aspect-[16/7] relative overflow-hidden border-b-2"
+            className="h-1.5 w-full"
             style={{
-              borderColor: "var(--border)",
-              backgroundColor: "var(--canvas)",
+              backgroundColor: isMagang
+                ? "var(--google-blue)"
+                : "var(--google-green)",
             }}
-          >
-            <img
-              src={item.photo}
-              alt={item.photoAlt || item.role}
-              className="w-full h-full object-cover object-center"
-              loading="lazy"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
-            <div className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-4 flex items-center justify-between gap-2">
-              <span className="neo-badge text-xs font-bold px-2.5 py-1 bg-white/95 dark:bg-black/85 text-[var(--ink)] border-2 border-[var(--border)] backdrop-blur-sm">
-                {item.type || item.category || "Organisasi"}
-              </span>
-              <span className="neo-badge text-xs font-mono font-bold px-2.5 py-1 bg-white/95 dark:bg-black/85 text-[var(--ink)] border-2 border-[var(--border)] backdrop-blur-sm">
-                {item.period}
-              </span>
-            </div>
-          </div>
-        )}
+          />
 
-        <div className="p-5 sm:p-7">
-          {!item.photo && (
-            <div className="flex items-center justify-between gap-2 mb-3">
-              <span
-                className="text-xs font-bold font-mono uppercase tracking-wider"
-                style={{ color: "var(--ink-muted)" }}
-              >
-                {item.type || item.category || "Organisasi"}
-              </span>
-              <span
-                className="text-xs sm:text-sm font-bold font-mono tracking-wider"
-                style={{ color: "var(--ink-muted)" }}
-              >
-                {item.period}
-              </span>
+          {/* Compact landscape photo banner if present */}
+          {item.photo && (
+            <div
+              className="w-full aspect-[16/9] max-h-40 sm:max-h-44 relative overflow-hidden border-b-2"
+              style={{
+                borderColor: "var(--border)",
+                backgroundColor: "var(--canvas)",
+              }}
+            >
+              <img
+                src={item.photo}
+                alt={item.photoAlt || item.role}
+                className="w-full h-full object-cover object-center"
+                loading="lazy"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
+              <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between gap-1.5">
+                <span className="neo-badge text-[10px] sm:text-[11px] font-bold px-2 py-0.5 bg-white/95 dark:bg-black/85 text-[var(--ink)] border border-[var(--border)] backdrop-blur-sm">
+                  {item.type || item.category || "Pengalaman"}
+                </span>
+                <span className="neo-badge text-[10px] sm:text-[11px] font-mono font-bold px-2 py-0.5 bg-white/95 dark:bg-black/85 text-[var(--ink)] border border-[var(--border)] backdrop-blur-sm">
+                  {item.period}
+                </span>
+              </div>
             </div>
           )}
 
-          <h3
-            className="text-xl sm:text-2xl font-extrabold mb-1 leading-snug"
-            style={{ fontFamily: "var(--font-display)", color: "var(--ink)" }}
-          >
-            {item.role}
-          </h3>
-          <p
-            className="text-base sm:text-lg font-bold mb-4"
-            style={{ color: "var(--google-blue)" }}
-          >
-            {item.org}
-          </p>
+          <div className="p-4 sm:p-5">
+            {/* Header info if no photo */}
+            {!item.photo && (
+              <div className="flex items-center justify-between gap-2 mb-2 flex-wrap">
+                <span
+                  className="neo-badge text-[10px] sm:text-[11px] font-bold px-2 py-0.5"
+                  style={{
+                    backgroundColor: isMagang
+                      ? "var(--google-blue-bg)"
+                      : "var(--google-green-bg)",
+                    color: isMagang
+                      ? "var(--google-blue-text)"
+                      : "var(--google-green-text)",
+                    borderColor: isMagang
+                      ? "var(--google-blue)"
+                      : "var(--google-green)",
+                  }}
+                >
+                  {item.type || item.category || "Pengalaman"}
+                </span>
+                <span
+                  className="text-xs font-mono font-bold"
+                  style={{ color: "var(--ink-muted)" }}
+                >
+                  {item.period}
+                </span>
+              </div>
+            )}
 
-          {item.bullets && item.bullets.length > 0 && (
-            <ul
-              className="space-y-2.5 mb-5 text-sm sm:text-base leading-relaxed"
-              style={{ color: "var(--ink-secondary)" }}
+            <h3
+              className="text-base sm:text-lg font-extrabold mb-1 leading-snug"
+              style={{
+                fontFamily: "var(--font-display)",
+                color: "var(--ink)",
+              }}
             >
-              {item.bullets.map((b, idx) => (
-                <li key={idx} className="flex items-start gap-2.5">
+              {item.role}
+            </h3>
+            <p
+              className="text-xs sm:text-sm font-bold mb-3"
+              style={{
+                color: isMagang ? "var(--google-blue)" : "var(--google-green)",
+              }}
+            >
+              {item.org}
+            </p>
+
+            {item.bullets && item.bullets.length > 0 && (
+              <ul
+                className="space-y-1.5 mb-3.5 text-xs sm:text-sm leading-relaxed"
+                style={{ color: "var(--ink-secondary)" }}
+              >
+                {item.bullets.map((b, idx) => (
+                  <li key={idx} className="flex items-start gap-2">
+                    <span
+                      className="mt-0.5 shrink-0"
+                      style={{
+                        color: isMagang
+                          ? "var(--google-blue)"
+                          : "var(--google-green)",
+                      }}
+                    >
+                      <Icon name="chevron-right" size={14} />
+                    </span>
+                    <span>{b}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            {item.tags && item.tags.length > 0 && (
+              <div
+                className="pt-2.5 border-t-2 flex flex-wrap gap-1.5"
+                style={{ borderColor: "var(--border)" }}
+              >
+                {item.tags.map((t) => (
                   <span
-                    className="mt-1 flex-shrink-0"
-                    style={{ color: "var(--google-blue)" }}
+                    key={t}
+                    className="text-[11px] font-bold font-mono px-2 py-0.5 rounded-md border"
+                    style={{
+                      backgroundColor: "var(--surface-alt)",
+                      borderColor: "var(--border)",
+                      color: "var(--ink)",
+                    }}
                   >
-                    <Icon name="chevron-right" size={15} />
+                    {t}
                   </span>
-                  <span>{b}</span>
-                </li>
-              ))}
-            </ul>
-          )}
-
-          {item.tags && item.tags.length > 0 && (
-            <Cluster
-              gap={8}
-              className="pt-4 border-t-2"
-              style={{ borderColor: "var(--border)" }}
-            >
-              {item.tags.map((t) => (
-                <Chip key={t} variant="default">
-                  {t}
-                </Chip>
-              ))}
-            </Cluster>
-          )}
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
