@@ -43,14 +43,16 @@
 - [ ] Generate TypeScript/JSDoc types and verify RLS test policies.
 - [ ] Run `npm run lint` and `npm run check:comments`.
 
-### Phase C: Admin CMS Panel (`/admin`) (PENDING)
-- [ ] Build Google OAuth authentication flow and admin session provider.
-- [ ] Develop responsive admin layout (grouped sidebar, topbar, mobile drawer).
-- [ ] Build Admin Dashboard (overview stats, draft/published counts, unread inquiries).
-- [ ] Build CRUD interfaces for Profile, Socials, Skills, Projects, Experiences, Certificates.
-- [ ] Build client-side image compressor (max 1600px WebP) and Markdown editor.
-- [ ] Build Contact Inbox (mark read, delete, mailto action).
-- [ ] Run `npm run lint` and `npm run check:comments`.
+### Phase M: Admin CMS Panel & Supabase Backend (COMPLETED)
+- [x] Author comprehensive idempotent SQL schema in `supabase/schema.sql`.
+- [x] Setup RLS policies, security definer function, and storage buckets.
+- [x] Build data access layer in `src/lib/supabase.js` with offline fallback.
+- [x] Connect public site (`App.jsx`, `ProjectPage.jsx`, `ExperiencePage.jsx`) to dynamic data.
+- [x] Build interactive contact form submitting to `contact_messages`.
+- [x] Build admin authentication (`AdminLogin.jsx`) and protected dashboard layout (`AdminLayout.jsx`).
+- [x] Build management tabs: Overview, Profile, Projects, Experience, Skills, Education, Messages.
+- [x] Implement client-side storage uploader for images and CV documents.
+- [x] Pass all quality checks (`check:comments`, `check:emoji`, `lint`, `check:layout`, `build`).
 
 ### Phase D: Public Site Integration & Resilient Caching (PENDING)
 - [ ] Connect public pages to Supabase data via `usePortfolioData`.

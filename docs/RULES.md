@@ -6,6 +6,16 @@
 3. **Database Schema**: Database `icon` columns store curated registry keys (`src/components/icons/registry`), never emoji characters or raw SVG strings. Admin provides an icon picker.
 4. **Enforcement**: Run `scripts/check-emoji.mjs` via `npm run check:emoji`. Every phase requires `check:emoji` to pass cleanly with 0 violations.
 
+## 0.1 Permanent Rule: Git Commit and Push Every Change
+1. **Mandatory Push**: After EVERY completed change (feature, fix, refactor, deletion, doc update), you MUST commit and push to remote. Never pile up uncommitted changes. Never end a task, turn, or phase with a dirty working tree or unpushed commits.
+2. **Pre-commit Verification**: Run lint, check:comments, check:emoji, check:layout, and build before committing. Never bypass with --no-verify.
+3. **Atomic Commits**: One commit = one concern. Conventional Commits format, English, single line max 72 characters, zero emojis.
+4. **Branching**: Always work on a feature branch (feat/..., fix/...). Push with git push -u origin <branch>.
+5. **Security Invariant**: Never commit .env*, service_role keys, passwords, or credentials. Check git diff --staged for secrets.
+6. **Destructive Safety**: Create checkpoint commits and push before destructive operations.
+7. **Prohibited Operations**: Never use git push --force, git reset --hard on pushed commits, or commit --amend on pushed commits.
+8. **Reporting**: Every report to user MUST explicitly state branch name and pushed commit hash.
+
 ## 1. Absolute Comment & Language Rules
 1. **Language**: ALL code comments, JSDoc tags, SQL comments, commit messages, README, and docs/ files MUST be written in English.
 2. **Length**: Comments MUST be single line, maximum 80 characters. Block comments (`/* ... */`) and multi-line explanations are strictly forbidden.

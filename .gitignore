@@ -25,3 +25,11 @@ dist-ssr
 
 # Visual layout test artifacts
 .artifacts/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Migration backup
+_migration_backup/

@@ -12,6 +12,23 @@
   never emoji characters or raw SVG strings. Admin provides an icon picker.
 - Enforcement: `npm run check:emoji` runs via `scripts/check-emoji.mjs`.
 
+## 0.1 PERMANENT RULE: GIT COMMIT AND PUSH EVERY CHANGE (MANDATORY)
+- After EVERY completed change (feature, fix, refactor, deletion, doc update),
+  you MUST commit and push to remote. Never pile up uncommitted changes. Never
+  end a task, turn, or phase with a dirty working tree or unpushed commits.
+- Before committing, run all verification: lint, check:comments, check:emoji,
+  check:layout, and build. Never commit if any check fails. Never use --no-verify.
+- One commit = one concern. Separate layout, admin features, cleanups, and docs.
+- Commit messages: Conventional Commits, English, one line max 72 chars, no emoji.
+- Branching: Always work on a feature branch (feat/..., fix/...). Never push to
+  main directly unless explicitly approved. Push with git push -u origin <branch>.
+- Security: Never commit .env*, service_role key, or passwords. Ensure .gitignore
+  contains .env*, .artifacts/, node_modules/, and _migration_backup/.
+- Before destructive operations, create a checkpoint commit and push first.
+- FORBIDDEN: git push --force, git reset --hard on pushed commits, commit --amend.
+- If push fails: run git pull --rebase. If conflicts persist, stop and report.
+- Every user summary MUST state the branch name and pushed commit hash.
+
 ## 1. Project Summary
 Personal portfolio and admin CMS for Muhammad Raynar Hammam (Information Systems student & developer).
 The redesign implements the GDG Cloud Surabaya neo-brutalist visual system with Google palette and light/dark themes.
