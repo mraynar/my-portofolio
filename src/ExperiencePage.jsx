@@ -2,7 +2,10 @@ import { Link } from "react-router-dom";
 import { Container, ExpCard, Stack, Cluster, Card, Chip, Icon } from "./components";
 import { EXPERIENCE, EDUCATION } from "./data";
 
-export default function ExperiencePage() {
+export default function ExperiencePage({
+  experience = EXPERIENCE,
+  education = EDUCATION,
+}) {
   return (
     <main
       className="min-h-screen pt-24 sm:pt-28 pb-28"
@@ -71,7 +74,7 @@ export default function ExperiencePage() {
               Pengalaman Profesional & Organisasi
             </h2>
             <Stack gap={24}>
-              {EXPERIENCE.map((item, idx) => (
+              {experience.map((item, idx) => (
                 <ExpCard key={item.role + item.org} item={item} index={idx} />
               ))}
             </Stack>
@@ -89,7 +92,7 @@ export default function ExperiencePage() {
               Riwayat Pendidikan Formal
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {EDUCATION.map((edu, idx) => (
+              {education.map((edu, idx) => (
                 <Card
                   key={edu.school}
                   className="p-5 sm:p-6 border-l-4"

@@ -26,8 +26,19 @@ import {
   EDUCATION,
   CERTIFICATIONS,
 } from "./data";
+import {
+  getSiteSettings,
+  getProjects,
+  getExperience,
+  getSkillCategories,
+  getEducation,
+  getCertifications,
+  submitContactMessage,
+} from "./lib/supabase";
 import ProjectPage from "./ProjectPage";
 import ExperiencePage from "./ExperiencePage";
+import AdminLogin from "./admin/AdminLogin";
+import AdminLayout from "./admin/AdminLayout";
 
 // Scroll to top on route change
 function ScrollToTop() {
@@ -46,8 +57,22 @@ function scrollToSection(id) {
   }
 }
 
-// Hero section with balanced 2-column layout and generous spacing
-function Hero() {
+// Hero section with dynamic configuration
+function Hero({ info = PERSONAL_INFO }) {
+  const kicker = info.kicker || "SISTEM INFORMASI & SOFTWARE ENGINEER";
+  const statusBadge = info.statusBadge || "UPN Veteran Jawa Timur";
+  const headline = info.headline || "Muhammad Raynar";
+  const headlineAccent = info.headlineAccent || "Hammam";
+  const valueProp = info.valueProp || PERSONAL_INFO.valueProp;
+  const university = info.university || PERSONAL_INFO.university;
+  const cvUrl = info.cvUrl || PERSONAL_INFO.cvUrl;
+  const github = info.github || PERSONAL_INFO.github;
+  const linkedin = info.linkedin || PERSONAL_INFO.linkedin;
+  const email = info.email || PERSONAL_INFO.email;
+  const avatar = info.avatar || PERSONAL_INFO.avatar;
+  const location = info.location || PERSONAL_INFO.location;
+  const displayName = info.name ? info.name.toUpperCase() : "M. RAYNAR HAMMAM";
+
   return (
     <Section
       id="home"
@@ -61,8 +86,8 @@ function Hero() {
           {/* Left column: narrative and actions (7 cols) */}
           <div className="lg:col-span-7 flex flex-col items-start">
             <Cluster gap={8} className="mb-4">
-              <Chip variant="blue">SISTEM INFORMASI & SOFTWARE ENGINEER</Chip>
-              <Chip variant="green">UPN Veteran Jawa Timur</Chip>
+              <Chip variant="blue">{kicker}</Chip>
+              <Chip variant="green">{statusBadge}</Chip>
             </Cluster>
 
             {/* Main heading limited to two lines */}
@@ -75,8 +100,8 @@ function Hero() {
                 color: "var(--ink)",
               }}
             >
-              Muhammad Raynar <br />
-              <span style={{ color: "var(--google-blue)" }}>Hammam</span>
+              {headline} <br />
+              <span style={{ color: "var(--google-blue)" }}>{headlineAccent}</span>
             </h1>
 
             <p
@@ -86,8 +111,7 @@ function Hero() {
                 maxWidth: "58ch",
               }}
             >
-              {PERSONAL_INFO.valueProp} Mahasiswa aktif Sistem Informasi di{" "}
-              {PERSONAL_INFO.university}.
+              {valueProp} Mahasiswa aktif Sistem Informasi di {university}.
             </p>
 
             {/* Primary actions */}
@@ -101,7 +125,7 @@ function Hero() {
               </button>
 
               <a
-                href={PERSONAL_INFO.cvUrl}
+                href={cvUrl}
                 target="_blank"
                 rel="noreferrer"
                 className="neo-btn-secondary font-bold text-base"
@@ -120,7 +144,7 @@ function Hero() {
                 Tautan:
               </span>
               <a
-                href={PERSONAL_INFO.github}
+                href={github}
                 target="_blank"
                 rel="noreferrer"
                 className="neo-badge text-xs sm:text-sm font-bold"
@@ -133,7 +157,7 @@ function Hero() {
                 <Icon name="external-link" size={13} />
               </a>
               <a
-                href={PERSONAL_INFO.linkedin}
+                href={linkedin}
                 target="_blank"
                 rel="noreferrer"
                 className="neo-badge text-xs sm:text-sm font-bold"
@@ -147,7 +171,7 @@ function Hero() {
                 <Icon name="external-link" size={13} />
               </a>
               <a
-                href={`mailto:${PERSONAL_INFO.email}`}
+                href={`mailto:${email}`}
                 className="neo-badge text-xs sm:text-sm font-bold"
                 style={{
                   backgroundColor: "var(--google-red-bg)",
@@ -195,8 +219,8 @@ function Hero() {
                     }}
                   >
                     <img
-                      src="/images/about/Profile Utama.PNG"
-                      alt="Foto Profil Muhammad Raynar Hammam"
+                      src={avatar}
+                      alt={`Foto Profil ${info.name || "Muhammad Raynar Hammam"}`}
                       className="w-full h-full object-cover object-top"
                       loading="eager"
                     />
@@ -214,16 +238,16 @@ function Hero() {
                         className="font-extrabold text-base font-mono"
                         style={{ color: "var(--ink)" }}
                       >
-                        M. RAYNAR HAMMAM
+                        {displayName}
                       </div>
                       <div
                         className="text-xs font-semibold"
                         style={{ color: "var(--google-blue)" }}
                       >
-                        Mahasiswa Sistem Informasi - UPN Jatim
+                        Mahasiswa Sistem Informasi - {university}
                       </div>
                     </div>
-                    <Chip variant="blue">Surabaya, ID</Chip>
+                    <Chip variant="blue">{location}</Chip>
                   </div>
                 </div>
               </Card>
@@ -236,7 +260,14 @@ function Hero() {
 }
 
 // About section
-function About() {
+function About({
+  info = PERSONAL_INFO,
+  education = EDUCATION,
+  projectCount = 8,
+  certCount = 9,
+}) {
+  const university = info.university || PERSONAL_INFO.university;
+
   return (
     <Section id="about" style={{ backgroundColor: "var(--canvas)" }}>
       <Container>
@@ -254,26 +285,36 @@ function About() {
             style={{ color: "var(--ink-secondary)", maxWidth: "65ch" }}
           >
             <p>
-              Saya adalah mahasiswa{" "}
-              <strong className="font-bold text-blue-600 dark:text-blue-400">
-                Sistem Informasi di {PERSONAL_INFO.university}
-              </strong>{" "}
-              dengan fokus rekayasa perangkat lunak web full-stack, solusi
-              mobile lintas platform, dan pemodelan basis data relasional.
+              {info.aboutP1 ? (
+                info.aboutP1
+              ) : (
+                <>
+                  Saya adalah mahasiswa{" "}
+                  <strong className="font-bold text-blue-600 dark:text-blue-400">
+                    Sistem Informasi di {university}
+                  </strong>{" "}
+                  dengan fokus rekayasa perangkat lunak web full-stack, solusi
+                  mobile lintas platform, dan pemodelan basis data relasional.
+                </>
+              )}
             </p>
             <p>
-              Perjalanan teknis saya berakar dari pendidikan kejuruan di SMK
-              Negeri 2 Surabaya (Jurusan Rekayasa Perangkat Lunak). Di sana saya
-              membangun fondasi pemrograman terstruktur, algoritma, serta
-              arsitektur aplikasi berbasis web modern.
+              {info.aboutP2 ||
+                "Perjalanan teknis saya berakar dari pendidikan kejuruan di SMK Negeri 2 Surabaya (Jurusan Rekayasa Perangkat Lunak). Di sana saya membangun fondasi pemrograman terstruktur, algoritma, serta arsitektur aplikasi berbasis web modern."}
             </p>
             <p>
-              Dalam setiap proyek, saya mengutamakan{" "}
-              <strong className="font-bold" style={{ color: "var(--ink)" }}>
-                fungsionalitas dan efisiensi operasional
-              </strong>
-              : memetakan alur proses bisnis riil ke dalam antarmuka yang
-              intuitif dan sistem backend yang tangguh.
+              {info.aboutP3 ? (
+                info.aboutP3
+              ) : (
+                <>
+                  Dalam setiap proyek, saya mengutamakan{" "}
+                  <strong className="font-bold" style={{ color: "var(--ink)" }}>
+                    fungsionalitas dan efisiensi operasional
+                  </strong>
+                  : memetakan alur proses bisnis riil ke dalam antarmuka yang
+                  intuitif dan sistem backend yang tangguh.
+                </>
+              )}
             </p>
           </div>
 
@@ -292,20 +333,22 @@ function About() {
                   style={{ color: "var(--google-blue-text)" }}
                 >
                   <Icon name="bolt" size={14} />
-                  PRINSIP REKAYASA (KEY POINT)
+                  {info.principleTitle || "PRINSIP REKAYASA (KEY POINT)"}
                 </div>
                 <blockquote
                   className="text-base sm:text-lg font-bold leading-snug"
                   style={{ color: "var(--google-blue-text)" }}
                 >
-                  &ldquo;Menghubungkan proses bisnis nyata dengan arsitektur
-                  perangkat lunak yang fungsional, terukur, dan efisien.&rdquo;
+                  &ldquo;
+                  {info.principleQuote ||
+                    "Menghubungkan proses bisnis nyata dengan arsitektur perangkat lunak yang fungsional, terukur, dan efisien."}
+                  &rdquo;
                 </blockquote>
               </div>
 
-              {EDUCATION.map((edu, idx) => (
+              {education.map((edu, idx) => (
                 <div
-                  key={edu.school}
+                  key={edu.school + edu.degree}
                   className="neo-card-flat p-4 sm:p-5 border-l-4"
                   style={{
                     borderLeftColor:
@@ -384,7 +427,7 @@ function About() {
                   className="text-4xl sm:text-5xl font-extrabold font-mono tracking-tight mb-2"
                   style={{ color: "var(--google-blue)" }}
                 >
-                  [{PROJECTS.length}+]
+                  [{projectCount}+]
                 </div>
                 <div className="text-sm sm:text-base font-extrabold uppercase tracking-wider mb-2">
                   PROYEK DIGITAL
@@ -406,7 +449,7 @@ function About() {
                   className="text-4xl sm:text-5xl font-extrabold font-mono tracking-tight mb-2"
                   style={{ color: "var(--google-green)" }}
                 >
-                  [{CERTIFICATIONS.length}+]
+                  [{certCount}+]
                 </div>
                 <div className="text-sm sm:text-base font-extrabold uppercase tracking-wider mb-2">
                   SERTIFIKASI RESMI
@@ -471,7 +514,7 @@ function About() {
 }
 
 // Skills section
-function Skills() {
+function Skills({ categories = SKILL_CATEGORIES }) {
   const categoryBarColors = [
     "var(--google-blue)",
     "var(--google-green)",
@@ -490,7 +533,7 @@ function Skills() {
         />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {SKILL_CATEGORIES.map((cat, idx) => (
+          {categories.map((cat, idx) => (
             <Card key={cat.name} className="flex flex-col justify-between">
               <div>
                 <div
@@ -535,9 +578,9 @@ function Skills() {
 }
 
 // Projects preview
-function ProjectsPreview({ onOpenCaseStudy }) {
-  const featuredHero = PROJECTS.find((p) => p.featured);
-  const secondaryFeatured = PROJECTS.filter(
+function ProjectsPreview({ projects = PROJECTS, onOpenCaseStudy }) {
+  const featuredHero = projects.find((p) => p.featured) || projects[0];
+  const secondaryFeatured = projects.filter(
     (p) => p.featured && p.id !== featuredHero?.id
   );
 
@@ -555,7 +598,7 @@ function ProjectsPreview({ onOpenCaseStudy }) {
             to="/projects"
             className="neo-btn-secondary text-base font-bold self-start sm:self-end"
           >
-            Lihat Semua Proyek ({PROJECTS.length})
+            Lihat Semua Proyek ({projects.length})
             <Icon name="arrow-right" size={18} />
           </Link>
         </div>
@@ -582,7 +625,7 @@ function ProjectsPreview({ onOpenCaseStudy }) {
 }
 
 // Experience preview
-function ExperiencePreview() {
+function ExperiencePreview({ experience = EXPERIENCE }) {
   return (
     <Section id="experience" style={{ backgroundColor: "var(--canvas)" }}>
       <Container>
@@ -603,7 +646,7 @@ function ExperiencePreview() {
         </div>
 
         <Stack gap={24}>
-          {EXPERIENCE.slice(0, 3).map((item, idx) => (
+          {experience.slice(0, 3).map((item, idx) => (
             <ExpCard key={item.role + item.org} item={item} index={idx} />
           ))}
         </Stack>
@@ -613,7 +656,7 @@ function ExperiencePreview() {
 }
 
 // Certifications section
-function CertificationsSection() {
+function CertificationsSection({ certifications = CERTIFICATIONS }) {
   const providerColors = {
     Coursera: "var(--google-blue)",
     Dicoding: "var(--google-green)",
@@ -632,13 +675,13 @@ function CertificationsSection() {
         />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {CERTIFICATIONS.slice(0, 6).map((cert) => {
+          {certifications.slice(0, 6).map((cert) => {
             const pColor =
               providerColors[cert.provider] || "var(--google-blue)";
 
             return (
               <Card
-                key={cert.credentialId}
+                key={cert.credentialId || cert.id}
                 className="flex flex-col justify-between"
               >
                 <div>
@@ -716,8 +759,56 @@ function CertificationsSection() {
   );
 }
 
-// Contact section
-function Contact() {
+// Contact section with dynamic contact form
+function Contact({ info = PERSONAL_INFO }) {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [feedback, setFeedback] = useState(null);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (
+      !formData.name.trim() ||
+      !formData.email.trim() ||
+      !formData.message.trim()
+    ) {
+      setFeedback({
+        type: "error",
+        text: "Mohon lengkapi nama, email, dan pesan Anda.",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+    setFeedback(null);
+    try {
+      await submitContactMessage(formData);
+      setFeedback({
+        type: "success",
+        text: "Pesan berhasil dikirim! Terima kasih telah menghubungi saya.",
+      });
+      setFormData({ name: "", email: "", subject: "", message: "" });
+    } catch {
+      setFeedback({
+        type: "error",
+        text: "Gagal mengirim pesan ke server. Silakan hubungi langsung via email.",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const email = info.email || PERSONAL_INFO.email;
+  const linkedin = info.linkedin || PERSONAL_INFO.linkedin;
+  const location = info.location || PERSONAL_INFO.location;
+  const timezone = info.timezone || PERSONAL_INFO.timezone;
+  const status = info.status || PERSONAL_INFO.status;
+
   return (
     <Section id="contact" style={{ backgroundColor: "var(--canvas)" }}>
       <Container>
@@ -765,7 +856,7 @@ function Contact() {
 
             <Cluster gap={16} className="justify-center mb-8">
               <a
-                href={`mailto:${PERSONAL_INFO.email}`}
+                href={`mailto:${email}`}
                 className="neo-btn-primary font-bold text-base"
                 style={{
                   backgroundColor: "var(--google-red)",
@@ -773,11 +864,11 @@ function Contact() {
                 }}
               >
                 <Icon name="mail" size={20} />
-                {PERSONAL_INFO.email}
+                {email}
               </a>
 
               <a
-                href={PERSONAL_INFO.linkedin}
+                href={linkedin}
                 target="_blank"
                 rel="noreferrer"
                 className="neo-btn-secondary font-bold text-base"
@@ -786,6 +877,142 @@ function Contact() {
                 <Icon name="external-link" size={16} />
               </a>
             </Cluster>
+
+            {/* Interactive contact submission form */}
+            <form
+              onSubmit={handleSubmit}
+              className="mb-8 text-left space-y-4 max-w-xl mx-auto pt-8 border-t-2"
+              style={{ borderColor: "var(--border)" }}
+            >
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label
+                    className="block text-xs font-bold font-mono uppercase mb-1.5"
+                    style={{ color: "var(--ink-secondary)" }}
+                  >
+                    Nama Lengkap
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.name}
+                    onChange={(e) =>
+                      setFormData({ ...formData, name: e.target.value })
+                    }
+                    placeholder="Nama Anda"
+                    className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm transition-all"
+                    style={{
+                      backgroundColor: "var(--surface-alt)",
+                      borderColor: "var(--border)",
+                      color: "var(--ink)",
+                    }}
+                  />
+                </div>
+                <div>
+                  <label
+                    className="block text-xs font-bold font-mono uppercase mb-1.5"
+                    style={{ color: "var(--ink-secondary)" }}
+                  >
+                    Alamat Email
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    value={formData.email}
+                    onChange={(e) =>
+                      setFormData({ ...formData, email: e.target.value })
+                    }
+                    placeholder="email@domain.com"
+                    className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm transition-all"
+                    style={{
+                      backgroundColor: "var(--surface-alt)",
+                      borderColor: "var(--border)",
+                      color: "var(--ink)",
+                    }}
+                  />
+                </div>
+              </div>
+              <div>
+                <label
+                  className="block text-xs font-bold font-mono uppercase mb-1.5"
+                  style={{ color: "var(--ink-secondary)" }}
+                >
+                  Subjek / Topik
+                </label>
+                <input
+                  type="text"
+                  value={formData.subject}
+                  onChange={(e) =>
+                    setFormData({ ...formData, subject: e.target.value })
+                  }
+                  placeholder="Peluang magang / diskusi proyek"
+                  className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm transition-all"
+                  style={{
+                    backgroundColor: "var(--surface-alt)",
+                    borderColor: "var(--border)",
+                    color: "var(--ink)",
+                  }}
+                />
+              </div>
+              <div>
+                <label
+                  className="block text-xs font-bold font-mono uppercase mb-1.5"
+                  style={{ color: "var(--ink-secondary)" }}
+                >
+                  Pesan
+                </label>
+                <textarea
+                  rows={4}
+                  required
+                  value={formData.message}
+                  onChange={(e) =>
+                    setFormData({ ...formData, message: e.target.value })
+                  }
+                  placeholder="Tuliskan pesan atau detail kolaborasi di sini..."
+                  className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm transition-all resize-y"
+                  style={{
+                    backgroundColor: "var(--surface-alt)",
+                    borderColor: "var(--border)",
+                    color: "var(--ink)",
+                  }}
+                />
+              </div>
+
+              {feedback && (
+                <div
+                  className="p-3.5 rounded-xl border-2 text-sm font-bold flex items-center gap-2"
+                  style={{
+                    backgroundColor:
+                      feedback.type === "success"
+                        ? "var(--google-green-bg)"
+                        : "var(--google-red-bg)",
+                    borderColor:
+                      feedback.type === "success"
+                        ? "var(--google-green)"
+                        : "var(--google-red)",
+                    color:
+                      feedback.type === "success"
+                        ? "var(--google-green-text)"
+                        : "var(--google-red-text)",
+                  }}
+                >
+                  <Icon
+                    name={feedback.type === "success" ? "check" : "alert"}
+                    size={18}
+                  />
+                  <span>{feedback.text}</span>
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="neo-btn-primary font-bold text-sm w-full sm:w-auto"
+              >
+                {isSubmitting ? "Mengirim..." : "Kirim Pesan"}
+                <Icon name="arrow-right" size={16} />
+              </button>
+            </form>
 
             <Cluster
               gap={16}
@@ -797,14 +1024,14 @@ function Contact() {
             >
               <span className="inline-flex items-center gap-1.5">
                 <Icon name="map-pin" size={15} />
-                {PERSONAL_INFO.location}
+                {location}
               </span>
               <span className="inline-flex items-center gap-1.5">
                 <Icon name="clock" size={15} />
-                {PERSONAL_INFO.timezone}
+                {timezone}
               </span>
               <span className="text-green-600 dark:text-green-400 font-bold">
-                {PERSONAL_INFO.status}
+                {status}
               </span>
             </Cluster>
           </div>
@@ -815,17 +1042,48 @@ function Contact() {
 }
 
 // Home page view
-function HomePage({ onOpenCaseStudy }) {
+function HomePage({
+  info,
+  education,
+  categories,
+  projects,
+  experience,
+  certifications,
+  onOpenCaseStudy,
+}) {
   return (
     <main>
-      <Hero />
-      <About />
-      <Skills />
-      <ProjectsPreview onOpenCaseStudy={onOpenCaseStudy} />
-      <ExperiencePreview />
-      <CertificationsSection />
-      <Contact />
+      <Hero info={info} />
+      <About
+        info={info}
+        education={education}
+        projectCount={projects.length}
+        certCount={certifications.length}
+      />
+      <Skills categories={categories} />
+      <ProjectsPreview
+        projects={projects}
+        onOpenCaseStudy={onOpenCaseStudy}
+      />
+      <ExperiencePreview experience={experience} />
+      <CertificationsSection certifications={certifications} />
+      <Contact info={info} />
     </main>
+  );
+}
+
+// Public pages layout wrapper
+function PublicLayout({ dark, toggleDark, children }) {
+  return (
+    <div
+      className="min-h-screen flex flex-col"
+      style={{ backgroundColor: "var(--canvas)", color: "var(--ink)" }}
+    >
+      <Navbar dark={dark} toggleDark={toggleDark} />
+      <ScrollTopFab />
+      <div className="flex-1">{children}</div>
+      <Footer />
+    </div>
   );
 }
 
@@ -834,40 +1092,109 @@ export default function App() {
   const [dark, toggleDark] = useDarkMode();
   const [selectedCaseStudy, setSelectedCaseStudy] = useState(null);
 
+  // Dynamic portfolio states with static fallbacks
+  const [info, setInfo] = useState(PERSONAL_INFO);
+  const [projects, setProjects] = useState(PROJECTS);
+  const [experience, setExperience] = useState(EXPERIENCE);
+  const [skills, setSkills] = useState(SKILL_CATEGORIES);
+  const [education, setEducation] = useState(EDUCATION);
+  const [certifications, setCertifications] = useState(CERTIFICATIONS);
+
+  // Load published data on initial mount
+  useEffect(() => {
+    let isMounted = true;
+    async function loadPortfolioData() {
+      try {
+        const [
+          fetchedInfo,
+          fetchedProjects,
+          fetchedExp,
+          fetchedSkills,
+          fetchedEdu,
+          fetchedCerts,
+        ] = await Promise.all([
+          getSiteSettings(),
+          getProjects(),
+          getExperience(),
+          getSkillCategories(),
+          getEducation(),
+          getCertifications(),
+        ]);
+
+        if (isMounted) {
+          if (fetchedInfo) setInfo(fetchedInfo);
+          if (fetchedProjects?.length) setProjects(fetchedProjects);
+          if (fetchedExp?.length) setExperience(fetchedExp);
+          if (fetchedSkills?.length) setSkills(fetchedSkills);
+          if (fetchedEdu?.length) setEducation(fetchedEdu);
+          if (fetchedCerts?.length) setCertifications(fetchedCerts);
+        }
+      } catch {
+        // Fallbacks already in place
+      }
+    }
+    loadPortfolioData();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   return (
     <BrowserRouter>
       <ScrollToTop />
 
-      <div
-        className="min-h-screen flex flex-col"
-        style={{ backgroundColor: "var(--canvas)", color: "var(--ink)" }}
-      >
-        <Navbar dark={dark} toggleDark={toggleDark} />
-        <ScrollTopFab />
+      <Routes>
+        {/* Public portfolio views */}
+        <Route
+          path="/"
+          element={
+            <PublicLayout dark={dark} toggleDark={toggleDark}>
+              <HomePage
+                info={info}
+                education={education}
+                categories={skills}
+                projects={projects}
+                experience={experience}
+                certifications={certifications}
+                onOpenCaseStudy={setSelectedCaseStudy}
+              />
+            </PublicLayout>
+          }
+        />
+        <Route
+          path="/projects"
+          element={
+            <PublicLayout dark={dark} toggleDark={toggleDark}>
+              <ProjectPage
+                projects={projects}
+                onOpenCaseStudy={setSelectedCaseStudy}
+              />
+            </PublicLayout>
+          }
+        />
+        <Route
+          path="/experience"
+          element={
+            <PublicLayout dark={dark} toggleDark={toggleDark}>
+              <ExperiencePage
+                experience={experience}
+                education={education}
+              />
+            </PublicLayout>
+          }
+        />
 
-        <div className="flex-1">
-          <Routes>
-            <Route
-              path="/"
-              element={<HomePage onOpenCaseStudy={setSelectedCaseStudy} />}
-            />
-            <Route
-              path="/projects"
-              element={<ProjectPage onOpenCaseStudy={setSelectedCaseStudy} />}
-            />
-            <Route path="/experience" element={<ExperiencePage />} />
-          </Routes>
-        </div>
+        {/* Admin CMS portal routes */}
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin/*" element={<AdminLayout />} />
+      </Routes>
 
-        <Footer />
-
-        {selectedCaseStudy && (
-          <CaseStudyModal
-            project={selectedCaseStudy}
-            onClose={() => setSelectedCaseStudy(null)}
-          />
-        )}
-      </div>
+      {selectedCaseStudy && (
+        <CaseStudyModal
+          project={selectedCaseStudy}
+          onClose={() => setSelectedCaseStudy(null)}
+        />
+      )}
     </BrowserRouter>
   );
 }

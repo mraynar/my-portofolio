@@ -3,7 +3,10 @@ import { Link } from "react-router-dom";
 import { Container, ProjectCard, Cluster, Icon } from "./components";
 import { PROJECTS } from "./data";
 
-export default function ProjectPage({ onOpenCaseStudy }) {
+export default function ProjectPage({
+  onOpenCaseStudy,
+  projects = PROJECTS,
+}) {
   const [activeFilter, setActiveFilter] = useState("Semua");
 
   const categories = [
@@ -41,8 +44,8 @@ export default function ProjectPage({ onOpenCaseStudy }) {
 
   const filteredProjects =
     activeFilter === "Semua"
-      ? PROJECTS
-      : PROJECTS.filter((p) => p.label === activeFilter);
+      ? projects
+      : projects.filter((p) => p.label === activeFilter);
 
   return (
     <main
@@ -104,8 +107,8 @@ export default function ProjectPage({ onOpenCaseStudy }) {
               const active = activeFilter === cat.label;
               const count =
                 cat.label === "Semua"
-                  ? PROJECTS.length
-                  : PROJECTS.filter((p) => p.label === cat.label).length;
+                  ? projects.length
+                  : projects.filter((p) => p.label === cat.label).length;
 
               return (
                 <button
