@@ -68,8 +68,9 @@ function Hero({ info = PERSONAL_INFO }) {
   const headline = info.headline || "Muhammad Raynar";
   const headlineAccent = info.headlineAccent || "Hammam";
   const valueProp =
-    info.valueProp ||
-    (language === "en" ? t("hero_bio") : PERSONAL_INFO.valueProp);
+    language === "en"
+      ? info.valuePropEn || t("hero_bio")
+      : info.valueProp || PERSONAL_INFO.valueProp;
   const university = info.university || PERSONAL_INFO.university;
   const cvUrl = info.cvUrl || PERSONAL_INFO.cvUrl;
   const github = info.github || PERSONAL_INFO.github;
@@ -210,7 +211,7 @@ function Hero({ info = PERSONAL_INFO }) {
                       className="text-[11px] font-mono ml-1.5 font-bold"
                       style={{ color: "var(--ink)" }}
                     >
-                      raynar-dev.ts
+                      {info.codeCardTitle || "raynar-dev.ts"}
                     </span>
                   </div>
                   <Chip variant="green" className="text-[11px] py-0.5 px-2">
@@ -282,7 +283,9 @@ function Hero({ info = PERSONAL_INFO }) {
                         className="text-xs font-semibold leading-relaxed"
                         style={{ color: "var(--google-blue)" }}
                       >
-                        {language === "en"
+                        {info.role
+                          ? `${info.role} • ${university}`
+                          : language === "en"
                           ? `Information Systems Student • ${university}`
                           : `Mahasiswa Sistem Informasi • ${university}`}
                       </div>
@@ -1294,7 +1297,7 @@ function HomePage({
 }
 
 // Public pages layout wrapper
-function PublicLayout({ dark, toggleDark, children }) {
+function PublicLayout({ dark, toggleDark, info, children }) {
   return (
     <div
       className="min-h-screen flex flex-col relative"
@@ -1302,10 +1305,10 @@ function PublicLayout({ dark, toggleDark, children }) {
     >
       {/* DevFest code symbol watermark tile background */}
       <div className="bg-code-tile fixed inset-0 pointer-events-none z-0" />
-      <Navbar />
+      <Navbar info={info} />
       <ScrollTopFab dark={dark} toggleDark={toggleDark} />
       <div className="flex-1 relative z-10">{children}</div>
-      <Footer />
+      <Footer info={info} />
     </div>
   );
 }
@@ -1323,7 +1326,7 @@ export default function App() {
   const [education, setEducation] = useState(EDUCATION);
   const [certifications, setCertifications] = useState(CERTIFICATIONS);
 
-  // Load published data on initial mount
+  // Load published data on mount and react to updates
   useEffect(() => {
     let isMounted = true;
     async function loadPortfolioData() {
@@ -1346,19 +1349,30 @@ export default function App() {
 
         if (isMounted) {
           if (fetchedInfo) setInfo(fetchedInfo);
-          if (fetchedProjects?.length) setProjects(fetchedProjects);
-          if (fetchedExp?.length) setExperience(fetchedExp);
-          if (fetchedSkills?.length) setSkills(fetchedSkills);
-          if (fetchedEdu?.length) setEducation(fetchedEdu);
-          if (fetchedCerts?.length) setCertifications(fetchedCerts);
+          if (fetchedProjects) setProjects(fetchedProjects);
+          if (fetchedExp) setExperience(fetchedExp);
+          if (fetchedSkills) setSkills(fetchedSkills);
+          if (fetchedEdu) setEducation(fetchedEdu);
+          if (fetchedCerts) setCertifications(fetchedCerts);
         }
       } catch {
         // Fallbacks already in place
       }
     }
+
     loadPortfolioData();
+
+    // Listen for data update notifications from Admin CMS
+    const handleUpdate = () => {
+      loadPortfolioData();
+    };
+    window.addEventListener("portfolio_data_updated", handleUpdate);
+    window.addEventListener("storage", handleUpdate);
+
     return () => {
       isMounted = false;
+      window.removeEventListener("portfolio_data_updated", handleUpdate);
+      window.removeEventListener("storage", handleUpdate);
     };
   }, []);
 
@@ -1372,7 +1386,7 @@ export default function App() {
           <Route
             path="/"
             element={
-              <PublicLayout dark={dark} toggleDark={toggleDark}>
+              <PublicLayout dark={dark} toggleDark={toggleDark} info={info}>
                 <HomePage
                   info={info}
                   education={education}
@@ -1388,7 +1402,7 @@ export default function App() {
           <Route
             path="/projects"
             element={
-              <PublicLayout dark={dark} toggleDark={toggleDark}>
+              <PublicLayout dark={dark} toggleDark={toggleDark} info={info}>
                 <ProjectPage
                   projects={projects}
                   onOpenCaseStudy={setSelectedCaseStudy}
@@ -1399,7 +1413,7 @@ export default function App() {
           <Route
             path="/experience"
             element={
-              <PublicLayout dark={dark} toggleDark={toggleDark}>
+              <PublicLayout dark={dark} toggleDark={toggleDark} info={info}>
                 <ExperiencePage
                   experience={experience}
                   education={education}

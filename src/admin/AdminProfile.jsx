@@ -65,10 +65,11 @@ export default function AdminProfile({ initialInfo, onUpdateInfo }) {
     setIsSaving(true);
     setFeedback(null);
     try {
-      if (formData.rawId) {
-        await saveSiteSettings(formData.rawId, formData);
-      }
-      onUpdateInfo(formData);
+      const saved = await saveSiteSettings(
+        formData.rawId || "default-site-settings",
+        formData
+      );
+      onUpdateInfo(saved || formData);
       setFeedback({
         type: "success",
         text: "Pengaturan profil dan tautan berhasil disimpan.",
@@ -140,12 +141,47 @@ export default function AdminProfile({ initialInfo, onUpdateInfo }) {
 
           <div>
             <label className="block text-xs font-bold font-mono uppercase mb-1.5">
+              Peran / Profesi Singkat
+            </label>
+            <input
+              type="text"
+              value={formData.role || ""}
+              onChange={(e) => handleChange("role", e.target.value)}
+              placeholder="Mahasiswa Sistem Informasi & Software Engineer"
+              className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm"
+              style={{
+                backgroundColor: "var(--surface-alt)",
+                borderColor: "var(--border)",
+              }}
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-xs font-bold font-mono uppercase mb-1.5">
               Tagline Kicker
             </label>
             <input
               type="text"
               value={formData.kicker || ""}
               onChange={(e) => handleChange("kicker", e.target.value)}
+              className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm"
+              style={{
+                backgroundColor: "var(--surface-alt)",
+                borderColor: "var(--border)",
+              }}
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold font-mono uppercase mb-1.5">
+              Badge Kampus
+            </label>
+            <input
+              type="text"
+              value={formData.statusBadge || ""}
+              onChange={(e) => handleChange("statusBadge", e.target.value)}
               className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm"
               style={{
                 backgroundColor: "var(--surface-alt)",
@@ -190,12 +226,13 @@ export default function AdminProfile({ initialInfo, onUpdateInfo }) {
 
           <div>
             <label className="block text-xs font-bold font-mono uppercase mb-1.5">
-              Badge Kampus
+              Judul Tab Kode (Card Kanan)
             </label>
             <input
               type="text"
-              value={formData.statusBadge || ""}
-              onChange={(e) => handleChange("statusBadge", e.target.value)}
+              value={formData.codeCardTitle || ""}
+              onChange={(e) => handleChange("codeCardTitle", e.target.value)}
+              placeholder="raynar-dev.ts"
               className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm"
               style={{
                 backgroundColor: "var(--surface-alt)",

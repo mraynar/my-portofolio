@@ -1065,10 +1065,11 @@ export function ExpCard({
 }
 
 // Sticky header navbar with 1px border and clean wordmark
-export function Navbar() {
+export function Navbar({ info = {} }) {
   const [open, setOpen] = useState(false);
   const location = useLocation();
   const { language, setLanguage, t } = useLanguage();
+  const cvUrl = info?.cvUrl || PERSONAL_INFO.cvUrl;
 
   const navLinks = [
     { label: t("nav_home"), href: "/#home" },
@@ -1166,7 +1167,7 @@ export function Navbar() {
           </div>
 
           <a
-            href={PERSONAL_INFO.cvUrl}
+            href={cvUrl}
             target="_blank"
             rel="noreferrer"
             className="hidden sm:inline-flex neo-btn-primary neo-btn-sm font-bold"
@@ -1244,7 +1245,7 @@ export function Navbar() {
             </div>
 
             <a
-              href={PERSONAL_INFO.cvUrl}
+              href={cvUrl}
               target="_blank"
               rel="noreferrer"
               className="w-full neo-btn-primary text-center font-bold block"
@@ -1260,8 +1261,12 @@ export function Navbar() {
 }
 
 // Footer with contact links
-export function Footer() {
+export function Footer({ info = {} }) {
   const { t } = useLanguage();
+  const name = info?.name || PERSONAL_INFO.name;
+  const github = info?.github || PERSONAL_INFO.github;
+  const linkedin = info?.linkedin || PERSONAL_INFO.linkedin;
+  const email = info?.email || PERSONAL_INFO.email;
 
   return (
     <footer
@@ -1280,7 +1285,7 @@ export function Footer() {
               className="font-extrabold text-xl tracking-tight mb-1"
               style={{ fontFamily: "var(--font-display)", color: "var(--ink)" }}
             >
-              {PERSONAL_INFO.name}
+              {name}
             </div>
             <p
               className="text-sm font-semibold"
@@ -1292,7 +1297,7 @@ export function Footer() {
 
           <Cluster gap={8} className="justify-center">
             <a
-              href={PERSONAL_INFO.github}
+              href={github}
               target="_blank"
               rel="noreferrer"
               className="neo-badge text-xs sm:text-sm font-bold"
@@ -1305,7 +1310,7 @@ export function Footer() {
               <Icon name="external-link" size={13} />
             </a>
             <a
-              href={PERSONAL_INFO.linkedin}
+              href={linkedin}
               target="_blank"
               rel="noreferrer"
               className="neo-badge text-xs sm:text-sm font-bold"
@@ -1319,7 +1324,7 @@ export function Footer() {
               <Icon name="external-link" size={13} />
             </a>
             <a
-              href={`mailto:${PERSONAL_INFO.email}`}
+              href={`mailto:${email}`}
               className="neo-badge text-xs sm:text-sm font-bold"
               style={{
                 backgroundColor: "var(--google-red-bg)",
