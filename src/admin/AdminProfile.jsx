@@ -85,7 +85,7 @@ export default function AdminProfile({ initialInfo, onUpdateInfo }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8 max-w-4xl">
+    <form onSubmit={handleSubmit} className="space-y-8 w-full">
       {feedback && (
         <div
           className="p-4 rounded-xl border-2 text-sm font-bold flex items-center gap-2"

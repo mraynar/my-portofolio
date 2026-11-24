@@ -95,7 +95,7 @@ export default function AdminSkills({ skills = [], onRefresh }) {
   };
 
   return (
-    <div className="space-y-8 max-w-4xl">
+    <div className="space-y-8 w-full">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2
@@ -287,7 +287,7 @@ export default function AdminSkills({ skills = [], onRefresh }) {
       )}
 
       {/* Categories grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 items-stretch">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-6 items-stretch">
         {skills.map((cat, idx) => (
           <Card
             key={cat.id || cat.name + idx}

@@ -158,7 +158,7 @@ export default function AdminProjects({
   };
 
   return (
-    <div className="space-y-8 max-w-5xl">
+    <div className="space-y-8 w-full">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2
@@ -721,7 +721,7 @@ export default function AdminProjects({
       )}
 
       {/* Projects list */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {projects.map((p) => (
           <Card key={p.id} className="p-5 flex flex-col justify-between">
             <div>

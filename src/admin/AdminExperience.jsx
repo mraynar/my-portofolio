@@ -134,7 +134,7 @@ export default function AdminExperience({ experience = [], onRefresh }) {
   };
 
   return (
-    <div className="space-y-8 max-w-4xl">
+    <div className="space-y-8 w-full">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2
@@ -528,7 +528,7 @@ export default function AdminExperience({ experience = [], onRefresh }) {
       </div>
 
       {/* Experience list */}
-      <div className="space-y-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-stretch">
         {sortExperiencesLatestFirst(experience)
           .filter((item) => {
             if (filterType === "magang") return isInternshipExperience(item);

@@ -476,7 +476,7 @@ export default function AdminLayout({
 
         {/* Main content display area */}
         <main className="flex-1 min-w-0 p-4 sm:p-6 lg:p-8 overflow-y-auto">
-          <div className="max-w-[1360px] mx-auto w-full">
+          <div className="w-full">
             {/* Breadcrumb section indicator */}
             <div
               className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b-2"

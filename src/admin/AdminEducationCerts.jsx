@@ -84,7 +84,7 @@ export default function AdminEducationCerts({
   };
 
   return (
-    <div className="space-y-8 max-w-4xl">
+    <div className="space-y-8 w-full">
       {/* Sub-tab navigation */}
       <div className="flex items-center gap-3 pb-4 border-b-2">
         <button
@@ -306,7 +306,7 @@ export default function AdminEducationCerts({
             </Card>
           )}
 
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-stretch">
             {education.map((edu, idx) => (
               <Card key={edu.id || edu.school + idx} className="p-5">
                 <div className="flex items-center justify-between mb-2 pb-2 border-b-2">
@@ -560,7 +560,7 @@ export default function AdminEducationCerts({
             </Card>
           )}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {certifications.map((c, idx) => (
               <Card key={c.id || c.credentialId || idx} className="p-4 flex flex-col justify-between">
                 <div>
