@@ -863,7 +863,7 @@ export function ExpCard({
         {/* Solid horizontal connector arm to left card */}
         {isLeft && (
           <div
-            className="absolute right-full top-1/2 -translate-y-1/2 w-5 lg:w-7 h-0.5"
+            className="absolute right-full top-1/2 -translate-y-1/2 w-5 lg:w-6 h-0.5"
             style={{ backgroundColor: "var(--border)" }}
           >
             <div
@@ -875,7 +875,7 @@ export function ExpCard({
         {/* Solid horizontal connector arm to right card */}
         {!isLeft && (
           <div
-            className="absolute left-full top-1/2 -translate-y-1/2 w-5 lg:w-7 h-0.5"
+            className="absolute left-full top-1/2 -translate-y-1/2 w-5 lg:w-6 h-0.5"
             style={{ backgroundColor: "var(--border)" }}
           >
             <div
@@ -909,7 +909,7 @@ export function ExpCard({
 
       {/* Card placement: Alternating left/right on desktop */}
       <div
-        className={`w-full md:w-[calc(50%-2.25rem)] lg:md:w-[calc(50%-2.5rem)] ${
+        className={`w-full md:w-[calc(50%-2.5rem)] ${
           isLeft ? "md:mr-auto" : "md:ml-auto"
         } pl-12 sm:pl-14 md:pl-0`}
       >

@@ -82,7 +82,7 @@ export default function ExperiencePage({
 
       {/* Experience list */}
       <Container>
-        <div className="max-w-5xl mx-auto space-y-12">
+        <div className="w-full space-y-12">
           {/* Internship and professional experience placed first */}
           <div className="space-y-6">
             <div

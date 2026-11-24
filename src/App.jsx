@@ -701,7 +701,7 @@ function ExperiencePreview({ experience = EXPERIENCE }) {
           </Link>
         </div>
 
-        <div className="max-w-5xl mx-auto">
+        <div className="w-full">
           {/* Internship and professional experience placed first */}
           <div className="mb-6">
             <div
