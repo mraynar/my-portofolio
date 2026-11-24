@@ -633,7 +633,7 @@ export function ProjectCard({ project, onOpenCaseStudy }) {
       </div>
 
       {/* Narrative details column */}
-      <div className="p-5 sm:p-6 flex-1 flex flex-col justify-between">
+      <div className="pt-4 flex-1 flex flex-col justify-between">
         <div>
           <h3
             className="font-extrabold text-lg sm:text-xl mb-2 leading-snug line-clamp-2"
@@ -664,21 +664,21 @@ export function ProjectCard({ project, onOpenCaseStudy }) {
             <div className="line-clamp-2">{project.impact}</div>
           </div>
 
-          <Cluster gap={6} className="mb-4">
-            {project.badges.slice(0, 3).map((b) => (
-              <Chip key={b} variant="default">
-                {b}
-              </Chip>
-            ))}
-            {project.badges.length > 3 && (
+          {/* Tech stack badges */}
+          <div className="flex flex-wrap items-center gap-1 mb-4">
+            {project.badges.map((b) => (
               <span
-                className="text-xs px-2 py-0.5 font-bold font-mono"
-                style={{ color: "var(--ink-muted)" }}
+                key={b}
+                className="text-[10px] font-mono font-bold tracking-tight px-1.5 py-0.5 rounded-md border text-[var(--ink)] whitespace-nowrap"
+                style={{
+                  backgroundColor: "var(--surface-alt)",
+                  borderColor: "var(--border)",
+                }}
               >
-                +{project.badges.length - 3}
+                {b}
               </span>
-            )}
-          </Cluster>
+            ))}
+          </div>
         </div>
 
         {/* Pinned action buttons */}
