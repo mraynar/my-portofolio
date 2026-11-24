@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { PERSONAL_INFO } from "./data";
 import { Icon } from "./components/icons/Icon";
+import { useLanguage } from "./context/LanguageContext";
 
 export { Icon } from "./components/icons/Icon";
 export { ICON_REGISTRY, ICON_KEYS } from "./components/icons/registry.js";
@@ -201,6 +202,7 @@ export function CaseStudyModal({ project, onClose }) {
     };
   }, [onClose]);
 
+  const { t } = useLanguage();
   if (!project) return null;
   const cs = project.caseStudy;
 
@@ -252,7 +254,7 @@ export function CaseStudyModal({ project, onClose }) {
                 className="text-sm sm:text-base font-semibold mt-1"
                 style={{ color: "var(--google-blue)" }}
               >
-                Peran: {cs.role} {cs.client ? `| Klien: ${cs.client}` : ""}
+                {t("modal_role")} {cs.role} {cs.client ? `| ${t("modal_client")} ${cs.client}` : ""}
               </p>
             )}
           </div>
@@ -263,7 +265,7 @@ export function CaseStudyModal({ project, onClose }) {
               backgroundColor: "var(--surface-alt)",
               color: "var(--ink)",
             }}
-            aria-label="Tutup dialog"
+            aria-label={t("modal_close")}
           >
             <Icon name="x" size={20} />
           </button>
@@ -276,7 +278,7 @@ export function CaseStudyModal({ project, onClose }) {
               className="text-xs sm:text-sm font-bold font-mono uppercase tracking-wider mb-2"
               style={{ color: "var(--google-red)" }}
             >
-              01. Latar Belakang & Masalah
+              {t("modal_bg_problem")}
             </h4>
             <p
               className="text-base leading-relaxed"
@@ -291,7 +293,7 @@ export function CaseStudyModal({ project, onClose }) {
               className="text-xs sm:text-sm font-bold font-mono uppercase tracking-wider mb-2"
               style={{ color: "var(--google-blue)" }}
             >
-              02. Pendekatan Solusi
+              {t("modal_solution")}
             </h4>
             <p
               className="text-base leading-relaxed"
@@ -306,14 +308,13 @@ export function CaseStudyModal({ project, onClose }) {
               className="text-xs sm:text-sm font-bold font-mono uppercase tracking-wider mb-2"
               style={{ color: "var(--google-yellow)" }}
             >
-              03. Arsitektur & Teknologi
+              {t("modal_arch_tech")}
             </h4>
             <p
               className="text-base leading-relaxed mb-3"
               style={{ color: "var(--ink-secondary)" }}
             >
-              {cs?.architecture ||
-                "Arsitektur modular memisahkan lapisan antarmuka pengguna, logika bisnis, dan basis data."}
+              {cs?.architecture || t("modal_arch_default")}
             </p>
             <Cluster gap={8}>
               {project.badges.map((b) => (
@@ -335,7 +336,7 @@ export function CaseStudyModal({ project, onClose }) {
               className="text-xs sm:text-sm font-bold font-mono uppercase tracking-wider mb-1"
               style={{ color: "var(--google-green-text)" }}
             >
-              04. Dampak Konkret
+              {t("modal_impact")}
             </h4>
             <p
               className="text-base sm:text-lg font-bold"
@@ -352,7 +353,7 @@ export function CaseStudyModal({ project, onClose }) {
               borderColor: "var(--border)",
             }}
           >
-            <span className="font-bold">Status Repositori: </span>
+            <span className="font-bold">{t("modal_repo_status")} </span>
             <span style={{ color: "var(--ink-secondary)" }}>
               {project.repoReason || project.repoNotice}
             </span>
@@ -366,7 +367,7 @@ export function CaseStudyModal({ project, onClose }) {
                 rel="noreferrer"
                 className="neo-btn-primary text-sm sm:text-base font-bold"
               >
-                Kunjungi Live Demo
+                {t("modal_visit_demo")}
                 <Icon name="external-link" size={16} />
               </a>
             )}
@@ -374,7 +375,7 @@ export function CaseStudyModal({ project, onClose }) {
               onClick={onClose}
               className="neo-btn-secondary text-sm sm:text-base font-bold"
             >
-              Tutup
+              {t("modal_close")}
             </button>
           </Cluster>
         </div>
@@ -385,6 +386,7 @@ export function CaseStudyModal({ project, onClose }) {
 
 // Featured hero project card with balanced two-column layout
 export function FeaturedHeroCard({ project, onOpenCaseStudy }) {
+  const { t } = useLanguage();
   return (
     <div
       className="neo-card-flat grid grid-cols-1 lg:grid-cols-12 mb-12 p-0 overflow-hidden"
@@ -431,7 +433,7 @@ export function FeaturedHeroCard({ project, onOpenCaseStudy }) {
             />
           ) : (
             <div className="absolute inset-0 flex items-center justify-center font-bold text-base text-gray-500">
-              Preview Proyek
+              {t("projects_preview")}
             </div>
           )}
         </div>
@@ -443,7 +445,7 @@ export function FeaturedHeroCard({ project, onOpenCaseStudy }) {
           <div className="mb-3">
             <Chip variant="blue">
               <Icon name="star" size={14} className="mr-1.5" />
-              PROYEK UNGGULAN
+              {t("featured_badge")}
             </Chip>
           </div>
 
@@ -473,7 +475,7 @@ export function FeaturedHeroCard({ project, onOpenCaseStudy }) {
               style={{ color: "var(--google-blue-text)" }}
             >
               <Icon name="bolt" size={14} />
-              DAMPAK BISNIS NYATA
+              {t("projects_key_impact")}
             </div>
             <div
               className="text-base sm:text-lg font-bold"
@@ -501,7 +503,7 @@ export function FeaturedHeroCard({ project, onOpenCaseStudy }) {
             onClick={() => onOpenCaseStudy(project)}
             className="w-full neo-btn-primary font-bold text-base"
           >
-            Lihat Studi Kasus Lengkap
+            {t("projects_case_study_full")}
             <Icon name="arrow-right" size={18} />
           </button>
 
@@ -512,7 +514,7 @@ export function FeaturedHeroCard({ project, onOpenCaseStudy }) {
               rel="noreferrer"
               className="w-full neo-btn-secondary font-bold text-base text-center"
             >
-              Buka Live Demo
+              {t("projects_live_demo")}
               <Icon name="external-link" size={16} />
             </a>
           )}
@@ -532,6 +534,7 @@ export function FeaturedHeroCard({ project, onOpenCaseStudy }) {
 
 // Landscape oriented project card with vertical deck layout
 export function ProjectCard({ project, onOpenCaseStudy }) {
+  const { t } = useLanguage();
   const categoryConfig = {
     "Web App": {
       variant: "blue",
@@ -620,13 +623,13 @@ export function ProjectCard({ project, onOpenCaseStudy }) {
               className="text-xs font-bold font-mono uppercase tracking-wider"
               style={{ color: "var(--ink)" }}
             >
-              Pratinjau Proyek
+              {t("projects_preview")}
             </span>
             <span
               className="text-[10px] font-mono mt-0.5"
               style={{ color: "var(--ink-muted)" }}
             >
-              Input via Admin CMS
+              {t("projects_input_cms")}
             </span>
           </div>
         )}
@@ -659,7 +662,7 @@ export function ProjectCard({ project, onOpenCaseStudy }) {
           >
             <div className="font-mono text-[11px] uppercase tracking-wider font-extrabold mb-0.5 flex items-center gap-1">
               <Icon name="bolt" size={12} />
-              DAMPAK UTAMA
+              {t("projects_key_impact")}
             </div>
             <div className="line-clamp-2">{project.impact}</div>
           </div>
@@ -691,7 +694,7 @@ export function ProjectCard({ project, onOpenCaseStudy }) {
               onClick={() => onOpenCaseStudy(project)}
               className="flex-1 neo-btn-primary font-bold text-xs sm:text-sm py-2 px-3 justify-center"
             >
-              Lihat Studi Kasus
+              {t("projects_view_case_study")}
               <Icon name="arrow-right" size={14} />
             </button>
 
@@ -701,8 +704,8 @@ export function ProjectCard({ project, onOpenCaseStudy }) {
                 target="_blank"
                 rel="noreferrer"
                 className="neo-btn-secondary text-xs font-bold py-2 px-3 text-center"
-                aria-label="Buka Live Demo"
-                title="Buka Live Demo"
+                aria-label={t("projects_live_demo")}
+                title={t("projects_live_demo")}
               >
                 <Icon name="external-link" size={14} />
               </a>
@@ -746,10 +749,15 @@ export const RoadTrack = TimelineSpine;
 
 // Pathway bridge between internship and organization milestones
 export function CareerPathwayBridge({
-  kicker = "KONTINUITAS REKAM JEJAK",
-  title = "Alur Perkembangan: Dari Ekosistem Kampus ke Industri",
-  description = "Landasan kepemimpinan, riset organisasi, dan kolaborasi tim di kampus menjadi akselerator dalam mengeksekusi proyek rekayasa perangkat lunak di dunia industri.",
+  kicker,
+  title,
+  description,
 }) {
+  const { t } = useLanguage();
+  const bridgeKicker = kicker || t("exp_bridge_kicker");
+  const bridgeTitle = title || t("exp_bridge_title");
+  const bridgeDesc = description || t("exp_bridge_desc");
+
   return (
     <div className="relative my-8 sm:my-12 z-20">
       {/* Continuous spine running behind the bridge */}
@@ -777,21 +785,21 @@ export function CareerPathwayBridge({
             }}
           >
             <Icon name="git-branch" size={13} />
-            <span>{kicker}</span>
+            <span>{bridgeKicker}</span>
           </div>
 
           <h4
             className="text-base sm:text-lg font-extrabold mb-1.5"
             style={{ fontFamily: "var(--font-display)", color: "var(--ink)" }}
           >
-            {title}
+            {bridgeTitle}
           </h4>
 
           <p
             className="text-xs sm:text-sm leading-relaxed max-w-lg mx-auto mb-3.5"
             style={{ color: "var(--ink-secondary)" }}
           >
-            {description}
+            {bridgeDesc}
           </p>
 
           {/* Stepper progression flow */}
@@ -808,7 +816,7 @@ export function CareerPathwayBridge({
               }}
             >
               <Icon name="users" size={13} />
-              <span>Organisasi Kampus</span>
+              <span>{t("exp_bridge_campus")}</span>
             </span>
 
             <Icon
@@ -826,7 +834,7 @@ export function CareerPathwayBridge({
               }}
             >
               <Icon name="briefcase" size={13} />
-              <span>Praktik Magang</span>
+              <span>{t("exp_bridge_internship")}</span>
             </span>
           </div>
         </div>
@@ -842,6 +850,7 @@ export function ExpCard({
   customIndex,
   isLeft = true,
 }) {
+  const { t } = useLanguage();
   const numberThemes = [
     { bg: "var(--google-blue)", text: "#ffffff" },
     { bg: "var(--google-green)", text: "#ffffff" },
@@ -949,7 +958,7 @@ export function ExpCard({
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
               <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between gap-1.5">
                 <span className="neo-badge text-[10px] sm:text-[11px] font-bold px-2 py-0.5 bg-white/95 dark:bg-black/85 text-[var(--ink)] border border-[var(--border)] backdrop-blur-sm">
-                  {item.type || item.category || "Pengalaman"}
+                  {item.type || item.category || t("exp_milestones")}
                 </span>
                 <span className="neo-badge text-[10px] sm:text-[11px] font-mono font-bold px-2 py-0.5 bg-white/95 dark:bg-black/85 text-[var(--ink)] border border-[var(--border)] backdrop-blur-sm">
                   {item.period}
@@ -976,7 +985,7 @@ export function ExpCard({
                       : "var(--google-green)",
                   }}
                 >
-                  {item.type || item.category || "Pengalaman"}
+                  {item.type || item.category || t("exp_milestones")}
                 </span>
                 <span
                   className="text-xs font-mono font-bold"
@@ -1059,14 +1068,15 @@ export function ExpCard({
 export function Navbar() {
   const [open, setOpen] = useState(false);
   const location = useLocation();
+  const { language, setLanguage, t } = useLanguage();
 
   const navLinks = [
-    { label: "Beranda", href: "/#home" },
-    { label: "Tentang", href: "/#about" },
-    { label: "Keahlian", href: "/#skills" },
-    { label: "Proyek", href: "/projects" },
-    { label: "Pengalaman", href: "/experience" },
-    { label: "Kontak", href: "/#contact" },
+    { label: t("nav_home"), href: "/#home" },
+    { label: t("nav_about"), href: "/#about" },
+    { label: t("nav_skills"), href: "/#skills" },
+    { label: t("nav_projects"), href: "/projects" },
+    { label: t("nav_experience"), href: "/experience" },
+    { label: t("nav_contact"), href: "/#contact" },
   ];
 
   return (
@@ -1102,7 +1112,7 @@ export function Navbar() {
 
             return (
               <a
-                key={item.label}
+                key={item.href}
                 href={item.href}
                 className="text-base font-bold no-underline transition-colors py-1 hover:text-[var(--google-blue)]"
                 style={{
@@ -1121,7 +1131,40 @@ export function Navbar() {
         </nav>
 
         {/* Action buttons */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5 sm:gap-3">
+          {/* Language toggle switch (ID / EN) */}
+          <div
+            className="inline-flex items-center p-0.5 rounded-full border-2 border-[var(--border)] shadow-[2px_2px_0_var(--shadow-color)]"
+            style={{ backgroundColor: "var(--surface-alt)" }}
+            role="group"
+            aria-label="Pilih Bahasa / Select Language"
+          >
+            <button
+              type="button"
+              onClick={() => setLanguage("id")}
+              className={`px-2 py-0.5 rounded-full text-xs font-mono font-extrabold transition-all cursor-pointer ${
+                language === "id"
+                  ? "bg-[var(--google-blue)] text-white shadow-[1px_1px_0_var(--shadow-color)]"
+                  : "text-[var(--ink-secondary)] hover:text-[var(--ink)]"
+              }`}
+              title="Bahasa Indonesia"
+            >
+              ID
+            </button>
+            <button
+              type="button"
+              onClick={() => setLanguage("en")}
+              className={`px-2 py-0.5 rounded-full text-xs font-mono font-extrabold transition-all cursor-pointer ${
+                language === "en"
+                  ? "bg-[var(--google-blue)] text-white shadow-[1px_1px_0_var(--shadow-color)]"
+                  : "text-[var(--ink-secondary)] hover:text-[var(--ink)]"
+              }`}
+              title="English"
+            >
+              EN
+            </button>
+          </div>
+
           <a
             href={PERSONAL_INFO.cvUrl}
             target="_blank"
@@ -1129,7 +1172,7 @@ export function Navbar() {
             className="hidden sm:inline-flex neo-btn-primary neo-btn-sm font-bold"
           >
             <Icon name="download" size={14} />
-            Unduh CV
+            {t("download_cv")}
           </a>
 
           <button
@@ -1154,7 +1197,7 @@ export function Navbar() {
         >
           {navLinks.map((item) => (
             <a
-              key={item.label}
+              key={item.href}
               href={item.href}
               onClick={() => setOpen(false)}
               className="block text-lg font-bold py-1 no-underline"
@@ -1164,9 +1207,42 @@ export function Navbar() {
             </a>
           ))}
           <div
-            className="pt-4 border-t-2"
+            className="pt-4 border-t-2 space-y-3"
             style={{ borderColor: "var(--border)" }}
           >
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-mono font-bold text-[var(--ink-secondary)]">
+                Bahasa / Language:
+              </span>
+              <div
+                className="inline-flex items-center p-0.5 rounded-full border-2 border-[var(--border)] shadow-[2px_2px_0_var(--shadow-color)]"
+                style={{ backgroundColor: "var(--surface-alt)" }}
+              >
+                <button
+                  type="button"
+                  onClick={() => setLanguage("id")}
+                  className={`px-2.5 py-0.5 rounded-full text-xs font-mono font-extrabold transition-all cursor-pointer ${
+                    language === "id"
+                      ? "bg-[var(--google-blue)] text-white"
+                      : "text-[var(--ink-secondary)]"
+                  }`}
+                >
+                  ID
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setLanguage("en")}
+                  className={`px-2.5 py-0.5 rounded-full text-xs font-mono font-extrabold transition-all cursor-pointer ${
+                    language === "en"
+                      ? "bg-[var(--google-blue)] text-white"
+                      : "text-[var(--ink-secondary)]"
+                  }`}
+                >
+                  EN
+                </button>
+              </div>
+            </div>
+
             <a
               href={PERSONAL_INFO.cvUrl}
               target="_blank"
@@ -1174,7 +1250,7 @@ export function Navbar() {
               className="w-full neo-btn-primary text-center font-bold block"
             >
               <Icon name="download" size={16} className="mr-1.5" />
-              Unduh CV
+              {t("download_cv")}
             </a>
           </div>
         </div>
@@ -1185,6 +1261,8 @@ export function Navbar() {
 
 // Footer with contact links
 export function Footer() {
+  const { t } = useLanguage();
+
   return (
     <footer
       className="border-t-2"
@@ -1208,7 +1286,7 @@ export function Footer() {
               className="text-sm font-semibold"
               style={{ color: "var(--ink-muted)" }}
             >
-              Mahasiswa Sistem Informasi - {PERSONAL_INFO.university}
+              {t("hero_terminal_role")}
             </p>
           </div>
 
@@ -1260,10 +1338,9 @@ export function Footer() {
           style={{ borderColor: "var(--border)", color: "var(--ink-muted)" }}
         >
           <div>
-            Copyright (c) {new Date().getFullYear()} Muhammad Raynar Hammam. All
-            rights reserved.
+            Copyright (c) {new Date().getFullYear()} Muhammad Raynar Hammam. {t("footer_rights")}
           </div>
-          <div>Bahasa Visual: Neo-Brutalism Google Event Surabaya</div>
+          <div>{t("footer_system")}</div>
         </div>
       </Container>
     </footer>

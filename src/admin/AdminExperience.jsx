@@ -283,7 +283,7 @@ export default function AdminExperience({ experience = [], onRefresh }) {
                     Pengalaman Magang & Profesional (Bagian Atas)
                   </option>
                   <option value="Organisasi">
-                    Pengalaman Organisasi & Kepemimpinan (Bagian Bawah)
+                    Pengalaman Organisasi & Komunitas (Bagian Bawah)
                   </option>
                 </select>
               </div>

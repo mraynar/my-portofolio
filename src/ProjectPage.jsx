@@ -2,39 +2,46 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Container, ProjectCard, Cluster, Icon } from "./components";
 import { PROJECTS } from "./data";
+import { useLanguage } from "./context/LanguageContext";
 
 export default function ProjectPage({
   onOpenCaseStudy,
   projects = PROJECTS,
 }) {
-  const [activeFilter, setActiveFilter] = useState("Semua");
+  const { t } = useLanguage();
+  const [activeFilter, setActiveFilter] = useState("ALL");
 
   const categories = [
     {
-      label: "Semua",
+      key: "ALL",
+      label: t("skills_all"),
       border: "var(--google-blue)",
       bg: "var(--google-blue-bg)",
       text: "var(--google-blue-text)",
     },
     {
+      key: "Web App",
       label: "Web App",
       border: "var(--google-blue)",
       bg: "var(--google-blue-bg)",
       text: "var(--google-blue-text)",
     },
     {
+      key: "Mobile App",
       label: "Mobile App",
       border: "var(--google-yellow)",
       bg: "var(--google-yellow-bg)",
       text: "var(--google-yellow-text)",
     },
     {
+      key: "UI/UX Design",
       label: "UI/UX Design",
       border: "var(--google-red)",
       bg: "var(--google-red-bg)",
       text: "var(--google-red-text)",
     },
     {
+      key: "Data Analyst",
       label: "Data Analyst",
       border: "var(--google-green)",
       bg: "var(--google-green-bg)",
@@ -43,7 +50,7 @@ export default function ProjectPage({
   ];
 
   const filteredProjects =
-    activeFilter === "Semua"
+    activeFilter === "ALL"
       ? projects
       : projects.filter((p) => p.label === activeFilter);
 
@@ -72,10 +79,10 @@ export default function ProjectPage({
               style={{ color: "var(--google-blue)" }}
             >
               <Icon name="arrow-left" size={16} />
-              Beranda
+              {t("nav_home")}
             </Link>
             <span>/</span>
-            <span>Portofolio Proyek</span>
+            <span>{t("project_page_crumb")}</span>
           </Cluster>
 
           <h1
@@ -87,9 +94,9 @@ export default function ProjectPage({
               color: "var(--ink)",
             }}
           >
-            Semua{" "}
+            {t("project_page_title_1")}{" "}
             <span style={{ color: "var(--google-blue)" }}>
-              Proyek & Eksplorasi
+              {t("project_page_title_2")}
             </span>
           </h1>
 
@@ -97,23 +104,22 @@ export default function ProjectPage({
             className="text-base sm:text-lg lg:text-xl max-w-3xl leading-relaxed mb-8"
             style={{ color: "var(--ink-secondary)" }}
           >
-            Dokumentasi lengkap aplikasi web, solusi mobile, purwarupa desain
-            UI/UX, dan dashboard analitik data yang telah saya rancang.
+            {t("project_page_desc")}
           </p>
 
           {/* Filter pills with Google category palette */}
           <Cluster gap={8} className="pt-1">
             {categories.map((cat) => {
-              const active = activeFilter === cat.label;
+              const active = activeFilter === cat.key;
               const count =
-                cat.label === "Semua"
+                cat.key === "ALL"
                   ? projects.length
-                  : projects.filter((p) => p.label === cat.label).length;
+                  : projects.filter((p) => p.label === cat.key).length;
 
               return (
                 <button
-                  key={cat.label}
-                  onClick={() => setActiveFilter(cat.label)}
+                  key={cat.key}
+                  onClick={() => setActiveFilter(cat.key)}
                   className="neo-badge text-xs sm:text-sm font-bold cursor-pointer transition-all"
                   style={{
                     backgroundColor: active ? cat.border : "var(--surface-alt)",

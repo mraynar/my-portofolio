@@ -15,11 +15,13 @@ import {
   isInternshipExperience,
   sortExperiencesLatestFirst,
 } from "./data";
+import { useLanguage } from "./context/LanguageContext";
 
 export default function ExperiencePage({
   experience = EXPERIENCE,
   education = EDUCATION,
 }) {
+  const { t } = useLanguage();
   const sortedAll = sortExperiencesLatestFirst(experience);
   const internships = sortedAll.filter(isInternshipExperience);
   const organizations = sortedAll.filter((item) => !isInternshipExperience(item));
@@ -48,10 +50,10 @@ export default function ExperiencePage({
               style={{ color: "var(--google-blue)" }}
             >
               <Icon name="arrow-left" size={16} />
-              Beranda
+              {t("nav_home")}
             </Link>
             <span>/</span>
-            <span>Pengalaman</span>
+            <span>{t("exp_page_crumb")}</span>
           </Cluster>
 
           <h1
@@ -63,9 +65,9 @@ export default function ExperiencePage({
               color: "var(--ink)",
             }}
           >
-            Linimasa{" "}
+            {t("exp_page_title_1")}{" "}
             <span style={{ color: "var(--google-blue)" }}>
-              Pengalaman & Kontribusi
+              {t("exp_page_title_2")}
             </span>
           </h1>
 
@@ -73,9 +75,7 @@ export default function ExperiencePage({
             className="text-base sm:text-lg lg:text-xl max-w-3xl leading-relaxed"
             style={{ color: "var(--ink-secondary)" }}
           >
-            Rekam jejak program kepemimpinan, kepengurusan organisasi
-            mahasiswa, pengembangan sistem institusi, dan pengalaman magang
-            industri.
+            {t("exp_page_desc")}
           </p>
         </Container>
       </section>
@@ -111,13 +111,13 @@ export default function ExperiencePage({
                       color: "var(--ink)",
                     }}
                   >
-                    Pengalaman Magang & Profesional
+                    {t("exp_internship_title")}
                   </h2>
                   <p
                     className="text-xs sm:text-sm font-medium"
                     style={{ color: "var(--ink-secondary)" }}
                   >
-                    Praktik industri, rekayasa perangkat lunak, dan solusi web terapan.
+                    {t("exp_internship_desc")}
                   </p>
                 </div>
               </div>
@@ -129,7 +129,7 @@ export default function ExperiencePage({
                   borderColor: "var(--google-blue)",
                 }}
               >
-                {internships.length} Pengalaman
+                {internships.length} {t("exp_milestones")}
               </span>
             </div>
 
@@ -149,9 +149,9 @@ export default function ExperiencePage({
 
           {/* Continuous career progression connector between sections */}
           <CareerPathwayBridge
-            kicker="KONEKSI JEJAK KARIR"
-            title="Alur Perkembangan: Dari Ekosistem Kampus ke Industri"
-            description="Landasan kepemimpinan, riset organisasi, dan kolaborasi tim di kampus menjadi akselerator dalam mengeksekusi proyek rekayasa perangkat lunak di dunia industri."
+            kicker={t("exp_bridge_kicker")}
+            title={t("exp_bridge_title")}
+            description={t("exp_bridge_desc")}
           />
 
           {/* Section 2: Campus and leadership organizations (Placed below) */}
@@ -182,13 +182,13 @@ export default function ExperiencePage({
                       color: "var(--ink)",
                     }}
                   >
-                    Pengalaman Organisasi & Kepemimpinan
+                    {t("exp_org_title")}
                   </h2>
                   <p
                     className="text-xs sm:text-sm font-medium"
                     style={{ color: "var(--ink-secondary)" }}
                   >
-                    Kemitraan publik, riset penalaran, dan pembinaan komunitas kampus.
+                    {t("exp_org_desc")}
                   </p>
                 </div>
               </div>
@@ -200,7 +200,7 @@ export default function ExperiencePage({
                   borderColor: "var(--google-green)",
                 }}
               >
-                {organizations.length} Pengalaman
+                {organizations.length} {t("exp_milestones")}
               </span>
             </div>
 
@@ -227,7 +227,7 @@ export default function ExperiencePage({
               className="text-xs sm:text-sm font-bold tracking-wider font-mono uppercase"
               style={{ color: "var(--google-blue)" }}
             >
-              Riwayat Pendidikan Formal
+              {t("exp_edu_title")}
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               {education.map((edu, idx) => (
@@ -246,7 +246,7 @@ export default function ExperiencePage({
                     >
                       {edu.period}
                     </span>
-                    {edu.active && <Chip variant="green">Aktif</Chip>}
+                    {edu.active && <Chip variant="green">{t("exp_active")}</Chip>}
                   </div>
                   <h3
                     className="font-extrabold text-lg sm:text-xl mb-1"
