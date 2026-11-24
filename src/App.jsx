@@ -1462,7 +1462,10 @@ export default function App() {
 
           {/* Admin CMS portal routes */}
           <Route path="/admin/login" element={<AdminLogin />} />
-          <Route path="/admin/*" element={<AdminLayout />} />
+          <Route
+            path="/admin/*"
+            element={<AdminLayout dark={dark} toggleDark={toggleDark} />}
+          />
         </Routes>
 
         {selectedCaseStudy && (

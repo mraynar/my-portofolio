@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useDarkMode } from "../useDarkMode";
 import { Chip, Icon } from "../components";
 import {
   checkIsAdmin,
@@ -22,7 +23,13 @@ import AdminEducationCerts from "./AdminEducationCerts";
 import AdminMessages from "./AdminMessages";
 
 // Protected admin dashboard layout with collapsible sidebar rail
-export default function AdminLayout() {
+export default function AdminLayout({
+  dark: propDark,
+  toggleDark: propToggleDark,
+}) {
+  const [internalDark, internalToggleDark] = useDarkMode();
+  const dark = propDark !== undefined ? propDark : internalDark;
+  const toggleDark = propToggleDark || internalToggleDark;
   const navigate = useNavigate();
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [activeTab, setActiveTab] = useState("overview");
@@ -244,6 +251,22 @@ export default function AdminLayout() {
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
+          {/* Theme mode toggle */}
+          <button
+            type="button"
+            onClick={toggleDark}
+            aria-label={
+              dark ? "Beralih ke mode terang" : "Beralih ke mode gelap"
+            }
+            title={dark ? "Mode Terang" : "Mode Gelap"}
+            className="neo-btn-secondary !min-h-[36px] px-2.5 py-1.5 text-xs font-bold flex items-center gap-1.5 cursor-pointer shrink-0"
+          >
+            <Icon name={dark ? "sun" : "moon"} size={15} />
+            <span className="hidden md:inline font-mono text-[11px] font-bold">
+              {dark ? "Mode Terang" : "Mode Gelap"}
+            </span>
+          </button>
+
           <div className="hidden sm:block">
             <Link
               to="/"
