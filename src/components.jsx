@@ -874,9 +874,9 @@ export function Navbar() {
             href={PERSONAL_INFO.cvUrl}
             target="_blank"
             rel="noreferrer"
-            className="hidden sm:inline-flex neo-btn-primary text-sm sm:text-base font-bold"
+            className="hidden sm:inline-flex neo-btn-primary neo-btn-sm font-bold"
           >
-            <Icon name="download" size={16} />
+            <Icon name="download" size={14} />
             Unduh CV
           </a>
 
