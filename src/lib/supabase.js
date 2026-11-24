@@ -253,25 +253,63 @@ export async function deleteExperience(id) {
   if (error) throw error;
 }
 
+const LOCAL_SKILLS_KEY = "portfolio_skill_categories_cache";
+
 // Fetch skill categories with fallback
 export async function getSkillCategories() {
-  if (!supabase) return SKILL_CATEGORIES;
+  if (!supabase) {
+    try {
+      const cached = localStorage.getItem(LOCAL_SKILLS_KEY);
+      if (cached) return JSON.parse(cached);
+    } catch {
+      // Fallback to static data
+    }
+    return SKILL_CATEGORIES;
+  }
   try {
     const { data, error } = await supabase
       .from("skill_categories")
       .select("*")
       .order("order_index", { ascending: true });
 
-    if (error || !data || data.length === 0) return SKILL_CATEGORIES;
+    if (error || !data || data.length === 0) {
+      try {
+        const cached = localStorage.getItem(LOCAL_SKILLS_KEY);
+        if (cached) return JSON.parse(cached);
+      } catch {
+        // Fallback to static data
+      }
+      return SKILL_CATEGORIES;
+    }
     return data;
   } catch {
+    try {
+      const cached = localStorage.getItem(LOCAL_SKILLS_KEY);
+      if (cached) return JSON.parse(cached);
+    } catch {
+      // Fallback to static data
+    }
     return SKILL_CATEGORIES;
   }
 }
 
 // Create or update skill category
 export async function upsertSkillCategory(cat) {
-  if (!supabase) throw new Error("Supabase credentials not configured.");
+  if (!supabase) {
+    const current = await getSkillCategories();
+    const id = cat.id || `cat-${Date.now()}`;
+    const payload = { ...cat, id };
+    const exists = current.some((c) => c.id === id || c.name === cat.name);
+    const updated = exists
+      ? current.map((c) => (c.id === id || c.name === cat.name ? payload : c))
+      : [...current, payload];
+    try {
+      localStorage.setItem(LOCAL_SKILLS_KEY, JSON.stringify(updated));
+    } catch {
+      // Silently continue
+    }
+    return payload;
+  }
   const { data, error } = await supabase
     .from("skill_categories")
     .upsert(cat)
@@ -284,12 +322,24 @@ export async function upsertSkillCategory(cat) {
 
 // Delete skill category
 export async function deleteSkillCategory(id) {
-  if (!supabase) throw new Error("Supabase credentials not configured.");
+  if (!supabase) {
+    const current = await getSkillCategories();
+    const updated = current.filter((c) => c.id !== id && c.name !== id);
+    try {
+      localStorage.setItem(LOCAL_SKILLS_KEY, JSON.stringify(updated));
+    } catch {
+      // Silently continue
+    }
+    return;
+  }
   const { error } = await supabase
     .from("skill_categories")
     .delete()
     .eq("id", id);
-  if (error) throw error;
+  if (error) {
+    // Retry deleting by category name when custom identifier is used
+    await supabase.from("skill_categories").delete().eq("name", id);
+  }
 }
 
 // Fetch education list with fallback

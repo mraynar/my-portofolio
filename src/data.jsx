@@ -27,21 +27,25 @@ export const NAV_LINKS = [
 // Categorized technical skills
 export const SKILL_CATEGORIES = [
   {
+    id: "cat-frontend",
     name: "Frontend Development",
     accent: "blue",
     skills: ["React", "JavaScript (ES6+)", "TypeScript", "Tailwind CSS", "Bootstrap", "HTML5 / CSS3"],
   },
   {
+    id: "cat-backend",
     name: "Backend & Database",
     accent: "green",
     skills: ["Laravel", "PHP", "Python", "MySQL", "Supabase", "RESTful API"],
   },
   {
+    id: "cat-mobile",
     name: "Mobile & Cloud",
     accent: "yellow",
     skills: ["Flutter", "Dart", "Firebase", "Google Cloud Run"],
   },
   {
+    id: "cat-tools",
     name: "Tools & Analytics",
     accent: "red",
     skills: ["Git & GitHub", "Google Looker Studio", "Power BI", "Figma", "Postman"],

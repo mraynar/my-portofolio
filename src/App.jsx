@@ -543,15 +543,17 @@ function Skills({ categories = SKILL_CATEGORIES }) {
           subtitle="Teknologi dan kerangka kerja yang saya kuasai dan terapkan dalam pengembangan perangkat lunak."
         />
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
           {categories.map((cat, idx) => (
-            <Card key={cat.name} className="flex flex-col justify-between">
-              <div>
+            <Card key={cat.id || cat.name} className="flex flex-col justify-between h-full">
+              <div className="flex flex-col h-full">
+                {/* Fixed-height header ensures divider baseline alignment */}
                 <div
-                  className="flex items-center gap-2.5 mb-5 pb-3 border-b-2"
+                  className="flex items-center gap-2.5 mb-5 pb-3 border-b-2 h-[72px]"
                   style={{ borderColor: "var(--border)" }}
                 >
                   <span
+                    className="shrink-0"
                     style={{
                       width: 14,
                       height: 14,
@@ -562,7 +564,7 @@ function Skills({ categories = SKILL_CATEGORIES }) {
                     }}
                   />
                   <h3
-                    className="font-extrabold text-lg sm:text-xl"
+                    className="font-extrabold text-base sm:text-lg lg:text-xl leading-snug line-clamp-2"
                     style={{
                       fontFamily: "var(--font-display)",
                       color: "var(--ink)",
@@ -572,13 +574,13 @@ function Skills({ categories = SKILL_CATEGORIES }) {
                   </h3>
                 </div>
 
-                <Cluster gap={8}>
+                <div className="flex flex-wrap gap-2 content-start flex-1">
                   {cat.skills.map((skill) => (
                     <Chip key={skill} variant="default">
                       {skill}
                     </Chip>
                   ))}
-                </Cluster>
+                </div>
               </div>
             </Card>
           ))}
