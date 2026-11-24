@@ -808,7 +808,7 @@ export function ExpCard({ item, index = 0 }) {
 }
 
 // Sticky header navbar with 1px border and clean wordmark
-export function Navbar({ dark, toggleDark }) {
+export function Navbar() {
   const [open, setOpen] = useState(false);
   const location = useLocation();
 
@@ -883,17 +883,6 @@ export function Navbar({ dark, toggleDark }) {
             <Icon name="download" size={16} />
             Unduh CV
           </a>
-
-          <button
-            onClick={toggleDark}
-            className="flex items-center justify-center w-10 h-10 rounded-full border-2 border-[var(--border)] bg-[var(--surface)] shadow-[2px_2px_0_var(--shadow-color)] hover:translate-x-[-1px] hover:translate-y-[-1px] cursor-pointer"
-            aria-label={
-              dark ? "Beralih ke mode terang" : "Beralih ke mode gelap"
-            }
-            title={dark ? "Mode Terang" : "Mode Gelap"}
-          >
-            <Icon name={dark ? "sun" : "moon"} size={20} />
-          </button>
 
           <button
             onClick={() => setOpen(!open)}
@@ -1033,28 +1022,80 @@ export function Footer() {
   );
 }
 
-// Floating back-to-top button
-export function ScrollTopFab() {
-  const [visible, setVisible] = useState(false);
+// Floating controls for theme toggle and vertical scroll navigation
+export function ScrollTopFab({ dark, toggleDark }) {
+  const [canScrollUp, setCanScrollUp] = useState(false);
+  const [canScrollDown, setCanScrollDown] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => {
-      setVisible(window.scrollY > 400);
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      const windowHeight = window.innerHeight;
+      const docHeight = document.documentElement.scrollHeight;
+
+      setCanScrollUp(scrollY > 200);
+      setCanScrollDown(scrollY + windowHeight < docHeight - 150);
     };
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
+
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("resize", handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleScroll);
+    };
   }, []);
 
-  if (!visible) return null;
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const scrollToBottom = () => {
+    window.scrollTo({
+      top: document.documentElement.scrollHeight,
+      behavior: "smooth",
+    });
+  };
 
   return (
-    <button
-      onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-      className="fixed bottom-6 right-6 z-40 flex items-center justify-center w-12 h-12 rounded-full border-2 border-[var(--border)] bg-[var(--surface)] shadow-[3px_3px_0_var(--shadow-color)] hover:translate-x-[-1px] hover:translate-y-[-1px] cursor-pointer"
-      aria-label="Kembali ke atas"
-      title="Kembali ke atas"
-    >
-      <Icon name="chevron-up" size={22} />
-    </button>
+    <div className="fixed bottom-6 right-6 z-40 flex flex-col items-center gap-3">
+      {/* Light and dark mode toggle button placed above scroll controls */}
+      {toggleDark && (
+        <button
+          onClick={toggleDark}
+          className="flex items-center justify-center w-12 h-12 rounded-full border-2 border-[var(--border)] bg-[var(--surface)] shadow-[3px_3px_0_var(--shadow-color)] hover:translate-x-[-1px] hover:translate-y-[-1px] cursor-pointer transition-all"
+          aria-label={
+            dark ? "Beralih ke mode terang" : "Beralih ke mode gelap"
+          }
+          title={dark ? "Mode Terang" : "Mode Gelap"}
+        >
+          <Icon name={dark ? "sun" : "moon"} size={20} />
+        </button>
+      )}
+
+      {/* Smooth scroll to top button */}
+      {canScrollUp && (
+        <button
+          onClick={scrollToTop}
+          className="flex items-center justify-center w-12 h-12 rounded-full border-2 border-[var(--border)] bg-[var(--surface)] shadow-[3px_3px_0_var(--shadow-color)] hover:translate-x-[-1px] hover:translate-y-[-1px] cursor-pointer transition-all"
+          aria-label="Gulir ke atas"
+          title="Gulir ke atas"
+        >
+          <Icon name="chevron-up" size={22} />
+        </button>
+      )}
+
+      {/* Smooth scroll to bottom button */}
+      {canScrollDown && (
+        <button
+          onClick={scrollToBottom}
+          className="flex items-center justify-center w-12 h-12 rounded-full border-2 border-[var(--border)] bg-[var(--surface)] shadow-[3px_3px_0_var(--shadow-color)] hover:translate-x-[-1px] hover:translate-y-[-1px] cursor-pointer transition-all"
+          aria-label="Gulir ke bawah"
+          title="Gulir ke bawah"
+        >
+          <Icon name="chevron-down" size={22} />
+        </button>
+      )}
+    </div>
   );
 }

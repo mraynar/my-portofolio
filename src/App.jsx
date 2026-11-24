@@ -1079,8 +1079,8 @@ function PublicLayout({ dark, toggleDark, children }) {
       className="min-h-screen flex flex-col"
       style={{ backgroundColor: "var(--canvas)", color: "var(--ink)" }}
     >
-      <Navbar dark={dark} toggleDark={toggleDark} />
-      <ScrollTopFab />
+      <Navbar />
+      <ScrollTopFab dark={dark} toggleDark={toggleDark} />
       <div className="flex-1">{children}</div>
       <Footer />
     </div>
