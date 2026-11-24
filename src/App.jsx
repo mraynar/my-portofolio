@@ -76,26 +76,26 @@ function Hero({ info = PERSONAL_INFO }) {
   return (
     <Section
       id="home"
-      className="relative pt-28 sm:pt-36 lg:pt-40 pb-16 sm:pb-24 lg:pb-28"
+      className="relative min-h-[calc(100dvh-var(--nav-h,64px))] flex items-center justify-center pt-20 sm:pt-24 lg:pt-20 pb-8 sm:pb-12 lg:pb-14"
       style={{ backgroundColor: "var(--canvas)" }}
     >
       <div className="bg-code-tile absolute inset-0 pointer-events-none" />
 
-      <Container className="relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+      <Container className="relative z-10 w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
           {/* Left column: narrative and actions (7 cols) */}
           <div className="lg:col-span-7 flex flex-col items-start">
-            <Cluster gap={8} className="mb-4">
+            <Cluster gap={8} className="mb-3.5">
               <Chip variant="blue">{kicker}</Chip>
               <Chip variant="green">{statusBadge}</Chip>
             </Cluster>
 
             {/* Main heading limited to two lines */}
             <h1
-              className="font-extrabold tracking-tight mb-4"
+              className="font-extrabold tracking-tight mb-3.5"
               style={{
                 fontFamily: "var(--font-display)",
-                fontSize: "clamp(2.6rem, 5.2vw, 4.4rem)",
+                fontSize: "clamp(2.3rem, 4.4vw, 3.8rem)",
                 lineHeight: 1.1,
                 color: "var(--ink)",
               }}
@@ -105,7 +105,7 @@ function Hero({ info = PERSONAL_INFO }) {
             </h1>
 
             <p
-              className="text-base sm:text-lg lg:text-xl leading-relaxed mb-6 font-normal"
+              className="text-base sm:text-lg leading-relaxed mb-5 font-normal"
               style={{
                 color: "var(--ink-secondary)",
                 maxWidth: "58ch",
@@ -115,7 +115,7 @@ function Hero({ info = PERSONAL_INFO }) {
             </p>
 
             {/* Primary actions */}
-            <Cluster gap={16} className="mb-6">
+            <Cluster gap={16} className="mb-5">
               <button
                 onClick={() => scrollToSection("projects")}
                 className="neo-btn-primary font-bold text-base"
@@ -136,7 +136,7 @@ function Hero({ info = PERSONAL_INFO }) {
             </Cluster>
 
             {/* Social link pills */}
-            <Cluster gap={8} className="pt-1">
+            <Cluster gap={8} className="pt-0.5">
               <span
                 className="text-xs sm:text-sm font-bold uppercase tracking-wider font-mono mr-1"
                 style={{ color: "var(--ink-muted)" }}
@@ -187,32 +187,32 @@ function Hero({ info = PERSONAL_INFO }) {
 
           {/* Right column: profile photo card (5 cols) */}
           <div className="lg:col-span-5 flex justify-center lg:justify-end">
-            <div className="w-full max-w-[420px]">
+            <div className="w-full max-w-[360px] lg:max-w-[380px]">
               <Card variant="flat" className="p-0 overflow-hidden">
                 <div
-                  className="h-11 px-4 flex items-center justify-between border-b-2"
+                  className="h-10 px-3.5 flex items-center justify-between border-b-2"
                   style={{
                     backgroundColor: "var(--surface-alt)",
                     borderColor: "var(--border)",
                   }}
                 >
-                  <div className="flex items-center gap-2">
-                    <span className="w-3 h-3 rounded-full border border-[var(--border)] bg-[#ea4335]" />
-                    <span className="w-3 h-3 rounded-full border border-[var(--border)] bg-[#fbbc04]" />
-                    <span className="w-3 h-3 rounded-full border border-[var(--border)] bg-[#34a853]" />
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-2.5 h-2.5 rounded-full border border-[var(--border)] bg-[#ea4335]" />
+                    <span className="w-2.5 h-2.5 rounded-full border border-[var(--border)] bg-[#fbbc04]" />
+                    <span className="w-2.5 h-2.5 rounded-full border border-[var(--border)] bg-[#34a853]" />
                     <span
-                      className="text-xs font-mono ml-2 font-bold"
+                      className="text-[11px] font-mono ml-1.5 font-bold"
                       style={{ color: "var(--ink)" }}
                     >
                       raynar-dev.ts
                     </span>
                   </div>
-                  <Chip variant="green">Online</Chip>
+                  <Chip variant="green" className="text-[11px] py-0.5 px-2">Online</Chip>
                 </div>
 
-                <div className="p-4 sm:p-5">
+                <div className="p-3.5 sm:p-4">
                   <div
-                    className="w-full aspect-[4/5] rounded-2xl overflow-hidden border-2 relative"
+                    className="w-full aspect-[4/4.5] max-h-[350px] rounded-2xl overflow-hidden border-2 relative"
                     style={{
                       backgroundColor: "var(--canvas)",
                       borderColor: "var(--border)",

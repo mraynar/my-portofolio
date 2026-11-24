@@ -18,15 +18,15 @@ export function Container({ children, className = "", style = {} }) {
   );
 }
 
-// Section wrapper with sticky navbar clearance and padding
+// Section wrapper with sticky navbar clearance and balanced padding
 export function Section({ id, children, className = "", style = {} }) {
   return (
     <section
       id={id}
-      className={`py-16 sm:py-24 lg:py-32 border-b-2 ${className}`}
+      className={`py-10 sm:py-14 lg:py-16 border-b-2 ${className}`}
       style={{
         borderColor: "var(--border)",
-        scrollMarginTop: "calc(var(--nav-h) + 16px)",
+        scrollMarginTop: "calc(var(--nav-h) + 12px)",
         ...style,
       }}
     >

@@ -8,12 +8,12 @@ export default function ExperiencePage({
 }) {
   return (
     <main
-      className="min-h-screen pt-24 sm:pt-28 pb-28"
+      className="min-h-screen pt-16 sm:pt-20 pb-20"
       style={{ backgroundColor: "var(--canvas)" }}
     >
       {/* Header banner */}
       <section
-        className="pt-10 pb-14 sm:pt-14 sm:pb-16 border-b-2 mb-12"
+        className="pt-6 pb-10 sm:pt-8 sm:pb-12 border-b-2 mb-8"
         style={{
           backgroundColor: "var(--surface)",
           borderColor: "var(--border)",
