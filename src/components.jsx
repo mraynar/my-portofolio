@@ -722,54 +722,42 @@ export function ProjectCard({ project, onOpenCaseStudy }) {
   );
 }
 
-// Stylized road track background running vertically through timeline
-export function RoadTrack() {
+// Clean neo-brutalist continuous timeline spine
+export function TimelineSpine() {
   return (
     <>
-      {/* Desktop central road running down the center */}
-      <div className="hidden md:block absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-8 lg:w-9 z-0 pointer-events-none">
-        <div
-          className="absolute inset-y-0 w-full rounded-full border-x-2 border-[var(--border)] overflow-hidden"
-          style={{ backgroundColor: "var(--surface-alt)" }}
-        >
-          {/* Dashed center lane divider on the road */}
-          <div
-            className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-0 border-l-2 border-dashed opacity-60"
-            style={{ borderColor: "var(--ink-muted)" }}
-          />
-        </div>
-      </div>
+      {/* Desktop central continuous rail */}
+      <div
+        className="hidden md:block absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-1 z-0 pointer-events-none"
+        style={{ backgroundColor: "var(--border)" }}
+      />
 
-      {/* Mobile road track aligned on the left */}
-      <div className="md:hidden absolute left-4 sm:left-6 -translate-x-1/2 top-0 bottom-0 w-7 sm:w-8 z-0 pointer-events-none">
-        <div
-          className="absolute inset-y-0 w-full rounded-full border-x-2 border-[var(--border)] overflow-hidden"
-          style={{ backgroundColor: "var(--surface-alt)" }}
-        >
-          <div
-            className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-0 border-l-2 border-dashed opacity-60"
-            style={{ borderColor: "var(--ink-muted)" }}
-          />
-        </div>
-      </div>
+      {/* Mobile left-aligned continuous rail */}
+      <div
+        className="md:hidden absolute left-5 sm:left-6 -translate-x-1/2 top-0 bottom-0 w-1 z-0 pointer-events-none"
+        style={{ backgroundColor: "var(--border)" }}
+      />
     </>
   );
 }
 
+// Backward-compatible alias for timeline spine
+export const RoadTrack = TimelineSpine;
+
 // Pathway bridge between internship and organization milestones
 export function CareerPathwayBridge({
-  kicker = "KONEKSI JEJAK KARIR",
+  kicker = "KONTINUITAS REKAM JEJAK",
   title = "Alur Perkembangan: Dari Ekosistem Kampus ke Industri",
   description = "Landasan kepemimpinan, riset organisasi, dan kolaborasi tim di kampus menjadi akselerator dalam mengeksekusi proyek rekayasa perangkat lunak di dunia industri.",
 }) {
   return (
     <div className="relative my-8 sm:my-12 z-20">
-      {/* Road track continuation running under the bridge */}
+      {/* Continuous spine running behind the bridge */}
       <div className="absolute inset-0 pointer-events-none">
-        <RoadTrack />
+        <TimelineSpine />
       </div>
 
-      {/* Central highway gantry road sign spanning across the road */}
+      {/* Central milestone hub spanning across */}
       <div className="max-w-xl mx-auto px-2 sm:px-0 relative z-10">
         <div
           className="p-4 sm:p-5 rounded-2xl border-2 relative overflow-hidden text-center"
@@ -806,7 +794,7 @@ export function CareerPathwayBridge({
             {description}
           </p>
 
-          {/* Road highway direction signs */}
+          {/* Stepper progression flow */}
           <div
             className="pt-3 border-t-2 flex items-center justify-center gap-2 sm:gap-3 text-xs font-mono font-bold flex-wrap"
             style={{ borderColor: "var(--border)" }}
@@ -870,23 +858,33 @@ export function ExpCard({
 
   return (
     <div className="relative mb-7 sm:mb-10 last:mb-0">
-      {/* Desktop center milestone marker on the road */}
+      {/* Desktop center milestone marker on the spine */}
       <div className="hidden md:flex absolute left-1/2 -translate-x-1/2 top-4 z-20 items-center justify-center">
-        {/* Horizontal connector spur to left card */}
+        {/* Solid horizontal connector arm to left card */}
         {isLeft && (
           <div
-            className="absolute right-full top-1/2 -translate-y-1/2 w-4 lg:w-6 h-0.5 border-t-2 border-dashed"
-            style={{ borderColor: "var(--border)" }}
-          />
+            className="absolute right-full top-1/2 -translate-y-1/2 w-5 lg:w-7 h-0.5"
+            style={{ backgroundColor: "var(--border)" }}
+          >
+            <div
+              className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full"
+              style={{ backgroundColor: numColor.bg }}
+            />
+          </div>
         )}
-        {/* Horizontal connector spur to right card */}
+        {/* Solid horizontal connector arm to right card */}
         {!isLeft && (
           <div
-            className="absolute left-full top-1/2 -translate-y-1/2 w-4 lg:w-6 h-0.5 border-t-2 border-dashed"
-            style={{ borderColor: "var(--border)" }}
-          />
+            className="absolute left-full top-1/2 -translate-y-1/2 w-5 lg:w-7 h-0.5"
+            style={{ backgroundColor: "var(--border)" }}
+          >
+            <div
+              className="absolute right-0 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full"
+              style={{ backgroundColor: numColor.bg }}
+            />
+          </div>
         )}
-        {/* Embossed road milestone badge */}
+        {/* Embossed milestone badge */}
         <div
           className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl border-2 border-[var(--border)] flex items-center justify-center font-extrabold font-mono text-xs sm:text-sm shadow-[2px_2px_0_var(--shadow-color)]"
           style={{ backgroundColor: numColor.bg, color: numColor.text }}
@@ -896,10 +894,10 @@ export function ExpCard({
       </div>
 
       {/* Mobile left-aligned milestone marker */}
-      <div className="md:hidden absolute left-4 sm:left-6 -translate-x-1/2 top-4 z-20 flex items-center justify-center">
+      <div className="md:hidden absolute left-5 sm:left-6 -translate-x-1/2 top-4 z-20 flex items-center justify-center">
         <div
-          className="absolute left-full top-1/2 -translate-y-1/2 w-3 sm:w-4 h-0.5 border-t-2 border-dashed"
-          style={{ borderColor: "var(--border)" }}
+          className="absolute left-full top-1/2 -translate-y-1/2 w-3 sm:w-4 h-0.5"
+          style={{ backgroundColor: "var(--border)" }}
         />
         <div
           className="w-8 h-8 rounded-xl border-2 border-[var(--border)] flex items-center justify-center font-extrabold font-mono text-xs shadow-[2px_2px_0_var(--shadow-color)]"
@@ -913,7 +911,7 @@ export function ExpCard({
       <div
         className={`w-full md:w-[calc(50%-2.25rem)] lg:md:w-[calc(50%-2.5rem)] ${
           isLeft ? "md:mr-auto" : "md:ml-auto"
-        } pl-11 sm:pl-14 md:pl-0`}
+        } pl-12 sm:pl-14 md:pl-0`}
       >
         <div
           className="rounded-2xl border-2 overflow-hidden relative transition-all duration-200 hover:translate-x-[-1px] hover:translate-y-[-1px]"
