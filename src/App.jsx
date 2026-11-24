@@ -999,7 +999,7 @@ function Contact({ info = PERSONAL_INFO }) {
   return (
     <Section id="contact" style={{ backgroundColor: "transparent" }}>
       <Container>
-        <Card variant="flat" className="p-0 overflow-hidden max-w-5xl mx-auto">
+        <Card variant="flat" className="p-0 overflow-hidden w-full">
           <div className="google-bar" />
 
           <div className="p-6 sm:p-8 lg:p-10">
