@@ -87,7 +87,7 @@ function Hero({ info = PERSONAL_INFO }) {
       style={{ backgroundColor: "transparent" }}
     >
       <Container className="relative z-10 w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-stretch">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-8 xl:gap-10 items-stretch">
           {/* Left column: narrative and actions (7 cols) */}
           <div className="lg:col-span-7 flex flex-col justify-between">
             <div>
@@ -114,7 +114,7 @@ function Hero({ info = PERSONAL_INFO }) {
                 className="text-base sm:text-lg leading-relaxed mb-5 font-normal"
                 style={{
                   color: "var(--ink-secondary)",
-                  maxWidth: "58ch",
+                  maxWidth: "64ch",
                 }}
               >
                 {valueProp}
@@ -194,7 +194,7 @@ function Hero({ info = PERSONAL_INFO }) {
 
           {/* Right column: profile photo card (5 cols) */}
           <div className="lg:col-span-5 flex justify-center lg:justify-end">
-            <div className="w-full max-w-[360px] lg:max-w-[380px] h-full">
+            <div className="w-full max-w-[420px] lg:max-w-[460px] xl:max-w-[480px] h-full">
               <Card variant="flat" className="p-0 overflow-hidden h-full flex flex-col">
                 <div
                   className="h-9 sm:h-10 px-3.5 flex items-center justify-between border-b-2 flex-shrink-0"
