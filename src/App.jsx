@@ -71,7 +71,6 @@ function Hero({ info = PERSONAL_INFO }) {
     language === "en"
       ? info.valuePropEn || t("hero_bio")
       : info.valueProp || PERSONAL_INFO.valueProp;
-  const university = info.university || PERSONAL_INFO.university;
   const cvUrl = info.cvUrl || PERSONAL_INFO.cvUrl;
   const github = info.github || PERSONAL_INFO.github;
   const linkedin = info.linkedin || PERSONAL_INFO.linkedin;
@@ -81,8 +80,6 @@ function Hero({ info = PERSONAL_INFO }) {
     "https://instagram.com/mraynarr";
   const email = info.email || PERSONAL_INFO.email;
   const avatar = info.avatar || PERSONAL_INFO.avatar;
-  const location = info.location || PERSONAL_INFO.location;
-  const displayName = info.name ? info.name.toUpperCase() : "M. RAYNAR HAMMAM";
 
   return (
     <Section
@@ -237,94 +234,43 @@ function Hero({ info = PERSONAL_INFO }) {
                   </Chip>
                 </div>
 
-                <div className="p-3 sm:p-3.5 flex-1 flex flex-col justify-between min-h-0">
-                  <div
-                    className="w-full h-[190px] sm:h-[220px] lg:h-auto lg:flex-1 min-h-[160px] rounded-xl overflow-hidden border-2 relative"
-                    style={{
-                      backgroundColor: "var(--canvas)",
-                      borderColor: "var(--border)",
-                    }}
-                  >
-                    {avatar ? (
-                      <img
-                        src={avatar}
-                        alt={`Foto Profil ${info.name || "Muhammad Raynar Hammam"}`}
-                        className="w-full h-full object-cover object-top"
-                        loading="eager"
-                      />
-                    ) : (
-                      <div
-                        className="w-full h-full flex flex-col items-center justify-center p-4 text-center select-none"
-                        style={{ backgroundColor: "var(--surface-alt)" }}
-                      >
-                        <div
-                          className="w-14 h-14 rounded-2xl border-2 flex items-center justify-center mb-2.5 shadow-[2px_2px_0_var(--shadow-color)]"
-                          style={{
-                            backgroundColor: "var(--surface)",
-                            borderColor: "var(--border)",
-                            color: "var(--google-blue)",
-                          }}
-                        >
-                          <Icon name="user" size={28} />
-                        </div>
-                        <span
-                          className="text-xs font-bold font-mono uppercase tracking-wider"
-                          style={{ color: "var(--ink)" }}
-                        >
-                          {t("projects_preview")}
-                        </span>
-                        <span
-                          className="text-[11px] font-mono mt-0.5"
-                          style={{ color: "var(--ink-muted)" }}
-                        >
-                          {t("projects_input_cms")}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-
-                  <div
-                    className="mt-3 p-3 rounded-xl border-2 flex flex-col gap-2 flex-shrink-0"
-                    style={{
-                      backgroundColor: "var(--surface-alt)",
-                      borderColor: "var(--border)",
-                    }}
-                  >
-                    <div className="flex flex-col gap-0.5">
-                      <div
-                        className="font-extrabold text-sm font-mono tracking-tight"
-                        style={{ color: "var(--ink)" }}
-                      >
-                        {displayName}
-                      </div>
-                      <div
-                        className="text-xs font-semibold leading-relaxed"
-                        style={{ color: "var(--google-blue)" }}
-                      >
-                        {info.role
-                          ? `${info.role} • ${university}`
-                          : language === "en"
-                          ? `Information Systems Student • ${university}`
-                          : `Mahasiswa Sistem Informasi • ${university}`}
-                      </div>
-                    </div>
-
+                <div className="relative w-full aspect-[4/5] min-h-[360px] sm:min-h-[420px] lg:min-h-[450px] overflow-hidden bg-[var(--surface-alt)] flex-1">
+                  {avatar ? (
+                    <img
+                      src={avatar}
+                      alt={`Foto Profil ${info.name || "Muhammad Raynar Hammam"}`}
+                      className="w-full h-full object-cover object-top"
+                      loading="eager"
+                    />
+                  ) : (
                     <div
-                      className="pt-2 border-t border-[var(--border)] flex items-center"
+                      className="w-full h-full flex flex-col items-center justify-center p-6 text-center select-none"
+                      style={{ backgroundColor: "var(--surface-alt)" }}
                     >
-                      <span
-                        className="neo-badge text-[11px] font-bold px-2.5 py-0.5 inline-flex items-center gap-1.5 max-w-full"
+                      <div
+                        className="w-16 h-16 rounded-2xl border-2 flex items-center justify-center mb-3 shadow-[2px_2px_0_var(--shadow-color)]"
                         style={{
-                          backgroundColor: "var(--google-blue-bg)",
-                          color: "var(--google-blue-text)",
-                          borderColor: "var(--google-blue)",
+                          backgroundColor: "var(--surface)",
+                          borderColor: "var(--border)",
+                          color: "var(--google-blue)",
                         }}
                       >
-                        <Icon name="map-pin" size={12} className="mr-0.5" />
-                        <span className="truncate">{location}</span>
+                        <Icon name="user" size={32} />
+                      </div>
+                      <span
+                        className="text-xs font-bold font-mono uppercase tracking-wider"
+                        style={{ color: "var(--ink)" }}
+                      >
+                        FOTO PROFIL
+                      </span>
+                      <span
+                        className="text-[11px] font-mono mt-1"
+                        style={{ color: "var(--ink-muted)" }}
+                      >
+                        Input via Admin CMS
                       </span>
                     </div>
-                  </div>
+                  )}
                 </div>
               </Card>
             </div>
