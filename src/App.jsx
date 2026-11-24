@@ -345,6 +345,26 @@ function About({
   const { t, language } = useLanguage();
   const university = info.university || PERSONAL_INFO.university;
 
+  // Resolve custom impact metrics or fall back to actual records count
+  const rawProjectCount =
+    info.customProjectCount && String(info.customProjectCount).trim() !== ""
+      ? String(info.customProjectCount).trim()
+      : `${projectCount}+`;
+  const displayProjectCount = rawProjectCount.includes("+")
+    ? rawProjectCount
+    : `${rawProjectCount}+`;
+
+  const rawCertCount =
+    info.customCertCount && String(info.customCertCount).trim() !== ""
+      ? String(info.customCertCount).trim()
+      : `${certCount}+`;
+  const displayCertCount = rawCertCount.includes("+")
+    ? rawCertCount
+    : `${rawCertCount}+`;
+
+  const displayStartYear = info.startYear || "2021";
+  const displayCodeQuality = info.codeQuality || "100%";
+
   return (
     <Section id="about" style={{ backgroundColor: "transparent" }}>
       <Container>
@@ -519,7 +539,7 @@ function About({
                   className="text-4xl sm:text-5xl font-extrabold font-mono tracking-tight mb-2"
                   style={{ color: "var(--google-blue)" }}
                 >
-                  [{projectCount}+]
+                  [{displayProjectCount}]
                 </div>
                 <div className="text-sm sm:text-base font-extrabold uppercase tracking-wider mb-2">
                   PROYEK DIGITAL
@@ -541,7 +561,7 @@ function About({
                   className="text-4xl sm:text-5xl font-extrabold font-mono tracking-tight mb-2"
                   style={{ color: "var(--google-green)" }}
                 >
-                  [{certCount}+]
+                  [{displayCertCount}]
                 </div>
                 <div className="text-sm sm:text-base font-extrabold uppercase tracking-wider mb-2">
                   SERTIFIKASI RESMI
@@ -562,7 +582,7 @@ function About({
                   className="text-4xl sm:text-5xl font-extrabold font-mono tracking-tight mb-2"
                   style={{ color: "var(--google-yellow-hover)" }}
                 >
-                  [2021]
+                  [{displayStartYear}]
                 </div>
                 <div className="text-sm sm:text-base font-extrabold uppercase tracking-wider mb-2">
                   REKAYASA SOFTWARE
@@ -584,7 +604,7 @@ function About({
                   className="text-4xl sm:text-5xl font-extrabold font-mono tracking-tight mb-2"
                   style={{ color: "var(--google-red)" }}
                 >
-                  [100%]
+                  [{displayCodeQuality}]
                 </div>
                 <div className="text-sm sm:text-base font-extrabold uppercase tracking-wider mb-2">
                   INTEGRITAS SOLUSI

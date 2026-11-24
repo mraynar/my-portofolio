@@ -522,7 +522,12 @@ export default function AdminLayout() {
               )}
 
               {activeTab === "projects" && (
-                <AdminProjects projects={projects} onRefresh={loadCmsData} />
+                <AdminProjects
+                  projects={projects}
+                  onRefresh={loadCmsData}
+                  info={info}
+                  onUpdateInfo={(updated) => setInfo(updated)}
+                />
               )}
 
               {activeTab === "experience" && (

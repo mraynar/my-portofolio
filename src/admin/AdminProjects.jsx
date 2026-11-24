@@ -4,6 +4,7 @@ import {
   upsertProject,
   deleteProject,
   uploadStorageFile,
+  saveSiteSettings,
 } from "../lib/supabase";
 
 const EMPTY_PROJECT = {
@@ -33,12 +34,48 @@ const EMPTY_PROJECT = {
 };
 
 // Project portfolio management tab
-export default function AdminProjects({ projects = [], onRefresh }) {
+export default function AdminProjects({
+  projects = [],
+  onRefresh,
+  info = {},
+  onUpdateInfo,
+}) {
   const [editingProject, setEditingProject] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [feedback, setFeedback] = useState(null);
   const [badgesInput, setBadgesInput] = useState("");
+  const [customCountInput, setCustomCountInput] = useState(
+    info?.customProjectCount || ""
+  );
+  const [isSavingCount, setIsSavingCount] = useState(false);
+  const [countFeedback, setCountFeedback] = useState(null);
+
+  const handleSaveCustomCount = async (e) => {
+    e.preventDefault();
+    setIsSavingCount(true);
+    setCountFeedback(null);
+    try {
+      const updated = await saveSiteSettings(
+        info?.rawId || "default-site-settings",
+        {
+          customProjectCount: customCountInput.trim(),
+        }
+      );
+      if (onUpdateInfo) onUpdateInfo(updated);
+      setCountFeedback({
+        type: "success",
+        text: "Jumlah statistik proyek digital berhasil disimpan.",
+      });
+    } catch (err) {
+      setCountFeedback({
+        type: "error",
+        text: err.message || "Gagal menyimpan jumlah proyek.",
+      });
+    } finally {
+      setIsSavingCount(false);
+    }
+  };
 
   const handleEdit = (p) => {
     setEditingProject({
@@ -148,6 +185,83 @@ export default function AdminProjects({ projects = [], onRefresh }) {
           </button>
         )}
       </div>
+
+      {!editingProject && (
+        <Card className="p-4 sm:p-5">
+          <form
+            onSubmit={handleSaveCustomCount}
+            className="flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+          >
+            <div className="flex items-center gap-3">
+              <div
+                className="w-10 h-10 rounded-xl border-2 border-[var(--border)] flex items-center justify-center shrink-0"
+                style={{
+                  backgroundColor: "var(--google-blue-bg)",
+                  color: "var(--google-blue)",
+                }}
+              >
+                <Icon name="folder" size={20} />
+              </div>
+              <div>
+                <h3 className="font-extrabold text-sm sm:text-base">
+                  Kustomisasi Total Proyek Digital (By The Numbers)
+                </h3>
+                <p className="text-xs text-[var(--ink-secondary)]">
+                  Atur angka total proyek pada kartu statistik web (misal &ldquo;15+&rdquo;) jika pernah mengerjakan lebih banyak dari daftar.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 shrink-0">
+              <input
+                type="text"
+                value={customCountInput}
+                onChange={(e) => setCustomCountInput(e.target.value)}
+                placeholder={`${projects.length}+`}
+                className="w-24 px-3 py-1.5 rounded-xl border-2 font-mono font-bold text-sm text-center"
+                style={{
+                  backgroundColor: "var(--surface-alt)",
+                  borderColor: "var(--border)",
+                }}
+              />
+              <button
+                type="submit"
+                disabled={isSavingCount}
+                className="neo-btn-primary text-xs font-bold py-2 px-3.5 cursor-pointer"
+              >
+                <Icon name="check" size={14} />
+                {isSavingCount ? "Menyimpan..." : "Simpan Angka"}
+              </button>
+            </div>
+          </form>
+
+          {countFeedback && (
+            <div
+              className="mt-3 p-2.5 rounded-xl border-2 text-xs font-bold flex items-center gap-2"
+              style={{
+                backgroundColor:
+                  countFeedback.type === "success"
+                    ? "var(--google-green-bg)"
+                    : "var(--google-red-bg)",
+                borderColor:
+                  countFeedback.type === "success"
+                    ? "var(--google-green)"
+                    : "var(--google-red)",
+                color:
+                  countFeedback.type === "success"
+                    ? "var(--google-green-text)"
+                    : "var(--google-red-text)",
+              }}
+            >
+              <Icon
+                name={countFeedback.type === "success" ? "check" : "alert"}
+                size={14}
+              />
+              <span>{countFeedback.text}</span>
+            </div>
+          )}
+        </Card>
+      )}
 
       {feedback && (
         <div

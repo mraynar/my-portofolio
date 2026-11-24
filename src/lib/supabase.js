@@ -111,6 +111,10 @@ export async function getSiteSettings() {
           aboutP3: data.about_p3,
           principleTitle: data.principle_title,
           principleQuote: data.principle_quote,
+          customProjectCount: data.custom_project_count || "",
+          customCertCount: data.custom_cert_count || "",
+          startYear: data.start_year || "",
+          codeQuality: data.code_quality || "",
           rawId: data.id,
         };
         try {
@@ -176,6 +180,22 @@ export async function saveSiteSettings(id, fields) {
         about_p3: fields.aboutP3 || updated.aboutP3 || "",
         principle_title: fields.principleTitle || updated.principleTitle || "",
         principle_quote: fields.principleQuote || updated.principleQuote || "",
+        custom_project_count:
+          fields.customProjectCount !== undefined
+            ? fields.customProjectCount
+            : updated.customProjectCount || "",
+        custom_cert_count:
+          fields.customCertCount !== undefined
+            ? fields.customCertCount
+            : updated.customCertCount || "",
+        start_year:
+          fields.startYear !== undefined
+            ? fields.startYear
+            : updated.startYear || "",
+        code_quality:
+          fields.codeQuality !== undefined
+            ? fields.codeQuality
+            : updated.codeQuality || "",
         updated_at: new Date().toISOString(),
       };
       if (id && id !== "default-site-settings") {

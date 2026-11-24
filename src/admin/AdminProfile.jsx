@@ -559,6 +559,100 @@ export default function AdminProfile({ initialInfo, onUpdateInfo }) {
         </div>
       </Card>
 
+      {/* Real impact metrics customization */}
+      <Card className="p-6 sm:p-8 space-y-6">
+        <h3
+          className="text-lg sm:text-xl font-extrabold pb-3 border-b-2"
+          style={{ fontFamily: "var(--font-display)" }}
+        >
+          Kustomisasi Kartu Statistik (By The Numbers)
+        </h3>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div>
+            <label className="block text-xs font-bold font-mono uppercase mb-1.5">
+              Total Proyek Digital
+            </label>
+            <input
+              type="text"
+              value={formData.customProjectCount || ""}
+              onChange={(e) =>
+                handleChange("customProjectCount", e.target.value)
+              }
+              placeholder="8+ (atau misal 15+)"
+              className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm"
+              style={{
+                backgroundColor: "var(--surface-alt)",
+                borderColor: "var(--border)",
+              }}
+            />
+            <span className="text-[11px] text-[var(--ink-secondary)] block mt-1">
+              Kustomisasi jumlah riil proyek yang pernah dikerjakan.
+            </span>
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold font-mono uppercase mb-1.5">
+              Total Sertifikasi Resmi
+            </label>
+            <input
+              type="text"
+              value={formData.customCertCount || ""}
+              onChange={(e) => handleChange("customCertCount", e.target.value)}
+              placeholder="9+ (atau misal 12+)"
+              className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm"
+              style={{
+                backgroundColor: "var(--surface-alt)",
+                borderColor: "var(--border)",
+              }}
+            />
+            <span className="text-[11px] text-[var(--ink-secondary)] block mt-1">
+              Kustomisasi jumlah sertifikasi pada kartu hijau.
+            </span>
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold font-mono uppercase mb-1.5">
+              Tahun Mulai Rekayasa
+            </label>
+            <input
+              type="text"
+              value={formData.startYear || ""}
+              onChange={(e) => handleChange("startYear", e.target.value)}
+              placeholder="2021"
+              className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm"
+              style={{
+                backgroundColor: "var(--surface-alt)",
+                borderColor: "var(--border)",
+              }}
+            />
+            <span className="text-[11px] text-[var(--ink-secondary)] block mt-1">
+              Tahun fondasi rekayasa pada kartu kuning.
+            </span>
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold font-mono uppercase mb-1.5">
+              Nilai Integritas Solusi
+            </label>
+            <input
+              type="text"
+              value={formData.codeQuality || ""}
+              onChange={(e) => handleChange("codeQuality", e.target.value)}
+              placeholder="100%"
+              className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm"
+              style={{
+                backgroundColor: "var(--surface-alt)",
+                borderColor: "var(--border)",
+              }}
+            />
+            <span className="text-[11px] text-[var(--ink-secondary)] block mt-1">
+              Nilai komitmen mutu pada kartu merah.
+            </span>
+          </div>
+        </div>
+      </Card>
+
       <div className="flex justify-end">
         <button
           type="submit"
