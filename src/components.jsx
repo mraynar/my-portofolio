@@ -1266,6 +1266,10 @@ export function Footer({ info = {} }) {
   const name = info?.name || PERSONAL_INFO.name;
   const github = info?.github || PERSONAL_INFO.github;
   const linkedin = info?.linkedin || PERSONAL_INFO.linkedin;
+  const instagram =
+    info?.instagram ||
+    PERSONAL_INFO.instagram ||
+    "https://instagram.com/mraynarr";
   const email = info?.email || PERSONAL_INFO.email;
 
   return (
@@ -1300,20 +1304,20 @@ export function Footer({ info = {} }) {
               href={github}
               target="_blank"
               rel="noreferrer"
-              className="neo-badge text-xs sm:text-sm font-bold"
+              className="neo-badge text-xs sm:text-sm font-bold inline-flex items-center gap-1.5"
               style={{
                 backgroundColor: "var(--surface)",
                 color: "var(--ink)",
               }}
             >
               GitHub
-              <Icon name="external-link" size={13} />
+              <Icon name="github" size={14} />
             </a>
             <a
               href={linkedin}
               target="_blank"
               rel="noreferrer"
-              className="neo-badge text-xs sm:text-sm font-bold"
+              className="neo-badge text-xs sm:text-sm font-bold inline-flex items-center gap-1.5"
               style={{
                 backgroundColor: "var(--google-blue-bg)",
                 color: "var(--google-blue-text)",
@@ -1321,11 +1325,25 @@ export function Footer({ info = {} }) {
               }}
             >
               LinkedIn
-              <Icon name="external-link" size={13} />
+              <Icon name="linkedin" size={14} />
+            </a>
+            <a
+              href={instagram}
+              target="_blank"
+              rel="noreferrer"
+              className="neo-badge text-xs sm:text-sm font-bold inline-flex items-center gap-1.5"
+              style={{
+                backgroundColor: "var(--google-yellow-bg)",
+                color: "var(--google-yellow-text)",
+                borderColor: "var(--google-yellow)",
+              }}
+            >
+              Instagram
+              <Icon name="instagram" size={14} />
             </a>
             <a
               href={`mailto:${email}`}
-              className="neo-badge text-xs sm:text-sm font-bold"
+              className="neo-badge text-xs sm:text-sm font-bold inline-flex items-center gap-1.5"
               style={{
                 backgroundColor: "var(--google-red-bg)",
                 color: "var(--google-red-text)",
@@ -1333,7 +1351,7 @@ export function Footer({ info = {} }) {
               }}
             >
               Email
-              <Icon name="mail" size={13} />
+              <Icon name="mail" size={14} />
             </a>
           </Cluster>
         </div>

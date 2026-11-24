@@ -334,7 +334,7 @@ export default function AdminProfile({ initialInfo, onUpdateInfo }) {
           Tautan Sosial & Dokumen
         </h3>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div>
             <label className="block text-xs font-bold font-mono uppercase mb-1.5">
               GitHub URL
@@ -359,6 +359,23 @@ export default function AdminProfile({ initialInfo, onUpdateInfo }) {
               type="url"
               value={formData.linkedin || ""}
               onChange={(e) => handleChange("linkedin", e.target.value)}
+              className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm"
+              style={{
+                backgroundColor: "var(--surface-alt)",
+                borderColor: "var(--border)",
+              }}
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold font-mono uppercase mb-1.5">
+              Instagram URL
+            </label>
+            <input
+              type="url"
+              value={formData.instagram || ""}
+              onChange={(e) => handleChange("instagram", e.target.value)}
+              placeholder="https://instagram.com/mraynarr"
               className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm"
               style={{
                 backgroundColor: "var(--surface-alt)",

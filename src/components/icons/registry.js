@@ -51,7 +51,7 @@ import {
   HelpCircle,
   LogOut,
 } from "lucide-react";
-import { GithubIcon, LinkedinIcon } from "./custom";
+import { GithubIcon, LinkedinIcon, InstagramIcon } from "./custom";
 
 // Curated icon registry for UI and database keys
 export const ICON_REGISTRY = {
@@ -66,6 +66,7 @@ export const ICON_REGISTRY = {
   "chevron-down": ChevronDown,
   github: GithubIcon,
   linkedin: LinkedinIcon,
+  instagram: InstagramIcon,
   mail: Mail,
   globe: Globe,
   phone: Phone,

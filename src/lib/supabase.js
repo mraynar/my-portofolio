@@ -98,6 +98,10 @@ export async function getSiteSettings() {
           cvUrl: data.cv_url,
           github: data.github_url,
           linkedin: data.linkedin_url,
+          instagram:
+            data.instagram_url ||
+            PERSONAL_INFO.instagram ||
+            "https://instagram.com/mraynarr",
           email: data.email,
           location: data.location,
           timezone: data.timezone,
@@ -162,6 +166,7 @@ export async function saveSiteSettings(id, fields) {
         cv_url: fields.cvUrl || updated.cvUrl || "",
         github_url: fields.github || updated.github || "",
         linkedin_url: fields.linkedin || updated.linkedin || "",
+        instagram_url: fields.instagram || updated.instagram || "",
         email: fields.email || updated.email || "",
         location: fields.location || updated.location || "",
         timezone: fields.timezone || updated.timezone || "",

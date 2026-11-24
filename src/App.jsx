@@ -75,6 +75,10 @@ function Hero({ info = PERSONAL_INFO }) {
   const cvUrl = info.cvUrl || PERSONAL_INFO.cvUrl;
   const github = info.github || PERSONAL_INFO.github;
   const linkedin = info.linkedin || PERSONAL_INFO.linkedin;
+  const instagram =
+    info.instagram ||
+    PERSONAL_INFO.instagram ||
+    "https://instagram.com/mraynarr";
   const email = info.email || PERSONAL_INFO.email;
   const avatar = info.avatar || PERSONAL_INFO.avatar;
   const location = info.location || PERSONAL_INFO.location;
@@ -154,20 +158,20 @@ function Hero({ info = PERSONAL_INFO }) {
                 href={github}
                 target="_blank"
                 rel="noreferrer"
-                className="neo-badge text-xs sm:text-sm font-bold"
+                className="neo-badge text-xs sm:text-sm font-bold inline-flex items-center gap-1.5"
                 style={{
                   backgroundColor: "var(--surface)",
                   color: "var(--ink)",
                 }}
               >
                 GitHub
-                <Icon name="external-link" size={13} />
+                <Icon name="github" size={14} />
               </a>
               <a
                 href={linkedin}
                 target="_blank"
                 rel="noreferrer"
-                className="neo-badge text-xs sm:text-sm font-bold"
+                className="neo-badge text-xs sm:text-sm font-bold inline-flex items-center gap-1.5"
                 style={{
                   backgroundColor: "var(--google-blue-bg)",
                   color: "var(--google-blue-text)",
@@ -175,11 +179,25 @@ function Hero({ info = PERSONAL_INFO }) {
                 }}
               >
                 LinkedIn
-                <Icon name="external-link" size={13} />
+                <Icon name="linkedin" size={14} />
+              </a>
+              <a
+                href={instagram}
+                target="_blank"
+                rel="noreferrer"
+                className="neo-badge text-xs sm:text-sm font-bold inline-flex items-center gap-1.5"
+                style={{
+                  backgroundColor: "var(--google-yellow-bg)",
+                  color: "var(--google-yellow-text)",
+                  borderColor: "var(--google-yellow)",
+                }}
+              >
+                Instagram
+                <Icon name="instagram" size={14} />
               </a>
               <a
                 href={`mailto:${email}`}
-                className="neo-badge text-xs sm:text-sm font-bold"
+                className="neo-badge text-xs sm:text-sm font-bold inline-flex items-center gap-1.5"
                 style={{
                   backgroundColor: "var(--google-red-bg)",
                   color: "var(--google-red-text)",
@@ -187,7 +205,7 @@ function Hero({ info = PERSONAL_INFO }) {
                 }}
               >
                 Email
-                <Icon name="mail" size={13} />
+                <Icon name="mail" size={14} />
               </a>
             </Cluster>
           </div>
