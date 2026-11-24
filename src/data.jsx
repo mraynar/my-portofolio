@@ -12,7 +12,7 @@ export const PERSONAL_INFO = {
   linkedin: "https://linkedin.com/in/mraynar",
   instagram: "https://instagram.com/mraynarr",
   cvUrl: "https://drive.google.com/file/d/1pq52Be_s4RBNsxYBBS2YEAFgtYxQjrbi/view?usp=sharing",
-  avatar: "/images/about/profile-utama.png",
+  avatar: "",
   valueProp: "Mengembangkan aplikasi web dan mobile berbasis sistem informasi yang terukur, fungsional, dan berorientasi pada efisiensi operasional.",
 };
 
@@ -60,7 +60,7 @@ export const PROJECTS = [
     title: "Sistem Manajemen Rumah Kos Griya Asri",
     label: "Web App",
     categoryColor: "blue", // Google Blue
-    image: "/images/projects/Griya Asri Kos.png",
+    image: "",
     featured: true,
     badges: ["Laravel", "Tailwind CSS", "Midtrans", "MySQL"],
     problem: "Pengelolaan sewa kos dan penagihan sewa bulanan sebelumnya masih dicatat manual via nota fisik dan spreadsheet, sering terjadi selisih dan keterlambatan konfirmasi pembayaran.",
@@ -87,7 +87,7 @@ export const PROJECTS = [
     title: "Portal Digital UKM Penalaran & Penelitian",
     label: "Web App",
     categoryColor: "green", // Google Green
-    image: "/images/projects/Web UKM.png",
+    image: "",
     featured: true,
     badges: ["WordPress Engine", "PHP", "MySQL", "UI/UX Design"],
     problem: "Alur pengumpulan proposal riset ilmiah mahasiswa dan publikasi dokumentasi kegiatan tersebar di berbagai tautan formulir terpisah tanpa repositori terpusat.",
@@ -114,7 +114,7 @@ export const PROJECTS = [
     title: "TemuAksi - Platform Kolaborasi Aksi Sosial",
     label: "Mobile App",
     categoryColor: "yellow", // Google Yellow
-    image: "/images/projects/TemuAksi.png",
+    image: "",
     featured: true,
     badges: ["Flutter", "Firebase Auth", "Firestore", "Google Sign-In"],
     problem: "Inisiator komunitas sosial lokal kesulitan mencari sukarelawan berkeahlian spesifik karena ketiadaan platform agregator aksi sosial yang terpercaya.",
@@ -141,7 +141,7 @@ export const PROJECTS = [
     title: "Shopping Kuy - Marketplace C2C Pre-Loved",
     label: "Web App",
     categoryColor: "blue",
-    image: "/images/projects/Shopping Kuy.png",
+    image: "",
     featured: false,
     badges: ["Laravel", "React", "RajaOngkir API", "MySQL"],
     problem: "Transaksi jual beli pakaian bekas (*pre-loved*) antar mahasiswa sering terkendala kalkulasi ongkos kirim manual dan risiko penipuan rekening pribadi.",
@@ -167,7 +167,7 @@ export const PROJECTS = [
     title: "Rent Car Management System",
     label: "Web App",
     categoryColor: "blue",
-    image: "/images/projects/RentCar.png",
+    image: "",
     featured: false,
     badges: ["Laravel", "Bootstrap 5", "Midtrans", "MySQL"],
     problem: "Penyewaan armada kendaraan rental rental membutuhkan pencatatan jadwal ketersediaan unit yang presisi agar terhindar dari *double booking*.",
@@ -193,7 +193,7 @@ export const PROJECTS = [
     title: "Si Paling - Platform Pelaporan Warga",
     label: "UI/UX Design",
     categoryColor: "red",
-    image: "/images/projects/Si PALING.png",
+    image: "",
     featured: false,
     badges: ["Figma", "Design System", "User Research", "Wireframing"],
     problem: "Masyarakat enggan melaporkan masalah fasilitas umum karena proses birokrasi formulir pemerintah yang berbelit dan tidak transparan.",
@@ -219,7 +219,7 @@ export const PROJECTS = [
     title: "SalesLens - Dashboard Analitik E-Commerce",
     label: "Data Analyst",
     categoryColor: "yellow",
-    image: "/images/projects/Data Analyst Dashboard.png",
+    image: "",
     featured: false,
     badges: ["Google Looker Studio", "Data Cleaning", "E-Commerce", "SQL"],
     problem: "Data transaksi penjualan e-commerce mentah sulit dibaca oleh tim bisnis untuk mengambil keputusan promosi musiman dan segmentasi produk.",
@@ -245,7 +245,7 @@ export const PROJECTS = [
     title: "Analisis Kinerja Distribusi FMCG",
     label: "Data Analyst",
     categoryColor: "yellow",
-    image: "/images/projects/Data Analyst.png",
+    image: "",
     featured: false,
     badges: ["Power BI", "Data Modeling", "DAX", "FMCG"],
     problem: "Distributor produk FMCG memerlukan visibilitas cepat terhadap stok lambat laku (*slow-moving items*) di berbagai gerai retail.",
@@ -279,7 +279,7 @@ export const EXPERIENCE = [
     active: true, // Single active indicator
     category: "Program Kepemimpinan",
     categoryColor: "green",
-    photo: "/images/experiences/novo/novo.jpg",
+    photo: "",
     photoAlt: "Dokumentasi Program Novo Entrepreneurship ParagonCorp",
     bullets: [
       "Mengikuti program intensif kepemimpinan dan kewirausahaan yang diselenggarakan oleh ekosistem ParagonCorp.",
@@ -297,7 +297,7 @@ export const EXPERIENCE = [
     active: false,
     category: "Organisasi Kampus",
     categoryColor: "blue",
-    photo: "/images/experiences/hima/himasifo.jpg",
+    photo: "",
     photoAlt: "Dokumentasi Staf Humas HIMASIFO UPN Veteran Jawa Timur",
     bullets: [
       "Menginisiasi dan mengoordinasikan jalinan kemitraan eksternal bersama 5+ himpunan mahasiswa universitas mitra dan praktisi industri.",
@@ -315,7 +315,7 @@ export const EXPERIENCE = [
     active: false,
     category: "Organisasi Kampus",
     categoryColor: "yellow",
-    photo: "/images/experiences/ukmpnk/pnk.jpg",
+    photo: "",
     photoAlt: "Dokumentasi Tim Staf IT UKM Penalaran",
     bullets: [
       "Mengembangkan dan merawat portal web resmi organisasi untuk publikasi artikel karya tulis ilmiah dan pengumuman lomba.",
@@ -333,7 +333,7 @@ export const EXPERIENCE = [
     active: false,
     category: "Magang Industri",
     categoryColor: "red",
-    photo: "/images/experiences/magang/magang.jpg",
+    photo: "",
     photoAlt: "Dokumentasi Magang Frontend Developer CV Indra Protection",
     bullets: [
       "Menerjemahkan desain purwarupa antarmuka ke dalam kode HTML, CSS, dan JavaScript yang modular dan responsif di berbagai perangkat.",

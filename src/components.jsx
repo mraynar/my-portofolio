@@ -602,8 +602,32 @@ export function ProjectCard({ project, onOpenCaseStudy }) {
             loading="lazy"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center font-bold text-sm text-gray-500">
-            Preview Proyek
+          <div
+            className="w-full h-full flex flex-col items-center justify-center p-4 text-center select-none"
+            style={{ backgroundColor: "var(--surface-alt)" }}
+          >
+            <div
+              className="w-10 h-10 rounded-xl border-2 flex items-center justify-center mb-2 shadow-[2px_2px_0_var(--shadow-color)]"
+              style={{
+                backgroundColor: "var(--surface)",
+                borderColor: "var(--border)",
+                color: cfg.topBorder,
+              }}
+            >
+              <Icon name="code" size={20} />
+            </div>
+            <span
+              className="text-xs font-bold font-mono uppercase tracking-wider"
+              style={{ color: "var(--ink)" }}
+            >
+              Pratinjau Proyek
+            </span>
+            <span
+              className="text-[10px] font-mono mt-0.5"
+              style={{ color: "var(--ink-muted)" }}
+            >
+              Input via Admin CMS
+            </span>
           </div>
         )}
       </div>

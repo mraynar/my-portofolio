@@ -11,7 +11,7 @@ const EMPTY_PROJECT = {
   title: "",
   label: "Web App",
   featured: false,
-  image: "/images/projects/sistem-kos.png",
+  image: "",
   problem: "",
   solution: "",
   impact: "",

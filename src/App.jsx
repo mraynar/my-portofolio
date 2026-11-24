@@ -216,12 +216,42 @@ function Hero({ info = PERSONAL_INFO }) {
                       borderColor: "var(--border)",
                     }}
                   >
-                    <img
-                      src={avatar || PERSONAL_INFO.avatar}
-                      alt={`Foto Profil ${info.name || "Muhammad Raynar Hammam"}`}
-                      className="w-full h-full object-cover object-top"
-                      loading="eager"
-                    />
+                    {avatar ? (
+                      <img
+                        src={avatar}
+                        alt={`Foto Profil ${info.name || "Muhammad Raynar Hammam"}`}
+                        className="w-full h-full object-cover object-top"
+                        loading="eager"
+                      />
+                    ) : (
+                      <div
+                        className="w-full h-full flex flex-col items-center justify-center p-4 text-center select-none"
+                        style={{ backgroundColor: "var(--surface-alt)" }}
+                      >
+                        <div
+                          className="w-14 h-14 rounded-2xl border-2 flex items-center justify-center mb-2.5 shadow-[2px_2px_0_var(--shadow-color)]"
+                          style={{
+                            backgroundColor: "var(--surface)",
+                            borderColor: "var(--border)",
+                            color: "var(--google-blue)",
+                          }}
+                        >
+                          <Icon name="user" size={28} />
+                        </div>
+                        <span
+                          className="text-xs font-bold font-mono uppercase tracking-wider"
+                          style={{ color: "var(--ink)" }}
+                        >
+                          Foto Profil
+                        </span>
+                        <span
+                          className="text-[11px] font-mono mt-0.5"
+                          style={{ color: "var(--ink-muted)" }}
+                        >
+                          Input via Admin CMS
+                        </span>
+                      </div>
+                    )}
                   </div>
 
                   <div

@@ -348,7 +348,7 @@ export default function AdminExperience({ experience = [], onRefresh }) {
                         photo: e.target.value,
                       })
                     }
-                    placeholder="/images/experiences/novo/novo.jpg atau URL online"
+                    placeholder="URL gambar (https://...)"
                     className="w-full px-3.5 py-2 rounded-xl border-2 font-medium text-sm"
                     style={{
                       backgroundColor: "var(--surface-alt)",
