@@ -1,1 +1,345 @@
 @import "tailwindcss";
+
+/* Design system tokens */
+:root {
+  --canvas: #f1f6fc;
+  --surface: #ffffff;
+  --surface-alt: #e8f0fe;
+  --ink: #1f1f1f;
+  --ink-secondary: #3c4043;
+  --ink-muted: #5f6368;
+  --border: #1f1f1f;
+  --shadow-color: #1f1f1f;
+
+  /* Google brand palette */
+  --google-blue: #1a73e8;
+  --google-blue-hover: #1557b0;
+  --google-blue-bg: #e8f0fe;
+  --google-blue-text: #174ea6;
+
+  --google-red: #ea4335;
+  --google-red-hover: #d93025;
+  --google-red-bg: #fce8e6;
+  --google-red-text: #c5221f;
+
+  --google-yellow: #f29900;
+  --google-yellow-hover: #e37400;
+  --google-yellow-bg: #fef7e0;
+  --google-yellow-text: #b06000;
+
+  --google-green: #188038;
+  --google-green-hover: #137333;
+  --google-green-bg: #e6f4ea;
+  --google-green-text: #0d652d;
+
+  /* Spacing system tokens */
+  --space-4: 4px;
+  --space-8: 8px;
+  --space-12: 12px;
+  --space-16: 16px;
+  --space-24: 24px;
+  --space-32: 32px;
+  --space-48: 48px;
+  --space-64: 64px;
+  --space-96: 96px;
+  --space-128: 128px;
+
+  /* Sticky navigation height */
+  --nav-h: 72px;
+
+  --card-radius: 24px;
+  --card-radius-lg: 32px;
+  --pill-radius: 9999px;
+  --font-display: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-body: 'Outfit', system-ui, -apple-system, sans-serif;
+}
+
+@media (max-width: 640px) {
+  :root {
+    --nav-h: 64px;
+  }
+}
+
+html.dark {
+  --canvas: #0c1017;
+  --surface: #141b26;
+  --surface-alt: #1c2536;
+  --ink: #f0f4f9;
+  --ink-secondary: #c4c7c5;
+  --ink-muted: #9aa0a6;
+  --border: #e3e3e3;
+  --shadow-color: #000000;
+
+  --google-blue: #8ab4f8;
+  --google-blue-hover: #aecbfa;
+  --google-blue-bg: #17263c;
+  --google-blue-text: #8ab4f8;
+
+  --google-red: #f28b82;
+  --google-red-hover: #f6aea9;
+  --google-red-bg: #381c1d;
+  --google-red-text: #f28b82;
+
+  --google-yellow: #fdd663;
+  --google-yellow-hover: #feefc3;
+  --google-yellow-bg: #382f19;
+  --google-yellow-text: #fdd663;
+
+  --google-green: #81c995;
+  --google-green-hover: #a8dab5;
+  --google-green-bg: #183324;
+  --google-green-text: #81c995;
+}
+
+/* Box sizing reset without wiping Tailwind utility spacing */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  color-scheme: light dark;
+}
+
+body {
+  background-color: var(--canvas);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* Section scroll anchor clearance for sticky navbar */
+section[id] {
+  scroll-margin-top: calc(var(--nav-h) + 16px);
+}
+
+/* Neo-brutalist card base */
+.neo-card {
+  background-color: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: var(--card-radius);
+  box-shadow: 3px 3px 0 var(--shadow-color);
+  padding: 1.25rem;
+  transition: transform 150ms ease, box-shadow 150ms ease;
+}
+
+@media (min-width: 640px) {
+  .neo-card {
+    padding: 1.5rem;
+    box-shadow: 4px 4px 0 var(--shadow-color);
+  }
+}
+
+@media (min-width: 1024px) {
+  .neo-card {
+    padding: 2rem;
+    border-radius: var(--card-radius-lg);
+    box-shadow: 6px 6px 0 var(--shadow-color);
+  }
+}
+
+.neo-card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--shadow-color);
+}
+
+.neo-card-flat {
+  background-color: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: var(--card-radius);
+  box-shadow: 3px 3px 0 var(--shadow-color);
+  padding: 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .neo-card-flat {
+    padding: 1.5rem;
+    box-shadow: 4px 4px 0 var(--shadow-color);
+  }
+}
+
+@media (min-width: 1024px) {
+  .neo-card-flat {
+    padding: 2rem;
+    border-radius: var(--card-radius-lg);
+    box-shadow: 6px 6px 0 var(--shadow-color);
+  }
+}
+
+.neo-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  gap: 0.75rem;
+  padding: 0.75rem 1.5rem;
+  background-color: var(--google-blue);
+  color: #ffffff;
+  font-weight: 700;
+  border-radius: var(--pill-radius);
+  border: 2px solid var(--border);
+  box-shadow: 3px 3px 0 var(--shadow-color);
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: transform 150ms ease, box-shadow 150ms ease, background-color 150ms ease;
+}
+
+.neo-btn-primary:hover {
+  background-color: var(--google-blue-hover);
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0 var(--shadow-color);
+}
+
+.neo-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  gap: 0.75rem;
+  padding: 0.75rem 1.5rem;
+  background-color: var(--surface);
+  color: var(--ink);
+  font-weight: 700;
+  border-radius: var(--pill-radius);
+  border: 2px solid var(--border);
+  box-shadow: 3px 3px 0 var(--shadow-color);
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: transform 150ms ease, box-shadow 150ms ease, background-color 150ms ease;
+}
+
+.neo-btn-secondary:hover {
+  background-color: var(--surface-alt);
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0 var(--shadow-color);
+}
+
+.neo-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  gap: 0.4rem;
+  padding: 0.375rem 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  border-radius: var(--pill-radius);
+  border: 1.5px solid var(--border);
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+.kicker {
+  font-family: 'Plus Jakarta Sans', monospace, sans-serif;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--google-blue);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Pastel tinted stat cards with high readability */
+.devfest-card-blue {
+  background-color: var(--google-blue-bg);
+  color: var(--ink);
+  border: 2px solid var(--border);
+  border-radius: var(--card-radius);
+  box-shadow: 4px 4px 0 var(--shadow-color);
+  transition: transform 150ms ease, box-shadow 150ms ease;
+}
+.devfest-card-blue:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--shadow-color);
+}
+
+.devfest-card-yellow {
+  background-color: var(--google-yellow-bg);
+  color: var(--ink);
+  border: 2px solid var(--border);
+  border-radius: var(--card-radius);
+  box-shadow: 4px 4px 0 var(--shadow-color);
+  transition: transform 150ms ease, box-shadow 150ms ease;
+}
+.devfest-card-yellow:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--shadow-color);
+}
+
+.devfest-card-green {
+  background-color: var(--google-green-bg);
+  color: var(--ink);
+  border: 2px solid var(--border);
+  border-radius: var(--card-radius);
+  box-shadow: 4px 4px 0 var(--shadow-color);
+  transition: transform 150ms ease, box-shadow 150ms ease;
+}
+.devfest-card-green:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--shadow-color);
+}
+
+.devfest-card-red {
+  background-color: var(--google-red-bg);
+  color: var(--ink);
+  border: 2px solid var(--border);
+  border-radius: var(--card-radius);
+  box-shadow: 4px 4px 0 var(--shadow-color);
+  transition: transform 150ms ease, box-shadow 150ms ease;
+}
+.devfest-card-red:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--shadow-color);
+}
+
+/* Static DevFest code tile background */
+.bg-code-tile {
+  background-image: radial-gradient(var(--ink) 1.5px, transparent 1.5px);
+  background-size: 24px 24px;
+  opacity: 0.06;
+}
+
+/* Google 4-color gradient bar */
+.google-bar {
+  height: 5px;
+  background: linear-gradient(
+    90deg,
+    #1a73e8 0% 25%,
+    #ea4335 25% 50%,
+    #fbbc04 50% 75%,
+    #34a853 75% 100%
+  );
+}
+
+/* Clean scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--canvas);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--ink-muted);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ink-secondary);
+}
+
+/* Reduced motion accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
