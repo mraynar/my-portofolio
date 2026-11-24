@@ -5,13 +5,18 @@ import {
   deleteExperience,
   uploadStorageFile,
 } from "../lib/supabase";
+import {
+  isInternshipExperience,
+  sortExperiencesLatestFirst,
+} from "../data";
 
 const EMPTY_EXP = {
   role: "",
   org: "",
   org_url: "",
   period: "Maret 2026 - Sekarang",
-  category: "Program Kepemimpinan",
+  type: "Magang",
+  category: "Magang Industri",
   photo: "",
   photoAlt: "",
   active: true,
@@ -23,6 +28,7 @@ const EMPTY_EXP = {
 // Experience timeline management tab
 export default function AdminExperience({ experience = [], onRefresh }) {
   const [editingItem, setEditingItem] = useState(null);
+  const [filterType, setFilterType] = useState("all");
   const [bulletsText, setBulletsText] = useState("");
   const [tagsText, setTagsText] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -88,8 +94,17 @@ export default function AdminExperience({ experience = [], onRefresh }) {
     setIsSubmitting(true);
     setFeedback(null);
 
+    const isMagang =
+      editingItem.type === "Magang" || isInternshipExperience(editingItem);
+    const resolvedType = isMagang ? "Magang" : "Organisasi";
     const payload = {
       ...editingItem,
+      type: resolvedType,
+      category:
+        editingItem.category ||
+        (isMagang ? "Magang Industri" : "Organisasi Kampus"),
+      active: Boolean(editingItem.active),
+      current: Boolean(editingItem.active),
       bullets: bulletsText
         .split("\n")
         .map((b) => b.trim())
@@ -239,27 +254,43 @@ export default function AdminExperience({ experience = [], onRefresh }) {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-bold font-mono uppercase mb-1.5">
-                  Periode Waktu
+                  Bagian / Tipe Pengalaman
                 </label>
-                <input
-                  type="text"
-                  required
-                  value={editingItem.period}
-                  onChange={(e) =>
-                    setEditingItem({ ...editingItem, period: e.target.value })
+                <select
+                  value={
+                    editingItem.type ||
+                    (isInternshipExperience(editingItem) ? "Magang" : "Organisasi")
                   }
-                  placeholder="Maret 2026 - Sekarang"
+                  onChange={(e) => {
+                    const nextType = e.target.value;
+                    setEditingItem({
+                      ...editingItem,
+                      type: nextType,
+                      category:
+                        editingItem.category ||
+                        (nextType === "Magang"
+                          ? "Magang Industri"
+                          : "Organisasi Kampus"),
+                    });
+                  }}
                   className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm"
                   style={{
                     backgroundColor: "var(--surface-alt)",
                     borderColor: "var(--border)",
                   }}
-                />
+                >
+                  <option value="Magang">
+                    Pengalaman Magang & Profesional (Bagian Atas)
+                  </option>
+                  <option value="Organisasi">
+                    Pengalaman Organisasi & Kepemimpinan (Bagian Bawah)
+                  </option>
+                </select>
               </div>
 
               <div>
                 <label className="block text-xs font-bold font-mono uppercase mb-1.5">
-                  Kategori Program / Jenis
+                  Label Kategori / Sub-judul
                 </label>
                 <input
                   type="text"
@@ -270,7 +301,7 @@ export default function AdminExperience({ experience = [], onRefresh }) {
                       category: e.target.value,
                     })
                   }
-                  placeholder="Program Kepemimpinan / Magang Industri"
+                  placeholder="Magang Industri / Program Kepemimpinan"
                   className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm"
                   style={{
                     backgroundColor: "var(--surface-alt)",
@@ -280,18 +311,19 @@ export default function AdminExperience({ experience = [], onRefresh }) {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="sm:col-span-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
                 <label className="block text-xs font-bold font-mono uppercase mb-1.5">
-                  Tautan Website Organisasi (Opsional)
+                  Periode Waktu
                 </label>
                 <input
-                  type="url"
-                  value={editingItem.org_url || ""}
+                  type="text"
+                  required
+                  value={editingItem.period}
                   onChange={(e) =>
-                    setEditingItem({ ...editingItem, org_url: e.target.value })
+                    setEditingItem({ ...editingItem, period: e.target.value })
                   }
-                  placeholder="https://organisasi.id"
+                  placeholder="Maret 2026 - Sekarang"
                   className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm"
                   style={{
                     backgroundColor: "var(--surface-alt)",
@@ -316,6 +348,25 @@ export default function AdminExperience({ experience = [], onRefresh }) {
                   <span>Masih Aktif / Sekarang</span>
                 </label>
               </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold font-mono uppercase mb-1.5">
+                Tautan Website Organisasi (Opsional)
+              </label>
+              <input
+                type="url"
+                value={editingItem.org_url || ""}
+                onChange={(e) =>
+                  setEditingItem({ ...editingItem, org_url: e.target.value })
+                }
+                placeholder="https://organisasi.id"
+                className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm"
+                style={{
+                  backgroundColor: "var(--surface-alt)",
+                  borderColor: "var(--border)",
+                }}
+              />
             </div>
 
             {/* Photo upload and URL row */}
@@ -451,92 +502,148 @@ export default function AdminExperience({ experience = [], onRefresh }) {
         </Card>
       )}
 
+      {/* Filter tabs */}
+      <div className="flex flex-wrap gap-2 pb-2">
+        {[
+          { key: "all", label: "Semua Pengalaman" },
+          { key: "magang", label: "Magang & Profesional" },
+          { key: "organisasi", label: "Organisasi & Kepemimpinan" },
+        ].map((tab) => (
+          <button
+            key={tab.key}
+            type="button"
+            onClick={() => setFilterType(tab.key)}
+            className="px-3.5 py-1.5 rounded-xl border-2 text-xs font-bold transition-all"
+            style={{
+              backgroundColor:
+                filterType === tab.key ? "var(--ink)" : "var(--surface)",
+              color:
+                filterType === tab.key ? "var(--canvas)" : "var(--ink)",
+              borderColor: "var(--border)",
+            }}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
       {/* Experience list */}
       <div className="space-y-4">
-        {experience.map((item, idx) => (
-          <Card key={item.id || item.role + idx} className="p-5">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3 pb-3 border-b-2">
-              <div className="flex items-center gap-3">
-                {item.photo && (
-                  <div
-                    className="w-16 h-12 rounded-lg overflow-hidden border-2 shrink-0"
-                    style={{ borderColor: "var(--border)" }}
-                  >
-                    <img
-                      src={item.photo}
-                      alt={item.photoAlt || item.role}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                )}
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <span
-                      className="text-xs font-mono font-bold"
-                      style={{ color: "var(--google-blue)" }}
-                    >
-                      {item.period}
-                    </span>
-                    {item.category && (
-                      <Chip variant="default">{item.category}</Chip>
+        {sortExperiencesLatestFirst(experience)
+          .filter((item) => {
+            if (filterType === "magang") return isInternshipExperience(item);
+            if (filterType === "organisasi")
+              return !isInternshipExperience(item);
+            return true;
+          })
+          .map((item, idx) => {
+            const isMagang = isInternshipExperience(item);
+            return (
+              <Card key={item.id || item.role + idx} className="p-5">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3 pb-3 border-b-2">
+                  <div className="flex items-center gap-3">
+                    {item.photo && (
+                      <div
+                        className="w-16 h-12 rounded-lg overflow-hidden border-2 shrink-0"
+                        style={{ borderColor: "var(--border)" }}
+                      >
+                        <img
+                          src={item.photo}
+                          alt={item.photoAlt || item.role}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
                     )}
+                    <div>
+                      <div className="flex items-center gap-2 mb-1 flex-wrap">
+                        <span
+                          className="neo-badge text-[11px] font-bold px-2 py-0.5"
+                          style={{
+                            backgroundColor: isMagang
+                              ? "var(--google-blue-bg)"
+                              : "var(--google-green-bg)",
+                            color: isMagang
+                              ? "var(--google-blue-text)"
+                              : "var(--google-green-text)",
+                            borderColor: isMagang
+                              ? "var(--google-blue)"
+                              : "var(--google-green)",
+                          }}
+                        >
+                          {isMagang
+                            ? "Magang & Profesional"
+                            : "Organisasi & Kampus"}
+                        </span>
+                        <span
+                          className="text-xs font-mono font-bold"
+                          style={{ color: "var(--ink-muted)" }}
+                        >
+                          {item.period}
+                        </span>
+                        {item.category && (
+                          <Chip variant="default">{item.category}</Chip>
+                        )}
+                        {(item.active || item.current) && (
+                          <Chip variant="green">Aktif</Chip>
+                        )}
+                      </div>
+                      <h4
+                        className="text-base sm:text-lg font-extrabold"
+                        style={{ fontFamily: "var(--font-display)" }}
+                      >
+                        {item.role}
+                      </h4>
+                      <div
+                        className="text-xs sm:text-sm font-bold"
+                        style={{ color: "var(--ink-secondary)" }}
+                      >
+                        {item.org}
+                      </div>
+                    </div>
                   </div>
-                  <h4
-                    className="text-base sm:text-lg font-extrabold"
-                    style={{ fontFamily: "var(--font-display)" }}
-                  >
-                    {item.role}
-                  </h4>
-                  <div
-                    className="text-xs sm:text-sm font-bold"
-                    style={{ color: "var(--ink-secondary)" }}
-                  >
-                    {item.org}
+
+                  <div className="flex items-center gap-2 self-start sm:self-auto">
+                    <button
+                      onClick={() => handleEdit(item)}
+                      className="neo-btn-secondary text-xs font-bold py-1.5 px-2.5"
+                    >
+                      <Icon name="edit" size={13} />
+                      Edit
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDelete(item.id || item.role)}
+                      className="neo-badge text-xs font-bold py-1.5 px-2.5"
+                      style={{
+                        backgroundColor: "var(--google-red-bg)",
+                        color: "var(--google-red-text)",
+                        borderColor: "var(--google-red)",
+                      }}
+                      aria-label={`Hapus ${item.role}`}
+                    >
+                      <Icon name="trash" size={13} />
+                    </button>
                   </div>
                 </div>
-              </div>
 
-              <div className="flex items-center gap-2 self-start sm:self-auto">
-                <button
-                  onClick={() => handleEdit(item)}
-                  className="neo-btn-secondary text-xs font-bold py-1.5 px-2.5"
-                >
-                  <Icon name="edit" size={13} />
-                  Edit
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleDelete(item.id || item.role)}
-                  className="neo-badge text-xs font-bold py-1.5 px-2.5"
-                  style={{
-                    backgroundColor: "var(--google-red-bg)",
-                    color: "var(--google-red-text)",
-                    borderColor: "var(--google-red)",
-                  }}
-                  aria-label={`Hapus ${item.role}`}
-                >
-                  <Icon name="trash" size={13} />
-                </button>
-              </div>
-            </div>
+                <ul className="list-disc pl-5 space-y-1 mb-4 text-xs sm:text-sm">
+                  {(item.bullets || []).map((b, i) => (
+                    <li key={i} style={{ color: "var(--ink-secondary)" }}>
+                      {b}
+                    </li>
+                  ))}
+                </ul>
 
-            <ul className="list-disc pl-5 space-y-1 mb-4 text-xs sm:text-sm">
-              {(item.bullets || []).map((b, i) => (
-                <li key={i} style={{ color: "var(--ink-secondary)" }}>
-                  {b}
-                </li>
-              ))}
-            </ul>
-
-            <div className="flex flex-wrap gap-2">
-              {(item.tags || []).map((tag) => (
-                <Chip key={tag} variant="default">
-                  {tag}
-                </Chip>
-              ))}
-            </div>
-          </Card>
-        ))}
+                <div className="flex flex-wrap gap-2">
+                  {(item.tags || []).map((tag) => (
+                    <Chip key={tag} variant="default">
+                      {tag}
+                    </Chip>
+                  ))}
+                </div>
+              </Card>
+            );
+          })}
       </div>
     </div>
   );

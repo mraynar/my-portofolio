@@ -9,6 +9,7 @@ import {
   SectionHeading,
   ProjectCard,
   ExpCard,
+  CareerPathwayBridge,
   CaseStudyModal,
   Navbar,
   Footer,
@@ -23,6 +24,8 @@ import {
   EXPERIENCE,
   EDUCATION,
   CERTIFICATIONS,
+  isInternshipExperience,
+  sortExperiencesLatestFirst,
 } from "./data";
 import {
   getSiteSettings,
@@ -672,9 +675,12 @@ function ProjectsPreview({ projects = PROJECTS, onOpenCaseStudy }) {
   );
 }
 
-// Experience preview
+// Experience preview separating internships and organizations with pathway
 function ExperiencePreview({ experience = EXPERIENCE }) {
-  const items = experience.slice(0, 3);
+  const sortedAll = sortExperiencesLatestFirst(experience);
+  const internships = sortedAll.filter(isInternshipExperience);
+  const organizations = sortedAll.filter((item) => !isInternshipExperience(item));
+
   return (
     <Section id="experience" style={{ backgroundColor: "transparent" }}>
       <Container>
@@ -682,8 +688,8 @@ function ExperiencePreview({ experience = EXPERIENCE }) {
           <SectionHeading
             kicker="REKAM JEJAK"
             title="Pengalaman"
-            accent="Organisasi & Magang"
-            subtitle="Kontribusi aktif dalam program kepemimpinan, kepengurusan kampus, dan praktik industri."
+            accent="Magang & Organisasi"
+            subtitle="Rekam jejak kontribusi profesional industri serta kepemimpinan organisasi kampus."
           />
           <Link
             to="/experience"
@@ -694,15 +700,140 @@ function ExperiencePreview({ experience = EXPERIENCE }) {
           </Link>
         </div>
 
-        <div className="max-w-4xl mx-auto relative">
-          {items.map((item, idx) => (
-            <ExpCard
-              key={item.role + item.org}
-              item={item}
-              index={idx}
-              isLast={idx === items.length - 1}
-            />
-          ))}
+        <div className="max-w-4xl mx-auto">
+          {/* Internship and professional experience placed first */}
+          <div className="mb-6">
+            <div
+              className="p-4 sm:p-5 rounded-2xl border-2 mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+              style={{
+                backgroundColor: "var(--surface)",
+                borderColor: "var(--border)",
+                boxShadow: "3px 3px 0 var(--shadow-color)",
+              }}
+            >
+              <div className="flex items-center gap-3">
+                <div
+                  className="w-10 h-10 rounded-xl border-2 border-[var(--border)] flex items-center justify-center shrink-0"
+                  style={{
+                    backgroundColor: "var(--google-blue-bg)",
+                    color: "var(--google-blue)",
+                  }}
+                >
+                  <Icon name="briefcase" size={20} />
+                </div>
+                <div>
+                  <h3
+                    className="font-extrabold text-base sm:text-lg"
+                    style={{
+                      fontFamily: "var(--font-display)",
+                      color: "var(--ink)",
+                    }}
+                  >
+                    Pengalaman Magang & Profesional
+                  </h3>
+                  <p
+                    className="text-xs sm:text-sm font-medium"
+                    style={{ color: "var(--ink-secondary)" }}
+                  >
+                    Praktik industri dan rekayasa perangkat lunak terapan.
+                  </p>
+                </div>
+              </div>
+              <span
+                className="neo-badge text-xs font-mono font-bold self-start sm:self-auto"
+                style={{
+                  backgroundColor: "var(--google-blue-bg)",
+                  color: "var(--google-blue-text)",
+                  borderColor: "var(--google-blue)",
+                }}
+              >
+                {internships.length} Pengalaman
+              </span>
+            </div>
+
+            <div className="relative">
+              {internships.map((item, idx) => (
+                <ExpCard
+                  key={item.id || item.role + item.org}
+                  item={item}
+                  index={idx}
+                  isLast={idx === internships.length - 1}
+                  connectToNext={true}
+                  customIndex={idx + 1}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Continuous career progression connector between sections */}
+          <CareerPathwayBridge
+            kicker="KONEKSI JEJAK KARIR"
+            title="Alur Perkembangan: Dari Ekosistem Kampus ke Industri"
+            description="Landasan kepemimpinan, riset organisasi, dan kolaborasi tim di kampus menjadi akselerator dalam mengeksekusi proyek rekayasa perangkat lunak di dunia industri."
+          />
+
+          {/* Section 2: Campus and leadership organizations (Placed below) */}
+          <div className="mt-6">
+            <div
+              className="p-4 sm:p-5 rounded-2xl border-2 mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+              style={{
+                backgroundColor: "var(--surface)",
+                borderColor: "var(--border)",
+                boxShadow: "3px 3px 0 var(--shadow-color)",
+              }}
+            >
+              <div className="flex items-center gap-3">
+                <div
+                  className="w-10 h-10 rounded-xl border-2 border-[var(--border)] flex items-center justify-center shrink-0"
+                  style={{
+                    backgroundColor: "var(--google-green-bg)",
+                    color: "var(--google-green)",
+                  }}
+                >
+                  <Icon name="users" size={20} />
+                </div>
+                <div>
+                  <h3
+                    className="font-extrabold text-base sm:text-lg"
+                    style={{
+                      fontFamily: "var(--font-display)",
+                      color: "var(--ink)",
+                    }}
+                  >
+                    Pengalaman Organisasi & Kepemimpinan
+                  </h3>
+                  <p
+                    className="text-xs sm:text-sm font-medium"
+                    style={{ color: "var(--ink-secondary)" }}
+                  >
+                    Kemitraan publik, riset penalaran, dan pembinaan komunitas.
+                  </p>
+                </div>
+              </div>
+              <span
+                className="neo-badge text-xs font-mono font-bold self-start sm:self-auto"
+                style={{
+                  backgroundColor: "var(--google-green-bg)",
+                  color: "var(--google-green-text)",
+                  borderColor: "var(--google-green)",
+                }}
+              >
+                {organizations.length} Pengalaman
+              </span>
+            </div>
+
+            <div className="relative">
+              {organizations.map((item, idx) => (
+                <ExpCard
+                  key={item.id || item.role + item.org}
+                  item={item}
+                  index={idx}
+                  isLast={idx === organizations.length - 1}
+                  customIndex={internships.length + idx + 1}
+                />
+              ))}
+            </div>
+          </div>
         </div>
       </Container>
     </Section>

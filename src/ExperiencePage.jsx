@@ -1,11 +1,27 @@
 import { Link } from "react-router-dom";
-import { Container, ExpCard, Cluster, Card, Chip, Icon } from "./components";
-import { EXPERIENCE, EDUCATION } from "./data";
+import {
+  Container,
+  ExpCard,
+  CareerPathwayBridge,
+  Cluster,
+  Card,
+  Chip,
+  Icon,
+} from "./components";
+import {
+  EXPERIENCE,
+  EDUCATION,
+  isInternshipExperience,
+  sortExperiencesLatestFirst,
+} from "./data";
 
 export default function ExperiencePage({
   experience = EXPERIENCE,
   education = EDUCATION,
 }) {
+  const sortedAll = sortExperiencesLatestFirst(experience);
+  const internships = sortedAll.filter(isInternshipExperience);
+  const organizations = sortedAll.filter((item) => !isInternshipExperience(item));
   return (
     <main
       className="min-h-screen pt-16 sm:pt-20 pb-20 relative"
@@ -66,20 +82,135 @@ export default function ExperiencePage({
       {/* Experience list */}
       <Container>
         <div className="max-w-4xl mx-auto space-y-12">
+          {/* Internship and professional experience placed first */}
           <div className="space-y-6">
-            <h2
-              className="text-xs sm:text-sm font-bold tracking-wider font-mono uppercase mb-6"
-              style={{ color: "var(--google-blue)" }}
+            <div
+              className="p-4 sm:p-5 rounded-2xl border-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+              style={{
+                backgroundColor: "var(--surface)",
+                borderColor: "var(--border)",
+                boxShadow: "3px 3px 0 var(--shadow-color)",
+              }}
             >
-              Pengalaman Profesional & Organisasi
-            </h2>
+              <div className="flex items-center gap-3">
+                <div
+                  className="w-10 h-10 rounded-xl border-2 border-[var(--border)] flex items-center justify-center shrink-0"
+                  style={{
+                    backgroundColor: "var(--google-blue-bg)",
+                    color: "var(--google-blue)",
+                  }}
+                >
+                  <Icon name="briefcase" size={20} />
+                </div>
+                <div>
+                  <h2
+                    className="font-extrabold text-base sm:text-lg"
+                    style={{
+                      fontFamily: "var(--font-display)",
+                      color: "var(--ink)",
+                    }}
+                  >
+                    Pengalaman Magang & Profesional
+                  </h2>
+                  <p
+                    className="text-xs sm:text-sm font-medium"
+                    style={{ color: "var(--ink-secondary)" }}
+                  >
+                    Praktik industri, rekayasa perangkat lunak, dan solusi web terapan.
+                  </p>
+                </div>
+              </div>
+              <span
+                className="neo-badge text-xs font-mono font-bold self-start sm:self-auto"
+                style={{
+                  backgroundColor: "var(--google-blue-bg)",
+                  color: "var(--google-blue-text)",
+                  borderColor: "var(--google-blue)",
+                }}
+              >
+                {internships.length} Pengalaman
+              </span>
+            </div>
+
             <div className="relative">
-              {experience.map((item, idx) => (
+              {internships.map((item, idx) => (
                 <ExpCard
-                  key={item.role + item.org}
+                  key={item.id || item.role + item.org}
                   item={item}
                   index={idx}
-                  isLast={idx === experience.length - 1}
+                  isLast={idx === internships.length - 1}
+                  connectToNext={true}
+                  customIndex={idx + 1}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Continuous career progression connector between sections */}
+          <CareerPathwayBridge
+            kicker="KONEKSI JEJAK KARIR"
+            title="Alur Perkembangan: Dari Ekosistem Kampus ke Industri"
+            description="Landasan kepemimpinan, riset organisasi, dan kolaborasi tim di kampus menjadi akselerator dalam mengeksekusi proyek rekayasa perangkat lunak di dunia industri."
+          />
+
+          {/* Section 2: Campus and leadership organizations (Placed below) */}
+          <div className="space-y-6">
+            <div
+              className="p-4 sm:p-5 rounded-2xl border-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+              style={{
+                backgroundColor: "var(--surface)",
+                borderColor: "var(--border)",
+                boxShadow: "3px 3px 0 var(--shadow-color)",
+              }}
+            >
+              <div className="flex items-center gap-3">
+                <div
+                  className="w-10 h-10 rounded-xl border-2 border-[var(--border)] flex items-center justify-center shrink-0"
+                  style={{
+                    backgroundColor: "var(--google-green-bg)",
+                    color: "var(--google-green)",
+                  }}
+                >
+                  <Icon name="users" size={20} />
+                </div>
+                <div>
+                  <h2
+                    className="font-extrabold text-base sm:text-lg"
+                    style={{
+                      fontFamily: "var(--font-display)",
+                      color: "var(--ink)",
+                    }}
+                  >
+                    Pengalaman Organisasi & Kepemimpinan
+                  </h2>
+                  <p
+                    className="text-xs sm:text-sm font-medium"
+                    style={{ color: "var(--ink-secondary)" }}
+                  >
+                    Kemitraan publik, riset penalaran, dan pembinaan komunitas kampus.
+                  </p>
+                </div>
+              </div>
+              <span
+                className="neo-badge text-xs font-mono font-bold self-start sm:self-auto"
+                style={{
+                  backgroundColor: "var(--google-green-bg)",
+                  color: "var(--google-green-text)",
+                  borderColor: "var(--google-green)",
+                }}
+              >
+                {organizations.length} Pengalaman
+              </span>
+            </div>
+
+            <div className="relative">
+              {organizations.map((item, idx) => (
+                <ExpCard
+                  key={item.id || item.role + item.org}
+                  item={item}
+                  index={idx}
+                  isLast={idx === organizations.length - 1}
+                  customIndex={internships.length + idx + 1}
                 />
               ))}
             </div>

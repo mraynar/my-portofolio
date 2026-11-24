@@ -268,16 +268,122 @@ export const PROJECTS = [
   },
 ];
 
+// Helper to check if experience item belongs to internship category
+export function isInternshipExperience(item) {
+  const typeText = String(item.type || "").toLowerCase();
+  const catText = String(item.category || "").toLowerCase();
+  const roleText = String(item.role || "").toLowerCase();
+
+  if (typeText === "magang" || typeText === "internship" || typeText === "profesional") {
+    return true;
+  }
+  if (typeText === "organisasi" || typeText === "leadership" || typeText === "kepemimpinan") {
+    return false;
+  }
+  return (
+    catText.includes("magang") ||
+    catText.includes("intern") ||
+    catText.includes("industri") ||
+    roleText.includes("intern") ||
+    roleText.includes("magang")
+  );
+}
+
+// Helper to parse date for reverse chronological sorting
+export function parseExperienceDate(item) {
+  const isActive = Boolean(
+    item.active ||
+    item.current ||
+    /sekarang|present|current/i.test(item.period || "")
+  );
+
+  const period = String(item.period || "");
+  const years = period.match(/\b(20\d{2}|19\d{2})\b/g);
+
+  let startYear = 0;
+  let endYear = 0;
+  if (years && years.length > 0) {
+    startYear = parseInt(years[0], 10);
+    endYear = years.length > 1 ? parseInt(years[1], 10) : (isActive ? 9999 : startYear);
+  }
+
+  const months = [
+    "januari", "februari", "maret", "april", "mei", "juni",
+    "juli", "agustus", "september", "oktober", "november", "desember",
+  ];
+  let startMonth = 0;
+  const lowerPeriod = period.toLowerCase();
+  for (let m = 0; m < months.length; m++) {
+    if (lowerPeriod.includes(months[m])) {
+      startMonth = m + 1;
+      break;
+    }
+  }
+
+  return {
+    isActive,
+    endYear,
+    startYear,
+    startMonth,
+    orderIndex: typeof item.order_index === "number" ? item.order_index : 0,
+  };
+}
+
+// Sort experience list reverse-chronologically with latest on top
+export function sortExperiencesLatestFirst(list = []) {
+  return [...list].sort((a, b) => {
+    const keyA = parseExperienceDate(a);
+    const keyB = parseExperienceDate(b);
+
+    if (keyA.isActive !== keyB.isActive) {
+      return keyA.isActive ? -1 : 1;
+    }
+    if (keyA.endYear !== keyB.endYear) {
+      return keyB.endYear - keyA.endYear;
+    }
+    if (keyA.startYear !== keyB.startYear) {
+      return keyB.startYear - keyA.startYear;
+    }
+    if (keyA.startMonth !== keyB.startMonth) {
+      return keyB.startMonth - keyA.startMonth;
+    }
+    return keyA.orderIndex - keyB.orderIndex;
+  });
+}
+
 // Experience timeline items
 export const EXPERIENCE = [
+  {
+    id: "exp-solusi",
+    role: "Full-Stack Web Developer Intern",
+    org: "PT Solusi Rekayasa Digital",
+    period: "Februari 2026 – Sekarang",
+    statusText: "Sekarang",
+    active: true,
+    current: true,
+    category: "Magang Industri",
+    type: "Magang",
+    categoryColor: "blue",
+    photo: "",
+    photoAlt: "Dokumentasi Full-Stack Web Developer Intern",
+    bullets: [
+      "Mengembangkan modul RESTful API dan integrasi basis data PostgreSQL untuk sistem pengelolaan transaksi internal perusahaan.",
+      "Membangun antarmuka dashboard monitoring operasional berbasis React dan Tailwind CSS yang responsif serta teruji di berbagai viewport.",
+      "Menerapkan mekanisme validasi data terpusat dan penanganan galat asinkron guna menjaga integritas data operasional.",
+    ],
+    tags: ["Full-Stack Web", "React", "PostgreSQL", "REST API", "Tailwind CSS"],
+    order_index: 1,
+  },
   {
     id: "exp-novo",
     role: "Peserta Novo Entrepreneurship",
     org: "Novo Club by ParagonCorp",
     period: "Maret 2026 – Sekarang",
     statusText: "Sekarang",
-    active: true, // Single active indicator
+    active: true,
+    current: true,
     category: "Program Kepemimpinan",
+    type: "Organisasi",
     categoryColor: "green",
     photo: "",
     photoAlt: "Dokumentasi Program Novo Entrepreneurship ParagonCorp",
@@ -287,6 +393,7 @@ export const EXPERIENCE = [
       "Menjalin jejaring profesional dan kolaborasi lintas disiplin bersama para mentor industri dan inovator muda.",
     ],
     tags: ["Kepemimpinan", "Validasi Bisnis", "Strategi Produk", "Kolaborasi"],
+    order_index: 2,
   },
   {
     id: "exp-himasifo",
@@ -295,7 +402,9 @@ export const EXPERIENCE = [
     period: "Januari 2025 – Desember 2025",
     statusText: "2025",
     active: false,
+    current: false,
     category: "Organisasi Kampus",
+    type: "Organisasi",
     categoryColor: "blue",
     photo: "",
     photoAlt: "Dokumentasi Staf Humas HIMASIFO UPN Veteran Jawa Timur",
@@ -305,6 +414,7 @@ export const EXPERIENCE = [
       "Berperan sebagai penghubung dalam penyelenggaraan seminar teknologi dan forum studi banding antar-kampus.",
     ],
     tags: ["Komunikasi Publik", "Kemitraan", "Manajemen Acara"],
+    order_index: 3,
   },
   {
     id: "exp-ukmpnk",
@@ -313,7 +423,9 @@ export const EXPERIENCE = [
     period: "Januari 2024 – Desember 2024",
     statusText: "2024",
     active: false,
+    current: false,
     category: "Organisasi Kampus",
+    type: "Organisasi",
     categoryColor: "yellow",
     photo: "",
     photoAlt: "Dokumentasi Tim Staf IT UKM Penalaran",
@@ -323,6 +435,7 @@ export const EXPERIENCE = [
       "Mendukung penyelenggaraan lokakarya penulisan ilmiah dan pembinaan delegasi kompetisi mahasiswa.",
     ],
     tags: ["Pengembangan Web", "Administrasi IT", "Riset Mahasiswa"],
+    order_index: 4,
   },
   {
     id: "exp-indra",
@@ -331,7 +444,9 @@ export const EXPERIENCE = [
     period: "Juli 2022 – Desember 2022",
     statusText: "2022",
     active: false,
+    current: false,
     category: "Magang Industri",
+    type: "Magang",
     categoryColor: "red",
     photo: "",
     photoAlt: "Dokumentasi Magang Frontend Developer CV Indra Protection",
@@ -341,6 +456,7 @@ export const EXPERIENCE = [
       "Mengoptimalkan kompresi aset gambar dan struktur skrip antarmuka guna meningkatkan kecepatan muat halaman web profil perusahaan.",
     ],
     tags: ["Front-End Web", "Responsive Design", "Cross-Browser Testing"],
+    order_index: 5,
   },
 ];
 

@@ -722,8 +722,88 @@ export function ProjectCard({ project, onOpenCaseStudy }) {
   );
 }
 
+// Pathway bridge between internship and organization milestones
+export function CareerPathwayBridge({
+  kicker = "KONEKSI JEJAK KARIR",
+  title = "Alur Perkembangan: Dari Ekosistem Kampus ke Industri",
+  description = "Landasan kepemimpinan, riset organisasi, dan kolaborasi tim di kampus menjadi akselerator dalam mengeksekusi proyek rekayasa perangkat lunak di dunia industri.",
+}) {
+  return (
+    <div className="relative pl-10 sm:pl-14 lg:pl-16 my-8 sm:my-12">
+      {/* Central continuous spine line running through */}
+      <div
+        className="absolute left-3.5 sm:left-5 lg:left-6 top-[-2.5rem] bottom-[-2.5rem] w-1"
+        style={{ backgroundColor: "var(--border)" }}
+      />
+
+      {/* Junction node on the spine */}
+      <div
+        className="absolute left-0 sm:left-1 lg:left-2 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 rounded-xl border-2 border-[var(--border)] flex items-center justify-center font-extrabold text-xs sm:text-sm shadow-[2px_2px_0_var(--shadow-color)] z-10"
+        style={{
+          backgroundColor: "var(--surface)",
+          color: "var(--google-blue)",
+        }}
+      >
+        <Icon name="git-branch" size={18} />
+      </div>
+
+      {/* Pathway card with circuit track styling */}
+      <div
+        className="p-5 sm:p-6 rounded-2xl border-2 relative overflow-hidden"
+        style={{
+          backgroundColor: "var(--surface-alt)",
+          borderColor: "var(--border)",
+          boxShadow: "3px 3px 0 var(--shadow-color)",
+        }}
+      >
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-2">
+          <div className="flex items-center gap-2">
+            <span
+              className="text-xs font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded border"
+              style={{
+                backgroundColor: "var(--google-blue-bg)",
+                borderColor: "var(--google-blue)",
+                color: "var(--google-blue-text)",
+              }}
+            >
+              {kicker}
+            </span>
+          </div>
+          <div
+            className="flex items-center gap-1.5 text-xs font-mono font-bold"
+            style={{ color: "var(--ink-muted)" }}
+          >
+            <span>Organisasi Kampus</span>
+            <Icon name="arrow-right" size={14} />
+            <span style={{ color: "var(--google-blue)" }}>Praktik Magang</span>
+          </div>
+        </div>
+
+        <h4
+          className="text-base sm:text-lg font-extrabold mb-1.5"
+          style={{ fontFamily: "var(--font-display)", color: "var(--ink)" }}
+        >
+          {title}
+        </h4>
+        <p
+          className="text-xs sm:text-sm leading-relaxed"
+          style={{ color: "var(--ink-secondary)" }}
+        >
+          {description}
+        </p>
+      </div>
+    </div>
+  );
+}
+
 // Progressive career journey milestone card with wide landscape media
-export function ExpCard({ item, index = 0, isLast = false }) {
+export function ExpCard({
+  item,
+  index = 0,
+  isLast = false,
+  connectToNext = false,
+  customIndex,
+}) {
   const numberThemes = [
     { bg: "var(--google-blue)", text: "#ffffff" },
     { bg: "var(--google-green)", text: "#ffffff" },
@@ -731,13 +811,15 @@ export function ExpCard({ item, index = 0, isLast = false }) {
     { bg: "var(--google-red)", text: "#ffffff" },
   ];
   const numColor = numberThemes[index % 4];
+  const displayNum =
+    typeof customIndex === "number" ? customIndex : index + 1;
 
   return (
     <div className="relative pl-10 sm:pl-14 lg:pl-16 mb-8 sm:mb-12 last:mb-0">
       {/* Connected vertical journey line linking milestones */}
-      {!isLast && (
+      {(!isLast || connectToNext) && (
         <div
-          className="absolute left-3.5 sm:left-5 lg:left-6 top-10 bottom-[-2rem] sm:bottom-[-3rem] w-1"
+          className="absolute left-3.5 sm:left-5 lg:left-6 top-10 bottom-[-2.5rem] sm:bottom-[-3.5rem] w-1"
           style={{
             backgroundColor: "var(--border)",
           }}
@@ -749,7 +831,7 @@ export function ExpCard({ item, index = 0, isLast = false }) {
         className="absolute left-0 sm:left-1 lg:left-2 top-2 w-8 h-8 sm:w-10 sm:h-10 rounded-xl border-2 border-[var(--border)] flex items-center justify-center font-extrabold font-mono text-xs sm:text-sm shadow-[2px_2px_0_var(--shadow-color)] z-10"
         style={{ backgroundColor: numColor.bg, color: numColor.text }}
       >
-        {String(index + 1).padStart(2, "0")}
+        {String(displayNum).padStart(2, "0")}
       </div>
 
       {/* Card with wide landscape photo banner and contained width */}

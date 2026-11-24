@@ -6,6 +6,7 @@ import {
   SKILL_CATEGORIES,
   EDUCATION,
   CERTIFICATIONS,
+  sortExperiencesLatestFirst,
 } from "../data";
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
@@ -219,16 +220,16 @@ export async function deleteProject(id) {
 
 const LOCAL_EXP_KEY = "portfolio_experience_cache";
 
-// Fetch experience entries with fallback
+// Fetch experience entries with fallback and reverse chronological sort
 export async function getExperience() {
   if (!supabase) {
     try {
       const cached = localStorage.getItem(LOCAL_EXP_KEY);
-      if (cached) return JSON.parse(cached);
+      if (cached) return sortExperiencesLatestFirst(JSON.parse(cached));
     } catch {
       // Fallback to static data
     }
-    return EXPERIENCE;
+    return sortExperiencesLatestFirst(EXPERIENCE);
   }
   try {
     const { data, error } = await supabase
@@ -239,21 +240,30 @@ export async function getExperience() {
     if (error || !data || data.length === 0) {
       try {
         const cached = localStorage.getItem(LOCAL_EXP_KEY);
-        if (cached) return JSON.parse(cached);
+        if (cached) return sortExperiencesLatestFirst(JSON.parse(cached));
       } catch {
         // Fallback to static data
       }
-      return EXPERIENCE;
+      return sortExperiencesLatestFirst(EXPERIENCE);
     }
-    return data;
+    const normalized = data.map((item) => ({
+      ...item,
+      category: item.category || item.type || "Organisasi",
+      type: item.type || item.category || "Organisasi",
+      active: item.active !== undefined ? item.active : item.current,
+      current: item.current !== undefined ? item.current : item.active,
+      photoAlt: item.photoAlt || item.photo_alt || "",
+      photo_alt: item.photo_alt || item.photoAlt || "",
+    }));
+    return sortExperiencesLatestFirst(normalized);
   } catch {
     try {
       const cached = localStorage.getItem(LOCAL_EXP_KEY);
-      if (cached) return JSON.parse(cached);
+      if (cached) return sortExperiencesLatestFirst(JSON.parse(cached));
     } catch {
       // Fallback to static data
     }
-    return EXPERIENCE;
+    return sortExperiencesLatestFirst(EXPERIENCE);
   }
 }
 
@@ -274,14 +284,37 @@ export async function upsertExperience(item) {
     }
     return payload;
   }
+  const isUuid =
+    item.id &&
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+      item.id
+    );
+  const dbPayload = {
+    ...(isUuid ? { id: item.id } : {}),
+    role: item.role,
+    org: item.org,
+    period: item.period,
+    type: item.type || item.category || "Organisasi",
+    current: Boolean(item.active ?? item.current ?? false),
+    bullets: Array.isArray(item.bullets) ? item.bullets : [],
+    tags: Array.isArray(item.tags) ? item.tags : [],
+    photo: item.photo || "",
+    photo_alt: item.photo_alt || item.photoAlt || "",
+    order_index: typeof item.order_index === "number" ? item.order_index : 0,
+  };
   const { data, error } = await supabase
     .from("experience")
-    .upsert(item)
+    .upsert(dbPayload)
     .select()
     .single();
 
   if (error) throw error;
-  return data;
+  return {
+    ...data,
+    category: data.category || data.type || "Organisasi",
+    active: data.active !== undefined ? data.active : data.current,
+    photoAlt: data.photoAlt || data.photo_alt || "",
+  };
 }
 
 // Delete experience entry
