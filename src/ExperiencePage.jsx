@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import {
   Container,
@@ -16,13 +17,22 @@ import {
   sortExperiencesLatestFirst,
 } from "./data";
 import { useLanguage } from "./context/LanguageContext";
+import { translateExperience, translateEducation } from "./lib/translations";
 
 export default function ExperiencePage({
   experience = EXPERIENCE,
   education = EDUCATION,
 }) {
-  const { t } = useLanguage();
-  const sortedAll = sortExperiencesLatestFirst(experience);
+  const { t, language } = useLanguage();
+  const localizedExperience = useMemo(
+    () => (experience || []).map((e) => translateExperience(e, language)),
+    [experience, language]
+  );
+  const localizedEducation = useMemo(
+    () => (education || []).map((e) => translateEducation(e, language)),
+    [education, language]
+  );
+  const sortedAll = sortExperiencesLatestFirst(localizedExperience);
   const internships = sortedAll.filter(isInternshipExperience);
   const organizations = sortedAll.filter((item) => !isInternshipExperience(item));
   return (
@@ -230,7 +240,7 @@ export default function ExperiencePage({
               {t("exp_edu_title")}
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {education.map((edu, idx) => (
+              {localizedEducation.map((edu, idx) => (
                 <Card
                   key={edu.school}
                   className="p-5 sm:p-6 border-l-4"

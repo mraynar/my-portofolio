@@ -1,8 +1,9 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useLocation } from "react-router-dom";
 import { PERSONAL_INFO } from "./data";
 import { Icon } from "./components/icons/Icon";
 import { useLanguage } from "./context/LanguageContext";
+import { translateProject, translateExperience } from "./lib/translations";
 
 export { Icon } from "./components/icons/Icon";
 export { ICON_REGISTRY, ICON_KEYS } from "./components/icons/registry.js";
@@ -785,9 +786,13 @@ export function CaseStudyModal({ project, onClose }) {
     };
   }, [onClose]);
 
-  const { t } = useLanguage();
-  if (!project) return null;
-  const cs = project.caseStudy;
+  const { t, language } = useLanguage();
+  const targetProject = useMemo(
+    () => (project ? translateProject(project, language) : null),
+    [project, language]
+  );
+  if (!targetProject) return null;
+  const cs = targetProject.caseStudy;
 
   return (
     <div
@@ -813,7 +818,7 @@ export function CaseStudyModal({ project, onClose }) {
         >
           <div>
             <Cluster gap={8} className="mb-2">
-              <Chip variant="blue">{project.label}</Chip>
+              <Chip variant="blue">{targetProject.label}</Chip>
               {cs?.duration && (
                 <span
                   className="text-xs sm:text-sm font-semibold"
@@ -830,7 +835,7 @@ export function CaseStudyModal({ project, onClose }) {
                 color: "var(--ink)",
               }}
             >
-              {project.title}
+              {targetProject.title}
             </h3>
             {cs?.role && (
               <p
@@ -867,7 +872,7 @@ export function CaseStudyModal({ project, onClose }) {
               className="text-base leading-relaxed"
               style={{ color: "var(--ink-secondary)" }}
             >
-              {cs?.background || project.problem}
+              {cs?.background || targetProject.problem}
             </p>
           </div>
 
@@ -882,7 +887,7 @@ export function CaseStudyModal({ project, onClose }) {
               className="text-base leading-relaxed"
               style={{ color: "var(--ink-secondary)" }}
             >
-              {cs?.solution || project.solution}
+              {cs?.solution || targetProject.solution}
             </p>
           </div>
 
@@ -900,7 +905,7 @@ export function CaseStudyModal({ project, onClose }) {
               {cs?.architecture || t("modal_arch_default")}
             </p>
             <Cluster gap={8}>
-              {project.badges.map((b) => (
+              {targetProject.badges.map((b) => (
                 <Chip key={b} variant="default">
                   {b}
                 </Chip>
@@ -925,7 +930,7 @@ export function CaseStudyModal({ project, onClose }) {
               className="text-base sm:text-lg font-bold"
               style={{ color: "var(--google-green-text)" }}
             >
-              {cs?.impact || project.impact}
+              {cs?.impact || targetProject.impact}
             </p>
           </div>
 
@@ -938,14 +943,14 @@ export function CaseStudyModal({ project, onClose }) {
           >
             <span className="font-bold">{t("modal_repo_status")} </span>
             <span style={{ color: "var(--ink-secondary)" }}>
-              {project.repoReason || project.repoNotice}
+              {targetProject.repoReason || targetProject.repoNotice}
             </span>
           </div>
 
           <Cluster gap={12} className="justify-end pt-4 border-t-2" style={{ borderColor: "var(--border)" }}>
-            {project.demoUrl && (
+            {targetProject.demoUrl && (
               <a
-                href={project.demoUrl}
+                href={targetProject.demoUrl}
                 target="_blank"
                 rel="noreferrer"
                 className="neo-btn-primary text-sm sm:text-base font-bold"
@@ -1052,33 +1057,11 @@ export function FeaturedHeroCard({ project, onOpenCaseStudy }) {
           </h3>
 
           <p
-            className="text-base sm:text-lg leading-relaxed mb-5"
+            className="text-base sm:text-lg leading-relaxed mb-6"
             style={{ color: "var(--ink-secondary)" }}
           >
             {project.problem}
           </p>
-
-          <div
-            className="p-4 rounded-xl border-2 mb-5"
-            style={{
-              backgroundColor: "var(--google-blue-bg)",
-              borderColor: "var(--google-blue)",
-            }}
-          >
-            <div
-              className="text-xs font-bold font-mono uppercase tracking-wider mb-1 flex items-center gap-1.5"
-              style={{ color: "var(--google-blue-text)" }}
-            >
-              <Icon name="bolt" size={14} />
-              {t("projects_key_impact")}
-            </div>
-            <div
-              className="text-base sm:text-lg font-bold"
-              style={{ color: "var(--google-blue-text)" }}
-            >
-              {project.impact}
-            </div>
-          </div>
 
           <Cluster gap={8} className="mb-6">
             {project.badges.map((b) => (
@@ -1138,8 +1121,14 @@ export function FeaturedHeroCard({ project, onOpenCaseStudy }) {
 
 // Landscape oriented project card with vertical deck layout
 export function ProjectCard({ project, onOpenCaseStudy }) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [lightboxOpen, setLightboxOpen] = useState(false);
+  const targetProject = useMemo(
+    () => (project ? translateProject(project, language) : null),
+    [project, language]
+  );
+  if (!targetProject) return null;
+
   const categoryConfig = {
     "Web App": {
       variant: "blue",
@@ -1171,7 +1160,7 @@ export function ProjectCard({ project, onOpenCaseStudy }) {
     },
   };
 
-  const cfg = categoryConfig[project.label] || categoryConfig["Web App"];
+  const cfg = categoryConfig[targetProject.label] || categoryConfig["Web App"];
 
   return (
     <div className="neo-card p-0 flex flex-col h-full overflow-hidden">
@@ -1191,7 +1180,7 @@ export function ProjectCard({ project, onOpenCaseStudy }) {
           <span className="w-2.5 h-2.5 rounded-full border border-[var(--border)] bg-[#fbbc04]" />
           <span className="w-2.5 h-2.5 rounded-full border border-[var(--border)] bg-[#34a853]" />
         </div>
-        <Chip variant={cfg.variant}>{project.label}</Chip>
+        <Chip variant={cfg.variant}>{targetProject.label}</Chip>
       </div>
 
       {/* Landscape media frame (16:10 aspect ratio) */}
@@ -1202,11 +1191,11 @@ export function ProjectCard({ project, onOpenCaseStudy }) {
           backgroundColor: "var(--canvas)",
         }}
       >
-        {project.image ? (
+        {targetProject.image ? (
           <>
             <img
-              src={project.image}
-              alt={project.title}
+              src={targetProject.image}
+              alt={targetProject.title}
               onClick={() => setLightboxOpen(true)}
               className="w-full h-full object-cover object-top cursor-zoom-in transition-transform duration-300 group-hover/cardimg:scale-105"
               loading="lazy"
@@ -1258,34 +1247,19 @@ export function ProjectCard({ project, onOpenCaseStudy }) {
             className="font-extrabold text-lg sm:text-xl mb-2 leading-snug line-clamp-2"
             style={{ fontFamily: "var(--font-display)", color: "var(--ink)" }}
           >
-            {project.title}
+            {targetProject.title}
           </h3>
 
           <p
-            className="text-xs sm:text-sm leading-relaxed mb-3 line-clamp-2"
+            className="text-xs sm:text-sm leading-relaxed mb-4 line-clamp-3"
             style={{ color: "var(--ink-secondary)" }}
           >
-            {project.problem}
+            {targetProject.problem}
           </p>
-
-          <div
-            className="p-2.5 rounded-xl border-2 mb-3 text-xs font-semibold"
-            style={{
-              backgroundColor: cfg.impactBg,
-              borderColor: cfg.impactBorder,
-              color: cfg.impactText,
-            }}
-          >
-            <div className="font-mono text-[11px] uppercase tracking-wider font-extrabold mb-0.5 flex items-center gap-1">
-              <Icon name="bolt" size={12} />
-              {t("projects_key_impact")}
-            </div>
-            <div className="line-clamp-2">{project.impact}</div>
-          </div>
 
           {/* Tech stack badges */}
           <div className="flex flex-wrap items-center gap-1 mb-4">
-            {project.badges.map((b) => (
+            {targetProject.badges.map((b) => (
               <span
                 key={b}
                 className="text-[10px] font-mono font-bold tracking-tight px-1.5 py-0.5 rounded-md border text-[var(--ink)] whitespace-nowrap"
@@ -1307,16 +1281,16 @@ export function ProjectCard({ project, onOpenCaseStudy }) {
         >
           <div className="flex items-center gap-2">
             <button
-              onClick={() => onOpenCaseStudy(project)}
+              onClick={() => onOpenCaseStudy(targetProject)}
               className="flex-1 neo-btn-primary font-bold text-xs sm:text-sm py-2 px-3 justify-center"
             >
               {t("projects_view_case_study")}
               <Icon name="arrow-right" size={14} />
             </button>
 
-            {project.demoUrl && (
+            {targetProject.demoUrl && (
               <a
-                href={project.demoUrl}
+                href={targetProject.demoUrl}
                 target="_blank"
                 rel="noreferrer"
                 className="neo-btn-secondary text-xs font-bold py-2 px-3 text-center"
@@ -1333,7 +1307,7 @@ export function ProjectCard({ project, onOpenCaseStudy }) {
             style={{ color: "var(--ink-muted)" }}
           >
             <Icon name="lock" size={11} />
-            {project.repoNotice}
+            {targetProject.repoNotice}
           </span>
         </div>
       </div>
@@ -1470,12 +1444,16 @@ export function CareerPathwayBridge({
 
 // Compact alternating road milestone card component
 export function ExpCard({
-  item,
+  item: rawItem,
   index = 0,
   customIndex,
   isLeft = true,
 }) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const item = useMemo(
+    () => (rawItem ? translateExperience(rawItem, language) : {}),
+    [rawItem, language]
+  );
   const [photoZoomOpen, setPhotoZoomOpen] = useState(false);
   const numberThemes = [
     { bg: "var(--google-blue)", text: "#ffffff" },

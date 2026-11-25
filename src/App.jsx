@@ -1,6 +1,15 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { BrowserRouter, Routes, Route, Link, useLocation } from "react-router-dom";
 import { LanguageProvider, useLanguage } from "./context/LanguageContext";
+import {
+  translateText,
+  translateInfo,
+  translateEducation,
+  translateProject,
+  translateExperience,
+  translateSkillCategory,
+  translateCertification,
+} from "./lib/translations";
 import {
   Container,
   Section,
@@ -103,7 +112,7 @@ function Hero({ info = PERSONAL_INFO }) {
   const accentWords = headlineAccent ? headlineAccent.split(" ").filter(Boolean) : [];
   const valueProp =
     language === "en"
-      ? info.valuePropEn || t("hero_bio")
+      ? info.valuePropEn || translateText(info.valueProp, "en") || t("hero_bio")
       : info.valueProp || PERSONAL_INFO.valueProp;
   const cvUrl = info.cvUrl || PERSONAL_INFO.cvUrl;
   const github = info.github || PERSONAL_INFO.github;
@@ -359,7 +368,7 @@ function About({
   projectCount = 8,
   certCount = 9,
 }) {
-  const { t, language } = useLanguage();
+  const { t, tText, language } = useLanguage();
   const university = info.university || PERSONAL_INFO.university;
 
   // Resolve custom impact metrics or fall back to actual records count
@@ -383,23 +392,40 @@ function About({
   const displayCodeQuality = info.codeQuality || "100%";
   const rawPrincipleQuote =
     info.principleQuote ||
-    "Menghubungkan proses bisnis nyata dengan arsitektur perangkat lunak yang fungsional, terukur, dan efisien.";
-  const displayPrincipleQuote = rawPrincipleQuote
-    .replace(/^["“']+|["”']+$/g, "")
+    (language === "en"
+      ? "Connecting real-world business processes with functional, scalable, and efficient software architecture."
+      : "Menghubungkan proses bisnis nyata dengan arsitektur perangkat lunak yang fungsional, terukur, dan efisien.");
+  const unquotedPrinciple = rawPrincipleQuote
+    .replace(/^["“'”]+|["“'”]+$/g, "")
     .trim();
+  const displayPrincipleQuote =
+    language === "en"
+      ? translateText(unquotedPrinciple, "en")
+      : unquotedPrinciple;
 
   return (
     <Section id="about" style={{ backgroundColor: "transparent" }}>
       <Container>
         <SectionHeading
-          kicker={info.aboutKicker || t("about_kicker")}
-          title={info.aboutTitle || (language === "en" ? "About" : "Tentang")}
-          accent={info.aboutTitleAccent || (language === "en" ? "Me" : "Saya")}
+          kicker={
+            language === "en"
+              ? translateText(info.aboutKicker, "en") || t("about_kicker")
+              : info.aboutKicker || t("about_kicker")
+          }
+          title={
+            language === "en"
+              ? translateText(info.aboutTitle, "en") || "About"
+              : info.aboutTitle || "Tentang"
+          }
+          accent={
+            language === "en"
+              ? translateText(info.aboutTitleAccent, "en") || "Me"
+              : info.aboutTitleAccent || "Saya"
+          }
           subtitle={
-            info.aboutSubtitle ||
-            (language === "en"
-              ? "Academic background, software engineering, and practical approaches in business information systems."
-              : "Latar belakang akademik, rekayasa perangkat lunak, dan pendekatan praktis dalam membangun sistem informasi bisnis.")
+            language === "en"
+              ? translateText(info.aboutSubtitle, "en")
+              : info.aboutSubtitle
           }
         />
 
@@ -412,33 +438,70 @@ function About({
             >
               <p>
                 {info.aboutP1 ? (
-                  info.aboutP1
+                  language === "en"
+                    ? translateText(info.aboutP1, "en")
+                    : info.aboutP1
                 ) : (
                   <>
-                    Saya adalah mahasiswa{" "}
-                    <strong className="font-bold text-blue-600 dark:text-blue-400">
-                      Sistem Informasi di {university}
-                    </strong>{" "}
-                    dengan fokus rekayasa perangkat lunak web full-stack, solusi
-                    mobile lintas platform, dan pemodelan basis data relasional.
+                    {language === "en" ? (
+                      <>
+                        I am an{" "}
+                        <strong className="font-bold text-blue-600 dark:text-blue-400">
+                          Information Systems student at {university}
+                        </strong>{" "}
+                        focusing on full-stack web software engineering, cross-platform
+                        mobile solutions, and relational database modeling.
+                      </>
+                    ) : (
+                      <>
+                        Saya adalah mahasiswa{" "}
+                        <strong className="font-bold text-blue-600 dark:text-blue-400">
+                          Sistem Informasi di {university}
+                        </strong>{" "}
+                        dengan fokus rekayasa perangkat lunak web full-stack, solusi
+                        mobile lintas platform, dan pemodelan basis data relasional.
+                      </>
+                    )}
                   </>
                 )}
               </p>
               <p>
-                {info.aboutP2 ||
-                  "Perjalanan teknis saya berakar dari pendidikan kejuruan di SMK Negeri 2 Surabaya (Jurusan Rekayasa Perangkat Lunak). Di sana saya membangun fondasi pemrograman terstruktur, algoritma, serta arsitektur aplikasi berbasis web modern."}
+                {info.aboutP2 ? (
+                  language === "en"
+                    ? translateText(info.aboutP2, "en")
+                    : info.aboutP2
+                ) : (
+                  language === "en"
+                    ? "My technical journey began with vocational education at SMKN 2 Surabaya (Software Engineering). There I built a strong foundation in structured programming, algorithms, and modern web application architecture."
+                    : "Perjalanan teknis saya berakar dari pendidikan kejuruan di SMK Negeri 2 Surabaya (Jurusan Rekayasa Perangkat Lunak). Di sana saya membangun fondasi pemrograman terstruktur, algoritma, serta arsitektur aplikasi berbasis web modern."
+                )}
               </p>
               <p>
                 {info.aboutP3 ? (
-                  info.aboutP3
+                  language === "en"
+                    ? translateText(info.aboutP3, "en")
+                    : info.aboutP3
                 ) : (
                   <>
-                    Dalam setiap proyek, saya mengutamakan{" "}
-                    <strong className="font-bold" style={{ color: "var(--ink)" }}>
-                      fungsionalitas dan efisiensi operasional
-                    </strong>
-                    : memetakan alur proses bisnis riil ke dalam antarmuka yang
-                    intuitif dan sistem backend yang tangguh.
+                    {language === "en" ? (
+                      <>
+                        In every project, I prioritize{" "}
+                        <strong className="font-bold" style={{ color: "var(--ink)" }}>
+                          functionality and operational efficiency
+                        </strong>
+                        : mapping real business process workflows into intuitive interfaces
+                        and robust backend systems.
+                      </>
+                    ) : (
+                      <>
+                        Dalam setiap proyek, saya mengutamakan{" "}
+                        <strong className="font-bold" style={{ color: "var(--ink)" }}>
+                          fungsionalitas dan efisiensi operasional
+                        </strong>
+                        : memetakan alur proses bisnis riil ke dalam antarmuka yang
+                        intuitif dan sistem backend yang tangguh.
+                      </>
+                    )}
                   </>
                 )}
               </p>
@@ -457,7 +520,9 @@ function About({
                 style={{ color: "var(--google-blue-text)" }}
               >
                 <Icon name="bolt" size={14} />
-                {info.principleTitle || "PRINSIP REKAYASA (KEY POINT)"}
+                {language === "en"
+                  ? translateText(info.principleTitle, "en") || "ENGINEERING PRINCIPLE (KEY POINT)"
+                  : info.principleTitle || "PRINSIP REKAYASA (KEY POINT)"}
               </div>
               <blockquote
                 className="text-base sm:text-lg font-bold leading-snug"
@@ -480,7 +545,7 @@ function About({
                 className="text-xs font-extrabold font-mono uppercase tracking-wider"
                 style={{ color: "var(--ink-muted)" }}
               >
-                RIWAYAT PENDIDIKAN FORMAL
+                {t("exp_edu_title")}
               </span>
             </div>
 
@@ -491,7 +556,9 @@ function About({
                 style={{ backgroundColor: "var(--border)" }}
               />
 
-              {education.map((edu, idx) => {
+              {education.map((rawEdu, idx) => {
+                const edu =
+                  language === "en" ? translateEducation(rawEdu, "en") : rawEdu;
                 const nodeColor =
                   idx === 0 ? "var(--google-blue)" : "var(--google-green)";
 
@@ -529,7 +596,7 @@ function About({
                         >
                           {edu.period}
                         </span>
-                        {edu.active && <Chip variant="green">Aktif</Chip>}
+                        {edu.active && <Chip variant="green">{t("exp_active")}</Chip>}
                       </div>
                       <h4
                         className="font-extrabold text-base sm:text-lg mb-0.5"
@@ -567,13 +634,17 @@ function About({
         >
           <div className="mb-6">
             <div className="kicker mb-2 text-xs sm:text-sm font-extrabold">
-              {info.numbersKicker || "BY THE NUMBERS"}
+              {language === "en"
+                ? translateText(info.numbersKicker, "en") || "BY THE NUMBERS"
+                : info.numbersKicker || "BY THE NUMBERS"}
             </div>
             <h3
               className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight"
               style={{ fontFamily: "var(--font-display)", color: "var(--ink)" }}
             >
-              {info.numbersTitle || "Dampak & Pencapaian Riil"}
+              {language === "en"
+                ? translateText(info.numbersTitle, "en") || "Measurable Impact & Milestones"
+                : info.numbersTitle || "Dampak & Pencapaian Riil"}
             </h3>
           </div>
 
@@ -588,15 +659,14 @@ function About({
                   [{displayProjectCount}]
                 </div>
                 <div className="text-sm sm:text-base font-extrabold uppercase tracking-wider mb-2">
-                  PROYEK DIGITAL
+                  {tText("PROYEK DIGITAL")}
                 </div>
               </div>
               <p
                 className="text-xs sm:text-sm font-medium leading-relaxed"
                 style={{ color: "var(--ink-secondary)" }}
               >
-                Aplikasi web full-stack, mobile lintas platform, dan sistem
-                informasi bisnis operasional.
+                {tText("Aplikasi web full-stack, mobile lintas platform, dan sistem informasi bisnis operasional.")}
               </p>
             </div>
 
@@ -610,14 +680,14 @@ function About({
                   [{displayCertCount}]
                 </div>
                 <div className="text-sm sm:text-base font-extrabold uppercase tracking-wider mb-2">
-                  SERTIFIKASI RESMI
+                  {tText("SERTIFIKASI RESMI")}
                 </div>
               </div>
               <p
                 className="text-xs sm:text-sm font-medium leading-relaxed"
                 style={{ color: "var(--ink-secondary)" }}
               >
-                Kompetensi terverifikasi dari IBM, Dicoding, DQLab, Udemy & AWS.
+                {tText("Kompetensi terverifikasi dari IBM, Dicoding, DQLab, Udemy & AWS.")}
               </p>
             </div>
 
@@ -631,15 +701,14 @@ function About({
                   [{displayStartYear}]
                 </div>
                 <div className="text-sm sm:text-base font-extrabold uppercase tracking-wider mb-2">
-                  REKAYASA SOFTWARE
+                  {tText("REKAYASA SOFTWARE")}
                 </div>
               </div>
               <p
                 className="text-xs sm:text-sm font-medium leading-relaxed"
                 style={{ color: "var(--ink-secondary)" }}
               >
-                Fondasi pemrograman terstruktur dimulai dari bangku SMK RPL
-                hingga S1 Sistem Informasi.
+                {tText("Fondasi pemrograman terstruktur dimulai dari bangku SMK RPL hingga S1 Sistem Informasi.")}
               </p>
             </div>
 
@@ -653,15 +722,14 @@ function About({
                   [{displayCodeQuality}]
                 </div>
                 <div className="text-sm sm:text-base font-extrabold uppercase tracking-wider mb-2">
-                  INTEGRITAS SOLUSI
+                  {tText("INTEGRITAS SOLUSI")}
                 </div>
               </div>
               <p
                 className="text-xs sm:text-sm font-medium leading-relaxed"
                 style={{ color: "var(--ink-secondary)" }}
               >
-                Komitmen arsitektur bersih, performa terukur, dan dokumentasi
-                yang transparan.
+                {tText("Komitmen arsitektur bersih, performa terukur, dan dokumentasi yang transparan.")}
               </p>
             </div>
           </div>
@@ -673,7 +741,7 @@ function About({
 
 // Skills section
 function Skills({ categories = SKILL_CATEGORIES, info = PERSONAL_INFO }) {
-  const { t, language } = useLanguage();
+  const { language } = useLanguage();
   const categoryBarColors = [
     "var(--google-blue)",
     "var(--google-green)",
@@ -685,10 +753,26 @@ function Skills({ categories = SKILL_CATEGORIES, info = PERSONAL_INFO }) {
     <Section id="skills" style={{ backgroundColor: "transparent" }}>
       <Container>
         <SectionHeading
-          kicker={info.skillsKicker || t("skills_kicker")}
-          title={info.skillsTitle || (language === "en" ? "Skills &" : "Keahlian &")}
-          accent={info.skillsTitleAccent || (language === "en" ? "Technology" : "Teknologi")}
-          subtitle={info.skillsSubtitle || t("skills_desc")}
+          kicker={
+            language === "en"
+              ? translateText(info.skillsKicker, "en") || "TECHNICAL SKILLS"
+              : info.skillsKicker || "KEAHLIAN TEKNIS"
+          }
+          title={
+            language === "en"
+              ? translateText(info.skillsTitle, "en") || "Skills &"
+              : info.skillsTitle || "Keahlian &"
+          }
+          accent={
+            language === "en"
+              ? translateText(info.skillsTitleAccent, "en") || "Technologies"
+              : info.skillsTitleAccent || "Teknologi"
+          }
+          subtitle={
+            language === "en"
+              ? translateText(info.skillsSubtitle, "en") || "Technologies I actively use in software development and information systems management."
+              : info.skillsSubtitle
+          }
         />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
@@ -724,7 +808,7 @@ function Skills({ categories = SKILL_CATEGORIES, info = PERSONAL_INFO }) {
                       color: "var(--ink)",
                     }}
                   >
-                    {cat.name}
+                    {language === "en" ? translateText(cat.name, "en") : cat.name}
                   </h3>
                 </div>
 
@@ -760,10 +844,26 @@ function ProjectsPreview({
       <Container>
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
           <SectionHeading
-            kicker={info.projectsKicker || t("projects_kicker")}
-            title={info.projectsTitle || (language === "en" ? "Featured" : "Proyek")}
-            accent={info.projectsTitleAccent || (language === "en" ? "Projects" : "Unggulan")}
-            subtitle={info.projectsSubtitle || t("projects_desc")}
+            kicker={
+              language === "en"
+                ? translateText(info.projectsKicker, "en") || "FEATURED PORTFOLIO"
+                : info.projectsKicker || "PORTOFOLIO TERPILIH"
+            }
+            title={
+              language === "en"
+                ? translateText(info.projectsTitle, "en") || "Featured"
+                : info.projectsTitle || "Proyek"
+            }
+            accent={
+              language === "en"
+                ? translateText(info.projectsTitleAccent, "en") || "Projects"
+                : info.projectsTitleAccent || "Unggulan"
+            }
+            subtitle={
+              language === "en"
+                ? translateText(info.projectsSubtitle, "en") || "Curated software architecture case studies with business system modeling and measurable performance."
+                : info.projectsSubtitle
+            }
           />
           <Link
             to="/projects"
@@ -803,10 +903,26 @@ function ExperiencePreview({
       <Container>
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
           <SectionHeading
-            kicker={info.expKicker || t("exp_kicker")}
-            title={info.expTitle || (language === "en" ? "Experience:" : "Pengalaman")}
-            accent={info.expTitleAccent || (language === "en" ? "Internship & Org" : "Magang & Organisasi")}
-            subtitle={info.expSubtitle || t("exp_desc")}
+            kicker={
+              language === "en"
+                ? translateText(info.expKicker, "en") || "CAREER MILESTONES"
+                : info.expKicker || "REKAM JEJAK PROFESIONAL"
+            }
+            title={
+              language === "en"
+                ? translateText(info.expTitle, "en") || "Internship &"
+                : info.expTitle || "Pengalaman"
+            }
+            accent={
+              language === "en"
+                ? translateText(info.expTitleAccent, "en") || "Organization Experience"
+                : info.expTitleAccent || "Magang & Organisasi"
+            }
+            subtitle={
+              language === "en"
+                ? translateText(info.expSubtitle, "en") || "Track record of professional industry contributions and campus organization leadership."
+                : info.expSubtitle
+            }
           />
           <Link
             to="/experience"
@@ -884,9 +1000,9 @@ function ExperiencePreview({
 
           {/* Continuous career progression connector between sections */}
           <CareerPathwayBridge
-            kicker="KONEKSI JEJAK KARIR"
-            title="Alur Perkembangan: Dari Ekosistem Kampus ke Industri"
-            description="Landasan kepemimpinan, riset organisasi, dan kolaborasi tim di kampus menjadi akselerator dalam mengeksekusi proyek rekayasa perangkat lunak di dunia industri."
+            kicker={t("exp_bridge_kicker")}
+            title={t("exp_bridge_title")}
+            description={t("exp_bridge_desc")}
           />
 
           {/* Section 2: Campus and leadership organizations (Placed below) */}
@@ -917,13 +1033,13 @@ function ExperiencePreview({
                       color: "var(--ink)",
                     }}
                   >
-                    Pengalaman Organisasi & Komunitas
+                    {t("exp_org_title")}
                   </h3>
                   <p
                     className="text-xs sm:text-sm font-medium"
                     style={{ color: "var(--ink-secondary)" }}
                   >
-                    Kemitraan publik, riset penalaran, dan pembinaan komunitas.
+                    {t("exp_org_desc")}
                   </p>
                 </div>
               </div>
@@ -935,7 +1051,7 @@ function ExperiencePreview({
                   borderColor: "var(--google-green)",
                 }}
               >
-                {organizations.length} Pengalaman
+                {organizations.length} {t("exp_milestones")}
               </span>
             </div>
 
@@ -975,14 +1091,32 @@ function CertificationsSection({
     <Section id="certifications" style={{ backgroundColor: "transparent" }}>
       <Container>
         <SectionHeading
-          kicker={info.certsKicker || t("edu_kicker")}
-          title={info.certsTitle || (language === "en" ? "Certifications &" : "Sertifikasi &")}
-          accent={info.certsTitleAccent || (language === "en" ? "Licenses" : "Lisensi")}
-          subtitle={info.certsSubtitle || t("edu_desc")}
+          kicker={
+            language === "en"
+              ? translateText(info.certsKicker, "en") || "PROFESSIONAL CREDENTIALS"
+              : info.certsKicker || "KREDENSIAL PROFESIONAL"
+          }
+          title={
+            language === "en"
+              ? translateText(info.certsTitle, "en") || "Certifications &"
+              : info.certsTitle || "Sertifikasi &"
+          }
+          accent={
+            language === "en"
+              ? translateText(info.certsTitleAccent, "en") || "Licenses"
+              : info.certsTitleAccent || "Lisensi"
+          }
+          subtitle={
+            language === "en"
+              ? translateText(info.certsSubtitle, "en") || "Official technical competency certifications from global learning and industry platforms."
+              : info.certsSubtitle
+          }
         />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {certifications.slice(0, 6).map((cert) => {
+          {certifications.slice(0, 6).map((rawCert) => {
+            const cert =
+              language === "en" ? translateCertification(rawCert, "en") : rawCert;
             const pColor =
               providerColors[cert.provider] || "var(--google-blue)";
 
@@ -1027,7 +1161,7 @@ function CertificationsSection({
                     className="text-sm sm:text-base font-semibold mb-4"
                     style={{ color: "var(--ink-secondary)" }}
                   >
-                    Penerbit: {cert.issuer}
+                    {language === "en" ? "Issuer:" : "Penerbit:"} {cert.issuer}
                   </p>
                 </div>
 
@@ -1048,12 +1182,12 @@ function CertificationsSection({
                       rel="noreferrer"
                       className="neo-btn-primary text-sm w-full font-bold"
                     >
-                      Verifikasi Kredensial
+                      {t("edu_view_credential")}
                       <Icon name="external-link" size={14} />
                     </a>
                   ) : (
                     <span className="text-xs sm:text-sm font-semibold text-gray-500 block text-center py-1">
-                      Terverifikasi Internal
+                      {language === "en" ? "Internal Verification" : "Terverifikasi Internal"}
                     </span>
                   )}
                 </div>
@@ -1138,7 +1272,9 @@ function Contact({ info = PERSONAL_INFO }) {
               <div className="lg:col-span-5 flex flex-col justify-between">
                 <div>
                   <div className="kicker mb-3 text-xs sm:text-sm font-extrabold">
-                    {info.contactKicker || t("contact_kicker")}
+                    {language === "en"
+                      ? translateText(info.contactKicker, "en") || t("contact_kicker")
+                      : info.contactKicker || t("contact_kicker")}
                   </div>
 
                   <h2
@@ -1149,9 +1285,13 @@ function Contact({ info = PERSONAL_INFO }) {
                       color: "var(--ink)",
                     }}
                   >
-                    {info.contactTitle || t("contact_title_1")}{" "}
+                    {language === "en"
+                      ? translateText(info.contactTitle, "en") || t("contact_title_1")
+                      : info.contactTitle || t("contact_title_1")}{" "}
                     <span style={{ color: "var(--google-blue)" }}>
-                      {info.contactTitleAccent || t("contact_title_2")}
+                      {language === "en"
+                        ? translateText(info.contactTitleAccent, "en") || t("contact_title_2")
+                        : info.contactTitleAccent || t("contact_title_2")}
                     </span>
                   </h2>
 
@@ -1159,7 +1299,9 @@ function Contact({ info = PERSONAL_INFO }) {
                     className="text-sm sm:text-base mb-6 leading-relaxed"
                     style={{ color: "var(--ink-secondary)" }}
                   >
-                    {info.contactSubtitle || t("contact_desc")}
+                    {language === "en"
+                      ? translateText(info.contactSubtitle, "en") || t("contact_desc")
+                      : info.contactSubtitle || t("contact_desc")}
                   </p>
 
                   <div className="space-y-3 mb-6">
@@ -1369,33 +1511,68 @@ function HomePage({
   certifications,
   onOpenCaseStudy,
 }) {
+  const { language } = useLanguage();
+  const localizedInfo = useMemo(
+    () => translateInfo(info, language),
+    [info, language]
+  );
+  const localizedEducation = useMemo(
+    () => (education || []).map((e) => translateEducation(e, language)),
+    [education, language]
+  );
+  const localizedCategories = useMemo(
+    () => (categories || []).map((c) => translateSkillCategory(c, language)),
+    [categories, language]
+  );
+  const localizedProjects = useMemo(
+    () => (projects || []).map((p) => translateProject(p, language)),
+    [projects, language]
+  );
+  const localizedExperience = useMemo(
+    () => (experience || []).map((e) => translateExperience(e, language)),
+    [experience, language]
+  );
+  const localizedCertifications = useMemo(
+    () =>
+      (certifications || []).map((c) =>
+        translateCertification(c, language)
+      ),
+    [certifications, language]
+  );
+
   return (
     <main>
-      <Hero info={info} />
+      <Hero info={localizedInfo} />
       <About
-        info={info}
-        education={education}
-        projectCount={projects.length}
-        certCount={certifications.length}
+        info={localizedInfo}
+        education={localizedEducation}
+        projectCount={localizedProjects.length}
+        certCount={localizedCertifications.length}
       />
-      <Skills categories={categories} info={info} />
+      <Skills categories={localizedCategories} info={localizedInfo} />
       <ProjectsPreview
-        projects={projects}
-        info={info}
+        projects={localizedProjects}
+        info={localizedInfo}
         onOpenCaseStudy={onOpenCaseStudy}
       />
-      <ExperiencePreview experience={experience} info={info} />
+      <ExperiencePreview experience={localizedExperience} info={localizedInfo} />
       <CertificationsSection
-        certifications={certifications}
-        info={info}
+        certifications={localizedCertifications}
+        info={localizedInfo}
       />
-      <Contact info={info} />
+      <Contact info={localizedInfo} />
     </main>
   );
 }
 
 // Public pages layout wrapper
 function PublicLayout({ dark, toggleDark, info, children }) {
+  const { language } = useLanguage();
+  const localizedInfo = useMemo(
+    () => translateInfo(info, language),
+    [info, language]
+  );
+
   return (
     <div
       className="min-h-screen flex flex-col relative"
@@ -1403,10 +1580,10 @@ function PublicLayout({ dark, toggleDark, info, children }) {
     >
       {/* DevFest code symbol watermark tile background */}
       <div className="bg-code-tile fixed inset-0 pointer-events-none z-0" />
-      <Navbar info={info} />
+      <Navbar info={localizedInfo} />
       <ScrollTopFab dark={dark} toggleDark={toggleDark} />
       <div className="flex-1 relative z-10">{children}</div>
-      <Footer info={info} />
+      <Footer info={localizedInfo} />
     </div>
   );
 }

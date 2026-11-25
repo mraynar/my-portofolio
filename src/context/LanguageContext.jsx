@@ -7,6 +7,25 @@ import {
   useMemo,
   useCallback,
 } from "react";
+import {
+  translateText,
+  translateInfo,
+  translateEducation,
+  translateProject,
+  translateExperience,
+  translateSkillCategory,
+  translateCertification,
+} from "../lib/translations";
+
+export {
+  translateText,
+  translateInfo,
+  translateEducation,
+  translateProject,
+  translateExperience,
+  translateSkillCategory,
+  translateCertification,
+};
 
 // Translation dictionary for Indonesian and English
 export const TRANSLATIONS = {
@@ -362,14 +381,20 @@ export function LanguageProvider({ children }) {
     return (key, fallback = "") => dict[key] || fallback || key;
   }, [language]);
 
+  const tText = useCallback(
+    (text) => (language === "en" ? translateText(text, "en") : text),
+    [language]
+  );
+
   const value = useMemo(
     () => ({
       language,
       setLanguage,
       toggleLanguage,
       t,
+      tText,
     }),
-    [language, setLanguage, toggleLanguage, t]
+    [language, setLanguage, toggleLanguage, t, tText]
   );
 
   return (
@@ -390,6 +415,7 @@ export function useLanguage() {
       toggleLanguage: () => {},
       t: (key, fallback = "") =>
         TRANSLATIONS.id[key] || fallback || key,
+      tText: (text) => text,
     };
   }
   return context;

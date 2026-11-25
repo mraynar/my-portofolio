@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Container, ProjectCard, Cluster, Icon, Pagination } from "./components";
 import { PROJECTS } from "./data";
 import { useLanguage } from "./context/LanguageContext";
+import { translateProject } from "./lib/translations";
 
 export default function ProjectPage({
   onOpenCaseStudy,
@@ -12,6 +13,11 @@ export default function ProjectPage({
   const [activeFilter, setActiveFilter] = useState("ALL");
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 6;
+
+  const localizedProjects = useMemo(
+    () => (projects || []).map((p) => translateProject(p, language)),
+    [projects, language]
+  );
 
   const categories = [
     {
@@ -53,8 +59,8 @@ export default function ProjectPage({
 
   const filteredProjects =
     activeFilter === "ALL"
-      ? projects
-      : projects.filter((p) => p.label === activeFilter);
+      ? localizedProjects
+      : localizedProjects.filter((p) => p.label === activeFilter);
 
   return (
     <main
