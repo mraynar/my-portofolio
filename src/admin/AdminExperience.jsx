@@ -108,30 +108,27 @@ export default function AdminExperience({ experience = [], onRefresh }) {
 
   // Reorder experience item to a new position
   const handleMove = async (fromIdx, toIdx) => {
-    if (fromIdx === toIdx || isReordering) return;
+    if (fromIdx === toIdx || isReordering || filterType === "all") return;
     const currentList = sortExperiencesLatestFirst(experience);
-    const displayedList = currentList.filter((item) => {
-      if (filterType === "magang") return isInternshipExperience(item);
-      if (filterType === "organisasi") return !isInternshipExperience(item);
-      return true;
-    });
+    const isMagangTab = filterType === "magang";
+    const categoryItems = currentList.filter((item) =>
+      isMagangTab ? isInternshipExperience(item) : !isInternshipExperience(item)
+    );
+    const otherItems = currentList.filter((item) =>
+      isMagangTab ? !isInternshipExperience(item) : isInternshipExperience(item)
+    );
 
-    const itemA = displayedList[fromIdx];
-    const itemB = displayedList[toIdx];
+    const itemA = categoryItems[fromIdx];
+    const itemB = categoryItems[toIdx];
     if (!itemA || !itemB) return;
 
-    const masterFromIdx = currentList.findIndex(
-      (it) => it.id === itemA.id || it.role === itemA.role
-    );
-    const masterToIdx = currentList.findIndex(
-      (it) => it.id === itemB.id || it.role === itemB.role
-    );
+    const newCategoryList = [...categoryItems];
+    const [moved] = newCategoryList.splice(fromIdx, 1);
+    newCategoryList.splice(toIdx, 0, moved);
 
-    if (masterFromIdx === -1 || masterToIdx === -1) return;
-
-    const newMaster = [...currentList];
-    const [moved] = newMaster.splice(masterFromIdx, 1);
-    newMaster.splice(masterToIdx, 0, moved);
+    const newMaster = isMagangTab
+      ? [...newCategoryList, ...otherItems]
+      : [...otherItems, ...newCategoryList];
 
     setIsReordering(true);
     try {
@@ -680,7 +677,11 @@ export default function AdminExperience({ experience = [], onRefresh }) {
           style={{ color: "var(--ink-muted)" }}
         >
           <Icon name="info" size={14} />
-          <span>Tarik kartu untuk mengatur urutan posisi tampilan.</span>
+          <span>
+            {filterType === "all"
+              ? "Pilih tab kategori untuk mengatur urutan posisi tampilan."
+              : "Tarik kartu untuk mengatur urutan posisi tampilan."}
+          </span>
         </div>
       </div>
 
@@ -698,19 +699,22 @@ export default function AdminExperience({ experience = [], onRefresh }) {
 
           return displayedList.map((item, idx) => {
             const isMagang = isInternshipExperience(item);
-            const isDragging = draggedIdx === idx;
-            const isOver = dragOverIdx === idx;
+            const canDrag = filterType !== "all" && !isReordering;
+            const isDragging = canDrag && draggedIdx === idx;
+            const isOver = canDrag && dragOverIdx === idx;
 
             return (
               <div
                 key={item.id || item.role + idx}
-                draggable={!isReordering}
+                draggable={canDrag}
                 onDragStart={(e) => {
+                  if (!canDrag) return;
                   setDraggedIdx(idx);
                   e.dataTransfer.effectAllowed = "move";
                   e.dataTransfer.setData("text/plain", String(idx));
                 }}
                 onDragOver={(e) => {
+                  if (!canDrag) return;
                   e.preventDefault();
                   e.dataTransfer.dropEffect = "move";
                   if (dragOverIdx !== idx) setDragOverIdx(idx);
@@ -719,6 +723,7 @@ export default function AdminExperience({ experience = [], onRefresh }) {
                   if (dragOverIdx === idx) setDragOverIdx(null);
                 }}
                 onDrop={(e) => {
+                  if (!canDrag) return;
                   e.preventDefault();
                   if (draggedIdx !== null && draggedIdx !== idx) {
                     handleMove(draggedIdx, idx);
@@ -728,9 +733,11 @@ export default function AdminExperience({ experience = [], onRefresh }) {
                   setDraggedIdx(null);
                   setDragOverIdx(null);
                 }}
-                className={`transition-all duration-200 cursor-grab active:cursor-grabbing select-none ${
-                  isDragging ? "opacity-40 scale-[0.98]" : "opacity-100"
-                }`}
+                className={`transition-all duration-200 select-none ${
+                  canDrag
+                    ? "cursor-grab active:cursor-grabbing"
+                    : "cursor-default"
+                } ${isDragging ? "opacity-40 scale-[0.98]" : "opacity-100"}`}
               >
                 <Card
                   className={`p-5 h-full flex flex-col justify-between transition-all relative ${
