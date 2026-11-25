@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import {
   Card,
   Chip,
@@ -6,6 +6,7 @@ import {
   CustomSelect,
   Pagination,
   FloatingAlert,
+  ImageLightboxModal,
 } from "../components";
 import ImageCropModal from "./ImageCropModal";
 import {
@@ -54,6 +55,10 @@ export default function AdminProjects({
   const [uploadingImage, setUploadingImage] = useState(false);
   const [feedback, setFeedback] = useState(null);
   const [cropFile, setCropFile] = useState(null);
+  const [previewProjectImg, setPreviewProjectImg] = useState(null);
+  const [previewProjectTitle, setPreviewProjectTitle] = useState("");
+  const [targetProjectForCrop, setTargetProjectForCrop] = useState(null);
+  const projectFileInputRef = useRef(null);
   const [badgesInput, setBadgesInput] = useState("");
   const [customCountInput, setCustomCountInput] = useState(
     info?.customProjectCount || ""
@@ -168,14 +173,27 @@ export default function AdminProjects({
       const fileName = `project-${Date.now()}-${(croppedFile?.name || "project.jpg").replace(/\s+/g, "-")}`;
       const url = await uploadStorageFile("media", fileName, croppedFile);
       const effectiveUrl = url || previewUrl;
-      setEditingProject((prev) => ({ ...prev, image: effectiveUrl }));
+
+      if (!editingProject && targetProjectForCrop) {
+        const updated = { ...targetProjectForCrop, image: effectiveUrl };
+        await upsertProject(updated);
+        if (onRefresh) onRefresh();
+        setTargetProjectForCrop(null);
+      } else {
+        setEditingProject((prev) => ({ ...prev, image: effectiveUrl }));
+      }
+
       setFeedback({
         type: "success",
-        text: "Gambar proyek berhasil disesuaikan dan diunggah.",
+        text: "Gambar proyek berhasil disesuaikan dan disimpan.",
       });
     } catch {
       // Fallback preview for offline environments
-      setEditingProject((prev) => ({ ...prev, image: previewUrl }));
+      if (!editingProject && targetProjectForCrop) {
+        setTargetProjectForCrop(null);
+      } else {
+        setEditingProject((prev) => ({ ...prev, image: previewUrl }));
+      }
       setFeedback({
         type: "success",
         text: "Gambar proyek berhasil disesuaikan dan dipratinjau.",
@@ -421,8 +439,17 @@ export default function AdminProjects({
               </label>
               <div className="flex items-center gap-3">
                 {editingProject.image ? (
-                  <div
-                    className="w-16 h-12 rounded-xl border-2 overflow-hidden shrink-0 flex items-center justify-center"
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPreviewProjectImg(editingProject.image);
+                      setPreviewProjectTitle(
+                        editingProject.title || "Gambar Proyek"
+                      );
+                      setTargetProjectForCrop(editingProject);
+                    }}
+                    title="Klik untuk memperbesar dan mengedit gambar"
+                    className="group relative w-16 h-12 rounded-xl border-2 overflow-hidden shrink-0 flex items-center justify-center cursor-pointer transition-transform hover:scale-105"
                     style={{
                       backgroundColor: "var(--surface-alt)",
                       borderColor: "var(--border)",
@@ -434,7 +461,10 @@ export default function AdminProjects({
                       alt="Pratinjau Mockup"
                       className="w-full h-full object-cover"
                     />
-                  </div>
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                      <Icon name="zoom-in" size={16} />
+                    </div>
+                  </button>
                 ) : (
                   <div
                     className="w-16 h-12 rounded-xl border-2 border-dashed shrink-0 flex items-center justify-center text-[var(--ink-secondary)]"
@@ -471,6 +501,7 @@ export default function AdminProjects({
                   <Icon name="upload" size={14} />
                   {uploadingImage ? "Mengunggah..." : "Unggah Gambar"}
                   <input
+                    ref={projectFileInputRef}
                     type="file"
                     accept="image/*"
                     onChange={handleImageSelect}
@@ -478,6 +509,19 @@ export default function AdminProjects({
                     className="hidden"
                   />
                 </label>
+                {editingProject.image && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setTargetProjectForCrop(editingProject);
+                      setCropFile(editingProject.image);
+                    }}
+                    className="neo-btn-secondary text-xs font-bold py-1.5 px-3 flex items-center gap-1.5"
+                  >
+                    <Icon name="crop" size={14} />
+                    <span>Sesuaikan Foto</span>
+                  </button>
+                )}
               </div>
             </div>
 
@@ -717,11 +761,30 @@ export default function AdminProjects({
           </form>
         </Card>
 
+        <ImageLightboxModal
+          isOpen={Boolean(previewProjectImg)}
+          imageUrl={previewProjectImg}
+          title={previewProjectTitle || "Gambar Portofolio Proyek"}
+          subtitle="Rasio 16:10 • Frame Galeri Proyek"
+          alt={previewProjectTitle || "Portofolio Proyek"}
+          onClose={() => setPreviewProjectImg(null)}
+          onEdit={() => {
+            const img = previewProjectImg;
+            setPreviewProjectImg(null);
+            setCropFile(img);
+          }}
+          onUpload={() => {
+            setPreviewProjectImg(null);
+            projectFileInputRef.current?.click();
+          }}
+        />
+
         {cropFile && (
           <ImageCropModal
             file={cropFile}
             aspectRatio={16 / 10}
             title="Sesuaikan Gambar Portofolio Proyek"
+            description="Rasio 16:10 sesuai persis dengan frame kartu galeri proyek."
             onConfirm={handleCropConfirm}
             onCancel={() => setCropFile(null)}
           />
@@ -949,6 +1012,35 @@ export default function AdminProjects({
                       {p.title}
                     </h4>
 
+                    {p.image && (
+                      <div className="mb-3">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setPreviewProjectImg(p.image);
+                            setPreviewProjectTitle(p.title);
+                            setTargetProjectForCrop(p);
+                          }}
+                          title="Klik untuk memperbesar gambar proyek"
+                          className="group relative w-full aspect-[16/10] rounded-xl overflow-hidden border-2 cursor-pointer transition-transform hover:scale-[1.02]"
+                          style={{
+                            borderColor: "var(--border)",
+                            backgroundColor: "var(--surface-alt)",
+                          }}
+                        >
+                          <img
+                            src={p.image}
+                            alt={p.title}
+                            className="w-full h-full object-cover object-top"
+                          />
+                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                            <Icon name="zoom-in" size={20} />
+                          </div>
+                        </button>
+                      </div>
+                    )}
+
                     <p
                       className="text-xs sm:text-sm line-clamp-2 mb-4"
                       style={{ color: "var(--ink-secondary)" }}
@@ -1008,11 +1100,26 @@ export default function AdminProjects({
         itemLabel="proyek"
       />
 
+      <ImageLightboxModal
+        isOpen={Boolean(previewProjectImg)}
+        imageUrl={previewProjectImg}
+        title={previewProjectTitle || "Gambar Portofolio Proyek"}
+        subtitle="Rasio 16:10 • Frame Galeri Proyek"
+        alt={previewProjectTitle || "Portofolio Proyek"}
+        onClose={() => setPreviewProjectImg(null)}
+        onEdit={() => {
+          const img = previewProjectImg;
+          setPreviewProjectImg(null);
+          setCropFile(img);
+        }}
+      />
+
       {cropFile && (
         <ImageCropModal
           file={cropFile}
           aspectRatio={16 / 10}
           title="Sesuaikan Gambar Portofolio Proyek"
+          description="Rasio 16:10 sesuai persis dengan frame kartu galeri proyek."
           onConfirm={handleCropConfirm}
           onCancel={() => setCropFile(null)}
         />

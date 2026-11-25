@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Card, Icon, FloatingAlert } from "../components";
+import { useState, useRef } from "react";
+import { Card, Icon, FloatingAlert, ImageLightboxModal } from "../components";
 import ImageCropModal from "./ImageCropModal";
 import { saveSiteSettings, uploadStorageFile } from "../lib/supabase";
 
@@ -11,7 +11,9 @@ export default function AdminProfile({ initialInfo, onUpdateInfo }) {
   const [uploadingCv, setUploadingCv] = useState(false);
   const [feedback, setFeedback] = useState(null);
   const [cropAvatarFile, setCropAvatarFile] = useState(null);
+  const [previewAvatarOpen, setPreviewAvatarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("hero");
+  const avatarInputRef = useRef(null);
 
   const handleChange = (field, val) => {
     setFormData((prev) => ({ ...prev, [field]: val }));
@@ -443,8 +445,11 @@ export default function AdminProfile({ initialInfo, onUpdateInfo }) {
             </label>
             <div className="flex items-center gap-3">
               {formData.avatar ? (
-                <div
-                  className="w-14 h-14 rounded-xl border-2 overflow-hidden shrink-0 flex items-center justify-center"
+                <button
+                  type="button"
+                  onClick={() => setPreviewAvatarOpen(true)}
+                  title="Klik untuk memperbesar dan mengedit foto profil"
+                  className="group relative w-16 h-16 rounded-xl border-2 overflow-hidden shrink-0 flex items-center justify-center cursor-pointer transition-transform hover:scale-105"
                   style={{
                     backgroundColor: "var(--surface-alt)",
                     borderColor: "var(--border)",
@@ -456,10 +461,13 @@ export default function AdminProfile({ initialInfo, onUpdateInfo }) {
                     alt="Pratinjau Avatar"
                     className="w-full h-full object-cover"
                   />
-                </div>
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                    <Icon name="zoom-in" size={18} />
+                  </div>
+                </button>
               ) : (
                 <div
-                  className="w-14 h-14 rounded-xl border-2 border-dashed shrink-0 flex items-center justify-center text-[var(--ink-secondary)]"
+                  className="w-16 h-16 rounded-xl border-2 border-dashed shrink-0 flex items-center justify-center text-[var(--ink-secondary)]"
                   style={{
                     backgroundColor: "var(--surface-alt)",
                     borderColor: "var(--border)",
@@ -487,6 +495,7 @@ export default function AdminProfile({ initialInfo, onUpdateInfo }) {
                 <Icon name="upload" size={14} />
                 {uploadingAvatar ? "Mengunggah..." : "Unggah Foto Baru"}
                 <input
+                  ref={avatarInputRef}
                   type="file"
                   accept="image/*"
                   onChange={handleAvatarSelect}
@@ -494,6 +503,16 @@ export default function AdminProfile({ initialInfo, onUpdateInfo }) {
                   className="hidden"
                 />
               </label>
+              {formData.avatar && (
+                <button
+                  type="button"
+                  onClick={() => setCropAvatarFile(formData.avatar)}
+                  className="neo-btn-secondary text-xs font-bold py-1.5 px-3 flex items-center gap-1.5"
+                >
+                  <Icon name="crop" size={14} />
+                  <span>Sesuaikan Foto</span>
+                </button>
+              )}
             </div>
           </div>
 
@@ -733,11 +752,29 @@ export default function AdminProfile({ initialInfo, onUpdateInfo }) {
         </button>
       </div>
 
+      <ImageLightboxModal
+        isOpen={previewAvatarOpen}
+        imageUrl={formData.avatar}
+        title="Foto Profil Hero"
+        subtitle="Rasio 4:5 • Frame Profil Hero Halaman Utama"
+        alt="Foto Profil Muhammad Raynar"
+        onClose={() => setPreviewAvatarOpen(false)}
+        onEdit={() => {
+          setPreviewAvatarOpen(false);
+          setCropAvatarFile(formData.avatar);
+        }}
+        onUpload={() => {
+          setPreviewAvatarOpen(false);
+          avatarInputRef.current?.click();
+        }}
+      />
+
       {cropAvatarFile && (
         <ImageCropModal
           file={cropAvatarFile}
-          aspectRatio={1}
+          aspectRatio={4 / 5}
           title="Sesuaikan Foto Profil Hero"
+          description="Rasio 4:5 sesuai persis dengan frame kartu profil hero pada halaman utama."
           onConfirm={handleAvatarCropConfirm}
           onCancel={() => setCropAvatarFile(null)}
         />

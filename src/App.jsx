@@ -18,6 +18,7 @@ import {
   ScrollTopFab,
   Icon,
   FloatingAlert,
+  ImageLightboxModal,
 } from "./components";
 import { useDarkMode } from "./useDarkMode";
 import {
@@ -95,6 +96,7 @@ function scrollToSection(id) {
 // Hero section with dynamic configuration
 function Hero({ info = PERSONAL_INFO }) {
   const { t, language } = useLanguage();
+  const [heroZoomOpen, setHeroZoomOpen] = useState(false);
   const kicker = info.kicker || t("hero_tag");
   const statusBadge = info.statusBadge || "UPN Veteran Jawa Timur";
   const headline = info.headline || "Muhammad Raynar";
@@ -277,12 +279,23 @@ function Hero({ info = PERSONAL_INFO }) {
 
                 <div className="relative w-full aspect-[4/5] min-h-[360px] sm:min-h-[420px] lg:min-h-[450px] overflow-hidden bg-[var(--surface-alt)] flex-1">
                   {avatar ? (
-                    <img
-                      src={avatar}
-                      alt={`Foto Profil ${info.name || "Muhammad Raynar Hammam"}`}
-                      className="w-full h-full object-cover object-top"
-                      loading="eager"
-                    />
+                    <button
+                      type="button"
+                      onClick={() => setHeroZoomOpen(true)}
+                      className="group relative w-full h-full block cursor-zoom-in text-left"
+                      title="Klik untuk memperbesar foto profil"
+                    >
+                      <img
+                        src={avatar}
+                        alt={`Foto Profil ${info.name || "Muhammad Raynar Hammam"}`}
+                        className="w-full h-full object-cover object-top transition-transform duration-300 group-hover:scale-105 select-none"
+                        loading="eager"
+                      />
+                      <div className="absolute bottom-3 right-3 px-2 py-1 rounded-md bg-black/60 text-white text-[11px] font-mono font-bold opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 backdrop-blur-xs">
+                        <Icon name="zoom-in" size={12} />
+                        <span>Perbesar</span>
+                      </div>
+                    </button>
                   ) : (
                     <div
                       className="w-full h-full flex flex-col items-center justify-center p-6 text-center select-none"
@@ -318,6 +331,15 @@ function Hero({ info = PERSONAL_INFO }) {
           </div>
         </div>
       </Container>
+
+      <ImageLightboxModal
+        isOpen={heroZoomOpen}
+        imageUrl={avatar}
+        title={info.name || "Muhammad Raynar Hammam"}
+        subtitle="Foto Profil Hero • Rekayasa Perangkat Lunak & Sistem Informasi"
+        alt={`Foto Profil ${info.name || "Muhammad Raynar Hammam"}`}
+        onClose={() => setHeroZoomOpen(false)}
+      />
     </Section>
   );
 }

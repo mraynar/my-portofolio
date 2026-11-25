@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import {
   Card,
   Chip,
@@ -6,6 +6,7 @@ import {
   CustomSelect,
   Pagination,
   FloatingAlert,
+  ImageLightboxModal,
 } from "../components";
 import ImageCropModal from "./ImageCropModal";
 import {
@@ -43,6 +44,10 @@ export default function AdminExperience({ experience = [], onRefresh }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedback, setFeedback] = useState(null);
   const [cropFile, setCropFile] = useState(null);
+  const [previewExpPhoto, setPreviewExpPhoto] = useState(null);
+  const [previewExpTitle, setPreviewExpTitle] = useState("");
+  const [targetExpForCrop, setTargetExpForCrop] = useState(null);
+  const expFileInputRef = useRef(null);
   const [draggedIdx, setDraggedIdx] = useState(null);
   const [dragOverIdx, setDragOverIdx] = useState(null);
   const [isReordering, setIsReordering] = useState(false);
@@ -83,14 +88,31 @@ export default function AdminExperience({ experience = [], onRefresh }) {
       const path = `experience/${Date.now()}-${cleanName}`;
       const url = await uploadStorageFile("media", path, croppedFile);
       const effectiveUrl = url || previewUrl;
-      setEditingItem((prev) => ({ ...prev, photo: effectiveUrl }));
+
+      if (!editingItem && targetExpForCrop) {
+        const updated = { ...targetExpForCrop, photo: effectiveUrl };
+        await upsertExperience(updated);
+        if (onRefresh) onRefresh();
+        setTargetExpForCrop(null);
+      } else {
+        setEditingItem((prev) => ({ ...prev, photo: effectiveUrl }));
+      }
+
       setFeedback({
         type: "success",
-        text: "Foto dokumentasi berhasil disesuaikan dan diunggah.",
+        text: "Foto dokumentasi berhasil disesuaikan dan disimpan.",
       });
     } catch {
       // Fallback preview for offline environments
-      setEditingItem((prev) => ({ ...prev, photo: previewUrl }));
+      if (!editingItem && targetExpForCrop) {
+        setTargetExpForCrop(null);
+      } else {
+        setEditingItem((prev) => ({ ...prev, photo: previewUrl }));
+      }
+      setFeedback({
+        type: "success",
+        text: "Foto dokumentasi berhasil disesuaikan dan dipratinjau.",
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -441,8 +463,17 @@ export default function AdminExperience({ experience = [], onRefresh }) {
 
               <div className="flex flex-col sm:flex-row gap-4 items-start">
                 {editingItem.photo && (
-                  <div
-                    className="w-32 h-24 rounded-xl overflow-hidden border-2 shrink-0"
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPreviewExpPhoto(editingItem.photo);
+                      setPreviewExpTitle(
+                        editingItem.role || "Foto Dokumentasi"
+                      );
+                      setTargetExpForCrop(editingItem);
+                    }}
+                    title="Klik untuk memperbesar dan mengedit foto"
+                    className="group relative w-32 h-24 rounded-xl overflow-hidden border-2 shrink-0 cursor-pointer transition-transform hover:scale-105"
                     style={{ borderColor: "var(--border)" }}
                   >
                     <img
@@ -450,7 +481,10 @@ export default function AdminExperience({ experience = [], onRefresh }) {
                       alt="Pratinjau Foto"
                       className="w-full h-full object-cover"
                     />
-                  </div>
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                      <Icon name="zoom-in" size={18} />
+                    </div>
+                  </button>
                 )}
 
                 <div className="flex-1 space-y-2 w-full">
@@ -475,12 +509,26 @@ export default function AdminExperience({ experience = [], onRefresh }) {
                       <Icon name="upload" size={14} />
                       Unggah File Foto
                       <input
+                        ref={expFileInputRef}
                         type="file"
                         accept="image/*"
                         onChange={handleFileSelect}
                         className="hidden"
                       />
                     </label>
+                    {editingItem.photo && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setTargetExpForCrop(editingItem);
+                          setCropFile(editingItem.photo);
+                        }}
+                        className="neo-btn-secondary text-xs font-bold py-1.5 px-3 flex items-center gap-1.5"
+                      >
+                        <Icon name="crop" size={14} />
+                        <span>Sesuaikan Foto</span>
+                      </button>
+                    )}
                     <span
                       className="text-xs"
                       style={{ color: "var(--ink-muted)" }}
@@ -565,11 +613,30 @@ export default function AdminExperience({ experience = [], onRefresh }) {
           </form>
         </Card>
 
+        <ImageLightboxModal
+          isOpen={Boolean(previewExpPhoto)}
+          imageUrl={previewExpPhoto}
+          title={previewExpTitle || "Foto Dokumentasi Kegiatan"}
+          subtitle="Rasio 16:9 • Frame Dokumentasi Linimasa"
+          alt={previewExpTitle || "Dokumentasi Pengalaman"}
+          onClose={() => setPreviewExpPhoto(null)}
+          onEdit={() => {
+            const p = previewExpPhoto;
+            setPreviewExpPhoto(null);
+            setCropFile(p);
+          }}
+          onUpload={() => {
+            setPreviewExpPhoto(null);
+            expFileInputRef.current?.click();
+          }}
+        />
+
         {cropFile && (
           <ImageCropModal
             file={cropFile}
             aspectRatio={16 / 9}
             title="Sesuaikan Foto Dokumentasi Kegiatan"
+            description="Rasio 16:9 sesuai persis dengan frame banner dokumentasi linimasa."
             onConfirm={handleCropConfirm}
             onCancel={() => setCropFile(null)}
           />
@@ -763,8 +830,16 @@ export default function AdminExperience({ experience = [], onRefresh }) {
                     {/* Experience item details */}
                     <div className="flex items-start gap-3 mb-3">
                       {item.photo && (
-                        <div
-                          className="w-16 h-12 rounded-lg overflow-hidden border-2 shrink-0"
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setPreviewExpPhoto(item.photo);
+                            setPreviewExpTitle(item.role || "Foto Kegiatan");
+                            setTargetExpForCrop(item);
+                          }}
+                          title="Klik untuk memperbesar foto dokumentasi"
+                          className="group relative w-16 h-12 rounded-lg overflow-hidden border-2 shrink-0 cursor-pointer transition-transform hover:scale-105"
                           style={{ borderColor: "var(--border)" }}
                         >
                           <img
@@ -772,7 +847,10 @@ export default function AdminExperience({ experience = [], onRefresh }) {
                             alt={item.photoAlt || item.role}
                             className="w-full h-full object-cover"
                           />
-                        </div>
+                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                            <Icon name="zoom-in" size={14} />
+                          </div>
+                        </button>
                       )}
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1 flex-wrap">
@@ -863,11 +941,26 @@ export default function AdminExperience({ experience = [], onRefresh }) {
         itemLabel="pengalaman"
       />
 
+      <ImageLightboxModal
+        isOpen={Boolean(previewExpPhoto)}
+        imageUrl={previewExpPhoto}
+        title={previewExpTitle || "Foto Dokumentasi Kegiatan"}
+        subtitle="Rasio 16:9 • Frame Dokumentasi Linimasa"
+        alt={previewExpTitle || "Dokumentasi Pengalaman"}
+        onClose={() => setPreviewExpPhoto(null)}
+        onEdit={() => {
+          const p = previewExpPhoto;
+          setPreviewExpPhoto(null);
+          setCropFile(p);
+        }}
+      />
+
       {cropFile && (
         <ImageCropModal
           file={cropFile}
           aspectRatio={16 / 9}
           title="Sesuaikan Foto Dokumentasi Kegiatan"
+          description="Rasio 16:9 sesuai persis dengan frame banner dokumentasi linimasa."
           onConfirm={handleCropConfirm}
           onCancel={() => setCropFile(null)}
         />

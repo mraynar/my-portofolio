@@ -1,12 +1,13 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Icon } from "../components";
 
-// Aspect ratio preset choices
+// Aspect ratio preset choices matching exact application display frames
 const PRESETS = [
-  { id: "16-9", label: "16:9 (Banner)", ratio: 16 / 9 },
+  { id: "4-5", label: "4:5 (Profil Hero)", ratio: 4 / 5 },
   { id: "16-10", label: "16:10 (Proyek)", ratio: 16 / 10 },
-  { id: "4-3", label: "4:3 (Standar)", ratio: 4 / 3 },
+  { id: "16-9", label: "16:9 (Dokumentasi)", ratio: 16 / 9 },
   { id: "1-1", label: "1:1 (Persegi)", ratio: 1 / 1 },
+  { id: "4-3", label: "4:3 (Standar)", ratio: 4 / 3 },
   { id: "free", label: "Asli (Penuh)", ratio: null },
 ];
 
@@ -30,7 +31,9 @@ export default function ImageCropModal({
   const [isDragging, setIsDragging] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [imageSrc, setImageSrc] = useState(null);
+  const [imageSrc, setImageSrc] = useState(
+    typeof file === "string" ? file : null
+  );
   const dragStartRef = useRef({ x: 0, y: 0, panX: 0, panY: 0 });
   const pendingPanRef = useRef({ x: 0, y: 0 });
   const pendingZoomRef = useRef(1);
@@ -41,18 +44,41 @@ export default function ImageCropModal({
     pendingZoomRef.current = zoom;
   }, [zoom]);
 
-  // Read file as persistent Data URL to prevent blob revocation issues
+  // Read file or URL as persistent Data URL to prevent revocation issues
   useEffect(() => {
     let isSubscribed = true;
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (isSubscribed && typeof reader.result === "string") {
-        setImageSrc(reader.result);
+    if (typeof file === "string") {
+      if (file.startsWith("http")) {
+        fetch(file)
+          .then((res) => res.blob())
+          .then((blob) => {
+            if (!isSubscribed) return;
+            const reader = new FileReader();
+            reader.onload = () => {
+              if (isSubscribed && typeof reader.result === "string") {
+                setImageSrc(reader.result);
+              }
+            };
+            reader.readAsDataURL(blob);
+          })
+          .catch(() => {
+            // Keep default imageSrc
+          });
       }
-    };
-    reader.readAsDataURL(file);
+      return;
+    }
+
+    if (file instanceof Blob) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (isSubscribed && typeof reader.result === "string") {
+          setImageSrc(reader.result);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
     return () => {
       isSubscribed = false;
     };
@@ -230,9 +256,10 @@ export default function ImageCropModal({
       ctx.restore();
 
       const dataUrl = canvas.toDataURL("image/jpeg", 0.88);
-      const fileName = file.name
-        ? file.name.replace(/\.[^/.]+$/, "") + "-cropped.jpg"
-        : "cropped-photo.jpg";
+      const fileName =
+        file && typeof file === "object" && file.name
+          ? file.name.replace(/\.[^/.]+$/, "") + "-cropped.jpg"
+          : "cropped-photo.jpg";
 
       // Convert data URL to Blob and File for cloud upload
       const res = await fetch(dataUrl);

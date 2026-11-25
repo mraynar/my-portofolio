@@ -549,6 +549,181 @@ export function FloatingAlert({ feedback, onClose, duration = 3500 }) {
   );
 }
 
+// Image lightbox modal with zoom and optional edit action
+export function ImageLightboxModal({
+  isOpen,
+  imageUrl,
+  title = "Pratinjau Foto",
+  subtitle,
+  alt = "Pratinjau Foto",
+  onClose,
+  onEdit,
+  onUpload,
+}) {
+  const [zoomLevel, setZoomLevel] = useState(1);
+
+  const handleClose = () => {
+    setZoomLevel(1);
+    if (onClose) onClose();
+  };
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        setZoomLevel(1);
+        if (onClose) onClose();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = "auto";
+    };
+  }, [isOpen, onClose]);
+
+  if (!isOpen || !imageUrl) return null;
+
+  const toggleZoom = () => {
+    setZoomLevel((prev) => (prev > 1 ? 1 : 1.75));
+  };
+
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label={title}
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-5"
+      style={{
+        background: "rgba(0, 0, 0, 0.8)",
+        backdropFilter: "blur(6px)",
+      }}
+      onClick={handleClose}
+    >
+      <div
+        className="neo-card-flat relative w-full max-w-3xl max-h-[92vh] flex flex-col p-4 sm:p-6 overflow-hidden animate-in fade-in zoom-in-95 duration-200"
+        style={{
+          backgroundColor: "var(--surface)",
+          borderColor: "var(--border)",
+          boxShadow: "6px 6px 0 var(--shadow-color)",
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Top Google accent bar */}
+        <div className="google-bar -mx-4 sm:-mx-6 -mt-4 sm:-mt-6 mb-4" />
+
+        {/* Modal Header */}
+        <div
+          className="flex items-center justify-between gap-3 pb-3 mb-3 border-b-2"
+          style={{ borderColor: "var(--border)" }}
+        >
+          <div className="min-w-0">
+            <h3
+              className="text-base sm:text-lg font-extrabold truncate"
+              style={{ fontFamily: "var(--font-display)" }}
+            >
+              {title}
+            </h3>
+            {subtitle && (
+              <p className="text-xs font-mono font-medium text-[var(--ink-secondary)]">
+                {subtitle}
+              </p>
+            )}
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={toggleZoom}
+              title={zoomLevel > 1 ? "Perkecil (100%)" : "Perbesar (175%)"}
+              className="p-1.5 rounded-lg border-2 hover:bg-[var(--surface-alt)] cursor-pointer text-[var(--ink)]"
+              style={{ borderColor: "var(--border)" }}
+            >
+              <Icon name={zoomLevel > 1 ? "zoom-out" : "zoom-in"} size={16} />
+            </button>
+            <button
+              type="button"
+              onClick={handleClose}
+              aria-label="Tutup jendela pratinjau"
+              className="p-1.5 rounded-lg border-2 hover:bg-[var(--surface-alt)] cursor-pointer text-[var(--ink)]"
+              style={{ borderColor: "var(--border)" }}
+            >
+              <Icon name="x" size={16} />
+            </button>
+          </div>
+        </div>
+
+        {/* Image display area with auto zoom in view */}
+        <div
+          className="relative flex-1 min-h-[220px] max-h-[62vh] rounded-xl overflow-auto border-2 flex items-center justify-center p-2 select-none"
+          style={{
+            backgroundColor: "#080c12",
+            borderColor: "var(--border)",
+          }}
+        >
+          <img
+            src={imageUrl}
+            alt={alt}
+            onClick={toggleZoom}
+            className={`max-w-full max-h-[58vh] object-contain rounded-lg transition-transform duration-200 select-none ${
+              zoomLevel > 1 ? "cursor-zoom-out" : "cursor-zoom-in"
+            }`}
+            style={{
+              transform: `scale(${zoomLevel})`,
+              transformOrigin: "center center",
+            }}
+          />
+        </div>
+
+        {/* Footer actions */}
+        <div
+          className="flex flex-wrap items-center justify-between gap-3 pt-3 mt-3 border-t-2"
+          style={{ borderColor: "var(--border)" }}
+        >
+          <div className="text-[11px] font-mono text-[var(--ink-secondary)] hidden sm:block">
+            {onEdit
+              ? "Klik 'Sesuaikan Foto' untuk memotong atau mengatur framing."
+              : "Klik foto untuk memperbesar tampilan."}
+          </div>
+
+          <div className="flex items-center gap-2 ml-auto">
+            {onUpload && (
+              <button
+                type="button"
+                onClick={onUpload}
+                className="neo-btn-secondary text-xs sm:text-sm font-bold py-1.5 px-3 flex items-center gap-1.5"
+              >
+                <Icon name="upload" size={14} />
+                <span>Unggah Baru</span>
+              </button>
+            )}
+
+            {onEdit && (
+              <button
+                type="button"
+                onClick={onEdit}
+                className="neo-btn-primary text-xs sm:text-sm font-bold py-1.5 px-3 flex items-center gap-1.5"
+              >
+                <Icon name="crop" size={14} />
+                <span>Sesuaikan / Edit Foto</span>
+              </button>
+            )}
+
+            <button
+              type="button"
+              onClick={handleClose}
+              className="neo-btn-secondary text-xs sm:text-sm font-bold py-1.5 px-3"
+            >
+              Tutup
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // Section title with uppercase blue eyebrow kicker
 export function SectionHeading({
   kicker,
@@ -795,6 +970,7 @@ export function CaseStudyModal({ project, onClose }) {
 // Featured hero project card with balanced two-column layout
 export function FeaturedHeroCard({ project, onOpenCaseStudy }) {
   const { t } = useLanguage();
+  const [lightboxOpen, setLightboxOpen] = useState(false);
   return (
     <div
       className="neo-card-flat grid grid-cols-1 lg:grid-cols-12 mb-12 p-0 overflow-hidden"
@@ -831,14 +1007,25 @@ export function FeaturedHeroCard({ project, onOpenCaseStudy }) {
           <Chip variant="blue">{project.label}</Chip>
         </div>
 
-        <div className="relative w-full aspect-[16/10] overflow-hidden flex-1">
+        <div className="relative w-full aspect-[16/10] overflow-hidden flex-1 group/hero">
           {project.image ? (
-            <img
-              src={project.image}
-              alt={project.title}
-              className="absolute inset-0 w-full h-full object-cover object-top"
-              loading="lazy"
-            />
+            <>
+              <img
+                src={project.image}
+                alt={project.title}
+                onClick={() => setLightboxOpen(true)}
+                className="absolute inset-0 w-full h-full object-cover object-top cursor-zoom-in transition-transform duration-300 group-hover/hero:scale-105"
+                loading="lazy"
+              />
+              <button
+                type="button"
+                onClick={() => setLightboxOpen(true)}
+                title="Perbesar gambar proyek"
+                className="absolute bottom-3 right-3 p-1.5 rounded-lg bg-black/60 text-white opacity-0 group-hover/hero:opacity-100 transition-opacity hover:bg-black/80 backdrop-blur-xs cursor-pointer"
+              >
+                <Icon name="zoom-in" size={16} />
+              </button>
+            </>
           ) : (
             <div className="absolute inset-0 flex items-center justify-center font-bold text-base text-gray-500">
               {t("projects_preview")}
@@ -936,6 +1123,15 @@ export function FeaturedHeroCard({ project, onOpenCaseStudy }) {
           </span>
         </Stack>
       </div>
+
+      <ImageLightboxModal
+        isOpen={lightboxOpen}
+        imageUrl={project.image}
+        title={project.title}
+        subtitle={`${project.label} • Rasio 16:10 • Proyek Unggulan`}
+        alt={project.title}
+        onClose={() => setLightboxOpen(false)}
+      />
     </div>
   );
 }
@@ -943,6 +1139,7 @@ export function FeaturedHeroCard({ project, onOpenCaseStudy }) {
 // Landscape oriented project card with vertical deck layout
 export function ProjectCard({ project, onOpenCaseStudy }) {
   const { t } = useLanguage();
+  const [lightboxOpen, setLightboxOpen] = useState(false);
   const categoryConfig = {
     "Web App": {
       variant: "blue",
@@ -999,19 +1196,30 @@ export function ProjectCard({ project, onOpenCaseStudy }) {
 
       {/* Landscape media frame (16:10 aspect ratio) */}
       <div
-        className="relative w-full aspect-[16/10] overflow-hidden border-b-2 flex-shrink-0"
+        className="relative w-full aspect-[16/10] overflow-hidden border-b-2 flex-shrink-0 group/cardimg"
         style={{
           borderColor: "var(--border)",
           backgroundColor: "var(--canvas)",
         }}
       >
         {project.image ? (
-          <img
-            src={project.image}
-            alt={project.title}
-            className="w-full h-full object-cover object-top"
-            loading="lazy"
-          />
+          <>
+            <img
+              src={project.image}
+              alt={project.title}
+              onClick={() => setLightboxOpen(true)}
+              className="w-full h-full object-cover object-top cursor-zoom-in transition-transform duration-300 group-hover/cardimg:scale-105"
+              loading="lazy"
+            />
+            <button
+              type="button"
+              onClick={() => setLightboxOpen(true)}
+              title="Perbesar gambar proyek"
+              className="absolute bottom-2 right-2 p-1.5 rounded-lg bg-black/60 text-white opacity-0 group-hover/cardimg:opacity-100 transition-opacity hover:bg-black/80 backdrop-blur-xs cursor-pointer"
+            >
+              <Icon name="zoom-in" size={14} />
+            </button>
+          </>
         ) : (
           <div
             className="w-full h-full flex flex-col items-center justify-center p-4 text-center select-none"
@@ -1129,6 +1337,15 @@ export function ProjectCard({ project, onOpenCaseStudy }) {
           </span>
         </div>
       </div>
+
+      <ImageLightboxModal
+        isOpen={lightboxOpen}
+        imageUrl={project.image}
+        title={project.title}
+        subtitle={`${project.label} • Rasio 16:10`}
+        alt={project.title}
+        onClose={() => setLightboxOpen(false)}
+      />
     </div>
   );
 }
@@ -1259,6 +1476,7 @@ export function ExpCard({
   isLeft = true,
 }) {
   const { t } = useLanguage();
+  const [photoZoomOpen, setPhotoZoomOpen] = useState(false);
   const numberThemes = [
     { bg: "var(--google-blue)", text: "#ffffff" },
     { bg: "var(--google-green)", text: "#ffffff" },
@@ -1350,20 +1568,25 @@ export function ExpCard({
           {/* Compact landscape photo banner if present */}
           {item.photo && (
             <div
-              className="w-full aspect-[16/9] max-h-40 sm:max-h-44 relative overflow-hidden border-b-2"
+              className="group/exp w-full aspect-[16/9] max-h-40 sm:max-h-44 relative overflow-hidden border-b-2 cursor-zoom-in"
               style={{
                 borderColor: "var(--border)",
                 backgroundColor: "var(--canvas)",
               }}
+              onClick={() => setPhotoZoomOpen(true)}
+              title="Klik untuk memperbesar foto dokumentasi"
             >
               <img
                 src={item.photo}
                 alt={item.photoAlt || item.role}
-                className="w-full h-full object-cover object-center"
+                className="w-full h-full object-cover object-center transition-transform duration-300 group-hover/exp:scale-105"
                 loading="lazy"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
-              <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between gap-1.5">
+              <div className="absolute top-2 right-2 p-1 rounded-md bg-black/60 text-white opacity-0 group-hover/exp:opacity-100 transition-opacity backdrop-blur-xs pointer-events-none">
+                <Icon name="zoom-in" size={13} />
+              </div>
+              <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between gap-1.5 pointer-events-none">
                 <span className="neo-badge text-[10px] sm:text-[11px] font-bold px-2 py-0.5 bg-white/95 dark:bg-black/85 text-[var(--ink)] border border-[var(--border)] backdrop-blur-sm">
                   {item.type || item.category || t("exp_milestones")}
                 </span>
@@ -1467,6 +1690,17 @@ export function ExpCard({
           </div>
         </div>
       </div>
+
+      {item.photo && (
+        <ImageLightboxModal
+          isOpen={photoZoomOpen}
+          imageUrl={item.photo}
+          title={item.role}
+          subtitle={`${item.org} • ${item.period} • Rasio 16:9`}
+          alt={item.photoAlt || item.role}
+          onClose={() => setPhotoZoomOpen(false)}
+        />
+      )}
     </div>
   );
 }
