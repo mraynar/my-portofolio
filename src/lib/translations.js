@@ -115,6 +115,10 @@ export const EXACT_TRANSLATIONS = {
   "Rekayasa Perangkat Lunak (RPL)": "Software Engineering (Vocational)",
   "Fokus pada rekayasa perangkat lunak, arsitektur basis data, dan analisis sistem bisnis.": "Focused on software engineering, database architecture, and business systems analysis.",
   "Mempelajari dasar algoritma pemrograman, web development full-stack, dan basis data relasional.": "Studied programming algorithm fundamentals, full-stack web development, and relational databases.",
+  "IPK": "GPA",
+  "Nilai Akhir": "Final Grade",
+  "Nilai": "Grade",
+  "Nilai Rata-rata": "Average Grade",
 
   // By The Numbers Cards
   "PROYEK DIGITAL": "DIGITAL PROJECTS",
@@ -703,6 +707,7 @@ export function translateEducation(edu, lang = "en") {
     period: translateText(edu.period, lang),
     status: translateText(edu.status, lang),
     focus: translateText(edu.focus, lang),
+    scoreLabel: translateText(edu.scoreLabel, lang),
   };
 }
 

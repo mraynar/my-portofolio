@@ -270,6 +270,58 @@ export default function AdminEducationCerts({
                   </div>
                 </div>
 
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold font-mono uppercase mb-1.5">
+                      Label Nilai / IPK
+                    </label>
+                    <input
+                      type="text"
+                      value={editingEdu.scoreLabel || ""}
+                      onChange={(e) =>
+                        setEditingEdu({
+                          ...editingEdu,
+                          scoreLabel: e.target.value,
+                        })
+                      }
+                      placeholder="IPK atau Nilai Akhir"
+                      className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm"
+                      style={{
+                        backgroundColor: "var(--surface-alt)",
+                        borderColor: "var(--border)",
+                      }}
+                    />
+                    <span className="text-[11px] text-[var(--ink-secondary)] block mt-1">
+                      Contoh: IPK, Nilai Akhir, Rata-rata Ujian.
+                    </span>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold font-mono uppercase mb-1.5">
+                      Nilai / Skor IPK
+                    </label>
+                    <input
+                      type="text"
+                      value={editingEdu.score || ""}
+                      onChange={(e) =>
+                        setEditingEdu({
+                          ...editingEdu,
+                          score: e.target.value,
+                        })
+                      }
+                      placeholder="3.84 / 4.00 atau 91.2 / 100"
+                      className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm font-mono"
+                      style={{
+                        backgroundColor: "var(--surface-alt)",
+                        borderColor: "var(--border)",
+                      }}
+                    />
+                    <span className="text-[11px] text-[var(--ink-secondary)] block mt-1">
+                      Contoh: 3.84 / 4.00 atau 91.2.
+                    </span>
+                  </div>
+                </div>
+
                 <div>
                   <label className="block text-xs font-bold font-mono uppercase mb-1.5">
                     Fokus Pembelajaran
@@ -683,6 +735,8 @@ export default function AdminEducationCerts({
                   period: "",
                   focus: "",
                   active: false,
+                  score: "",
+                  scoreLabel: "",
                   order_index: education.length,
                 });
               }}
@@ -756,6 +810,16 @@ export default function AdminEducationCerts({
                   >
                     {edu.focus}
                   </p>
+                  {(edu.score || edu.ipk) && (
+                    <div className="mt-2.5 pt-2 border-t flex items-center gap-1.5 text-xs font-mono font-bold">
+                      <span className="text-[var(--ink-muted)]">
+                        {edu.scoreLabel || "Nilai / IPK"}:
+                      </span>
+                      <span className="text-[var(--google-blue)] font-extrabold">
+                        {edu.score || edu.ipk}
+                      </span>
+                    </div>
+                  )}
                 </Card>
               ));
             })()}

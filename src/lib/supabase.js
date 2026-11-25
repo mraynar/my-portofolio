@@ -967,12 +967,21 @@ export async function getEducation() {
         .order("order_index", { ascending: true });
 
       if (!error && data && data.length > 0) {
+        const mapped = data.map((item, idx) => {
+          const fallback = EDUCATION[idx] || {};
+          return {
+            ...item,
+            score: item.score || item.ipk || fallback.score || "",
+            scoreLabel:
+              item.score_label || item.scoreLabel || fallback.scoreLabel || "",
+          };
+        });
         try {
-          localStorage.setItem(CACHE_KEYS.EDUCATION, JSON.stringify(data));
+          localStorage.setItem(CACHE_KEYS.EDUCATION, JSON.stringify(mapped));
         } catch {
           // Ignore
         }
-        return data;
+        return mapped;
       }
     } catch {
       // Fall through
@@ -1008,7 +1017,24 @@ export async function upsertEducation(item) {
 
   if (supabase) {
     try {
-      await supabase.from("education").upsert(payload);
+      const dbPayload = {
+        id: payload.id,
+        school: payload.school,
+        degree: payload.degree,
+        period: payload.period,
+        focus: payload.focus,
+        active: Boolean(payload.active),
+        order_index: payload.order_index ?? payload.orderIndex ?? 0,
+        score: payload.score || payload.ipk || null,
+        score_label: payload.scoreLabel || payload.score_label || null,
+      };
+      const { error } = await supabase.from("education").upsert(dbPayload);
+      if (error && (error.message.includes("score") || error.code === "42703")) {
+        const fallback = { ...dbPayload };
+        delete fallback.score;
+        delete fallback.score_label;
+        await supabase.from("education").upsert(fallback);
+      }
     } catch {
       // Retain local state
     }

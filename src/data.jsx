@@ -514,6 +514,8 @@ export const EDUCATION = [
     period: "2024 – Sekarang",
     status: "Mahasiswa Aktif",
     active: true,
+    score: "3.84 / 4.00",
+    scoreLabel: "IPK",
     focus: "Fokus pada rekayasa perangkat lunak, arsitektur basis data, dan analisis sistem bisnis.",
   },
   {
@@ -522,6 +524,8 @@ export const EDUCATION = [
     period: "2021 – 2024",
     status: "Lulus",
     active: false,
+    score: "91.2 / 100",
+    scoreLabel: "Nilai Akhir",
     focus: "Mempelajari dasar algoritma pemrograman, web development full-stack, dan basis data relasional.",
   },
 ];

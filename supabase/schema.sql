@@ -99,6 +99,8 @@ create table if not exists public.education (
   period text not null,
   focus text not null,
   active boolean not null default false,
+  score text,
+  score_label text,
   order_index int not null default 0,
   created_at timestamptz default now()
 );

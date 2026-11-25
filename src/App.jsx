@@ -639,36 +639,75 @@ function About({
                         borderLeftColor: nodeColor,
                       }}
                     >
-                      <div className="flex items-center justify-between mb-1.5">
-                        <span
-                          className="text-xs font-bold font-mono"
-                          style={{ color: "var(--ink-muted)" }}
-                        >
-                          {edu.period}
-                        </span>
-                        {edu.active && <Chip variant="green">{t("exp_active")}</Chip>}
+                      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 sm:gap-4">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1.5">
+                            <span
+                              className="text-xs font-bold font-mono"
+                              style={{ color: "var(--ink-muted)" }}
+                            >
+                              {edu.period}
+                            </span>
+                            {edu.active && (
+                              <Chip variant="green">{t("exp_active")}</Chip>
+                            )}
+                          </div>
+                          <h4
+                            className="font-extrabold text-base sm:text-lg mb-0.5"
+                            style={{
+                              color: "var(--ink)",
+                              fontFamily: "var(--font-display)",
+                            }}
+                          >
+                            {edu.degree}
+                          </h4>
+                          <p
+                            className="text-xs sm:text-sm font-bold mb-1.5"
+                            style={{ color: nodeColor }}
+                          >
+                            {edu.school}
+                          </p>
+                          <p
+                            className="text-xs sm:text-sm leading-relaxed"
+                            style={{ color: "var(--ink-secondary)" }}
+                          >
+                            {edu.focus}
+                          </p>
+                        </div>
+
+                        {/* Nilai or IPK score badge */}
+                        {(edu.score || edu.ipk) && (
+                          <div
+                            className="shrink-0 sm:self-center px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl border-2 text-left sm:text-right"
+                            style={{
+                              backgroundColor:
+                                idx === 0
+                                  ? "var(--google-blue-bg)"
+                                  : "var(--google-green-bg)",
+                              borderColor: nodeColor,
+                              boxShadow: "2px 2px 0 var(--shadow-color)",
+                            }}
+                          >
+                            <span
+                              className="block text-[10px] font-black font-mono uppercase tracking-wider mb-0.5"
+                              style={{ color: "var(--ink-muted)" }}
+                            >
+                              {edu.scoreLabel ||
+                                (idx === 0
+                                  ? language === "en" ? "GPA" : "IPK"
+                                  : language === "en"
+                                    ? "FINAL GRADE"
+                                    : "NILAI AKHIR")}
+                            </span>
+                            <span
+                              className="block text-sm sm:text-base font-black font-mono tracking-tight"
+                              style={{ color: nodeColor }}
+                            >
+                              [{String(edu.score || edu.ipk).replace(/^\[+|\]+$/g, "").trim()}]
+                            </span>
+                          </div>
+                        )}
                       </div>
-                      <h4
-                        className="font-extrabold text-base sm:text-lg mb-0.5"
-                        style={{
-                          color: "var(--ink)",
-                          fontFamily: "var(--font-display)",
-                        }}
-                      >
-                        {edu.degree}
-                      </h4>
-                      <p
-                        className="text-xs sm:text-sm font-bold mb-1.5"
-                        style={{ color: nodeColor }}
-                      >
-                        {edu.school}
-                      </p>
-                      <p
-                        className="text-xs sm:text-sm leading-relaxed"
-                        style={{ color: "var(--ink-secondary)" }}
-                      >
-                        {edu.focus}
-                      </p>
                     </div>
                   </div>
                 );
