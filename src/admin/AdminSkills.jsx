@@ -21,7 +21,20 @@ export default function AdminSkills({
   const [feedback, setFeedback] = useState(null);
   const [draggedIdx, setDraggedIdx] = useState(null);
   const [dragOverIdx, setDragOverIdx] = useState(null);
+  const [draggedSkillIdx, setDraggedSkillIdx] = useState(null);
+  const [dragOverSkillIdx, setDragOverSkillIdx] = useState(null);
   const [isReordering, setIsReordering] = useState(false);
+
+  // Reorder skill item within editing category
+  const handleMoveSkill = (fromIdx, toIdx) => {
+    if (fromIdx === toIdx || fromIdx === null || toIdx === null) return;
+    setEditingSkillsList((prev) => {
+      const next = [...prev];
+      const [moved] = next.splice(fromIdx, 1);
+      next.splice(toIdx, 0, moved);
+      return next;
+    });
+  };
 
   // Reorder skill category item to a new position via drag and drop
   const handleMove = async (fromIdx, toIdx) => {
@@ -63,6 +76,8 @@ export default function AdminSkills({
     setEditingSkillsList([...(cat.skills || [])]);
     setNewSkillInput("");
     setFeedback(null);
+    setDraggedSkillIdx(null);
+    setDragOverSkillIdx(null);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -71,6 +86,8 @@ export default function AdminSkills({
     setEditingSkillsList([]);
     setNewSkillInput("");
     setFeedback(null);
+    setDraggedSkillIdx(null);
+    setDragOverSkillIdx(null);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -236,11 +253,22 @@ export default function AdminSkills({
               />
             </div>
 
-            {/* Interactive tag list */}
+            {/* Interactive tag list with drag-and-drop reordering */}
             <div>
-              <label className="block text-xs font-bold font-mono uppercase mb-1.5">
-                Daftar Keahlian ({editingSkillsList.length})
-              </label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-xs font-bold font-mono uppercase">
+                  Daftar Keahlian ({editingSkillsList.length})
+                </label>
+                {editingSkillsList.length > 1 && (
+                  <span
+                    className="text-[11px] font-mono inline-flex items-center gap-1"
+                    style={{ color: "var(--ink-muted)" }}
+                  >
+                    <Icon name="grip" size={12} />
+                    Tarik untuk mengatur urutan
+                  </span>
+                )}
+              </div>
 
               <div
                 className="p-4 rounded-xl border-2 min-h-[60px] flex flex-wrap gap-2 mb-3"
@@ -257,27 +285,82 @@ export default function AdminSkills({
                     Belum ada keahlian ditambahkan. Ketik di bawah untuk menambah.
                   </span>
                 ) : (
-                  editingSkillsList.map((skill) => (
-                    <span
-                      key={skill}
-                      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border-2"
-                      style={{
-                        backgroundColor: "var(--surface)",
-                        borderColor: "var(--border)",
-                        color: "var(--ink)",
-                      }}
-                    >
-                      {skill}
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveSkill(skill)}
-                        className="hover:opacity-75 focus:outline-none"
-                        aria-label={`Hapus ${skill}`}
+                  editingSkillsList.map((skill, idx) => {
+                    const isDragging = draggedSkillIdx === idx;
+                    const isOver = dragOverSkillIdx === idx;
+
+                    return (
+                      <span
+                        key={skill}
+                        draggable
+                        onDragStart={(e) => {
+                          setDraggedSkillIdx(idx);
+                          e.dataTransfer.effectAllowed = "move";
+                          e.dataTransfer.setData("text/plain", String(idx));
+                        }}
+                        onDragOver={(e) => {
+                          e.preventDefault();
+                          e.dataTransfer.dropEffect = "move";
+                          if (dragOverSkillIdx !== idx) {
+                            setDragOverSkillIdx(idx);
+                          }
+                        }}
+                        onDragLeave={() => {
+                          if (dragOverSkillIdx === idx) {
+                            setDragOverSkillIdx(null);
+                          }
+                        }}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          const from =
+                            draggedSkillIdx ??
+                            parseInt(e.dataTransfer.getData("text/plain"), 10);
+                          if (from !== null && !isNaN(from) && from !== idx) {
+                            handleMoveSkill(from, idx);
+                          }
+                          setDraggedSkillIdx(null);
+                          setDragOverSkillIdx(null);
+                        }}
+                        onDragEnd={() => {
+                          setDraggedSkillIdx(null);
+                          setDragOverSkillIdx(null);
+                        }}
+                        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border-2 cursor-grab active:cursor-grabbing select-none transition-all duration-150 ${
+                          isDragging ? "opacity-40 scale-95" : ""
+                        } ${
+                          isOver && !isDragging
+                            ? "ring-2 ring-[var(--google-blue)] border-[var(--google-blue)] scale-105"
+                            : ""
+                        }`}
+                        style={{
+                          backgroundColor: "var(--surface)",
+                          borderColor:
+                            isOver && !isDragging
+                              ? "var(--google-blue)"
+                              : "var(--border)",
+                          color: "var(--ink)",
+                        }}
+                        title="Tarik untuk mengatur posisi"
                       >
-                        <Icon name="x" size={12} />
-                      </button>
-                    </span>
-                  ))
+                        <Icon
+                          name="grip"
+                          size={12}
+                          className="opacity-40 shrink-0 pointer-events-none"
+                        />
+                        <span>{skill}</span>
+                        <button
+                          type="button"
+                          draggable={false}
+                          onMouseDown={(e) => e.stopPropagation()}
+                          onClick={() => handleRemoveSkill(skill)}
+                          className="hover:opacity-75 focus:outline-none cursor-pointer shrink-0 ml-0.5"
+                          aria-label={`Hapus ${skill}`}
+                        >
+                          <Icon name="x" size={12} />
+                        </button>
+                      </span>
+                    );
+                  })
                 )}
               </div>
 
