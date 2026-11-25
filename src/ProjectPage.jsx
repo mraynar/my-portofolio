@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Container, ProjectCard, Cluster, Icon } from "./components";
+import { Container, ProjectCard, Cluster, Icon, Pagination } from "./components";
 import { PROJECTS } from "./data";
 import { useLanguage } from "./context/LanguageContext";
 
@@ -8,8 +8,10 @@ export default function ProjectPage({
   onOpenCaseStudy,
   projects = PROJECTS,
 }) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [activeFilter, setActiveFilter] = useState("ALL");
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 6;
 
   const categories = [
     {
@@ -119,7 +121,10 @@ export default function ProjectPage({
               return (
                 <button
                   key={cat.key}
-                  onClick={() => setActiveFilter(cat.key)}
+                  onClick={() => {
+                    setActiveFilter(cat.key);
+                    setCurrentPage(1);
+                  }}
                   className="neo-badge text-xs sm:text-sm font-bold cursor-pointer transition-all"
                   style={{
                     backgroundColor: active ? cat.border : "var(--surface-alt)",
@@ -140,15 +145,39 @@ export default function ProjectPage({
 
       {/* Responsive projects grid */}
       <Container>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-          {filteredProjects.map((project) => (
-            <ProjectCard
-              key={project.id}
-              project={project}
-              onOpenCaseStudy={onOpenCaseStudy}
-            />
-          ))}
-        </div>
+        {(() => {
+          const maxPage = Math.max(1, Math.ceil(filteredProjects.length / pageSize));
+          const effectivePage = Math.min(currentPage, maxPage);
+          const paginatedProjects = filteredProjects.slice(
+            (effectivePage - 1) * pageSize,
+            effectivePage * pageSize
+          );
+
+          return (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+                {paginatedProjects.map((project) => (
+                  <ProjectCard
+                    key={project.id}
+                    project={project}
+                    onOpenCaseStudy={onOpenCaseStudy}
+                  />
+                ))}
+              </div>
+
+              <Pagination
+                currentPage={effectivePage}
+                totalItems={filteredProjects.length}
+                pageSize={pageSize}
+                onPageChange={(page) => {
+                  setCurrentPage(page);
+                  window.scrollTo({ top: 350, behavior: "smooth" });
+                }}
+                itemLabel={language === "en" ? "projects" : "proyek"}
+              />
+            </>
+          );
+        })()}
       </Container>
     </main>
   );

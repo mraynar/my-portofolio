@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Card, Chip, Icon, CustomSelect } from "../components";
+import { Card, Chip, Icon, CustomSelect, Pagination } from "../components";
 import ImageCropModal from "./ImageCropModal";
 import {
   upsertProject,
@@ -56,6 +56,8 @@ export default function AdminProjects({
   const [draggedIdx, setDraggedIdx] = useState(null);
   const [dragOverIdx, setDragOverIdx] = useState(null);
   const [isReordering, setIsReordering] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 6;
 
   // Reorder project item to a new position via drag and drop
   const handleMove = async (fromIdx, toIdx) => {
@@ -891,32 +893,39 @@ export default function AdminProjects({
           const sortedProjects = [...projects].sort(
             (a, b) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0)
           );
+          const maxPage = Math.max(1, Math.ceil(sortedProjects.length / pageSize));
+          const effectivePage = Math.min(currentPage, maxPage);
+          const paginatedProjects = sortedProjects.slice(
+            (effectivePage - 1) * pageSize,
+            effectivePage * pageSize
+          );
 
-          return sortedProjects.map((p, idx) => {
-            const isDragging = draggedIdx === idx;
-            const isOver = dragOverIdx === idx;
+          return paginatedProjects.map((p, localIdx) => {
+            const absoluteIdx = (effectivePage - 1) * pageSize + localIdx;
+            const isDragging = draggedIdx === absoluteIdx;
+            const isOver = dragOverIdx === absoluteIdx;
 
             return (
               <div
                 key={p.id}
                 draggable={!isReordering}
                 onDragStart={(e) => {
-                  setDraggedIdx(idx);
+                  setDraggedIdx(absoluteIdx);
                   e.dataTransfer.effectAllowed = "move";
-                  e.dataTransfer.setData("text/plain", String(idx));
+                  e.dataTransfer.setData("text/plain", String(absoluteIdx));
                 }}
                 onDragOver={(e) => {
                   e.preventDefault();
                   e.dataTransfer.dropEffect = "move";
-                  if (dragOverIdx !== idx) setDragOverIdx(idx);
+                  if (dragOverIdx !== absoluteIdx) setDragOverIdx(absoluteIdx);
                 }}
                 onDragLeave={() => {
-                  if (dragOverIdx === idx) setDragOverIdx(null);
+                  if (dragOverIdx === absoluteIdx) setDragOverIdx(null);
                 }}
                 onDrop={(e) => {
                   e.preventDefault();
-                  if (draggedIdx !== null && draggedIdx !== idx) {
-                    handleMove(draggedIdx, idx);
+                  if (draggedIdx !== null && draggedIdx !== absoluteIdx) {
+                    handleMove(draggedIdx, absoluteIdx);
                   }
                 }}
                 onDragEnd={() => {
@@ -944,7 +953,7 @@ export default function AdminProjects({
                             borderColor: "var(--border)",
                           }}
                         >
-                          #{idx + 1}
+                          #{absoluteIdx + 1}
                         </span>
                         <Chip
                           variant={
@@ -1028,6 +1037,17 @@ export default function AdminProjects({
           });
         })()}
       </div>
+
+      <Pagination
+        currentPage={currentPage}
+        totalItems={projects.length}
+        pageSize={pageSize}
+        onPageChange={(page) => {
+          setCurrentPage(page);
+          window.scrollTo({ top: 300, behavior: "smooth" });
+        }}
+        itemLabel="proyek"
+      />
 
       {cropFile && (
         <ImageCropModal

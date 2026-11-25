@@ -334,6 +334,130 @@ export function Card({
   );
 }
 
+// Neo-brutalist pagination with page numbers and item count summary
+export function Pagination({
+  currentPage = 1,
+  totalItems = 0,
+  pageSize = 6,
+  onPageChange,
+  className = "",
+  itemLabel = "item",
+}) {
+  const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+
+  if (totalPages <= 1) return null;
+
+  const startIdx = (currentPage - 1) * pageSize + 1;
+  const endIdx = Math.min(currentPage * pageSize, totalItems);
+
+  // Calculate visible page buttons with ellipsis
+  const getPageNumbers = () => {
+    if (totalPages <= 5) {
+      return Array.from({ length: totalPages }, (_, i) => i + 1);
+    }
+    const pages = [1];
+    if (currentPage > 3) pages.push("...");
+    const start = Math.max(2, currentPage - 1);
+    const end = Math.min(totalPages - 1, currentPage + 1);
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+    if (currentPage < totalPages - 2) pages.push("...");
+    pages.push(totalPages);
+    return pages;
+  };
+
+  return (
+    <div
+      className={`flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 mt-6 border-t-2 ${className}`}
+      style={{ borderColor: "var(--border)" }}
+    >
+      <div
+        className="text-xs font-mono font-medium"
+        style={{ color: "var(--ink-secondary)" }}
+      >
+        Menampilkan{" "}
+        <span className="font-bold font-mono" style={{ color: "var(--ink)" }}>
+          {startIdx}-{endIdx}
+        </span>{" "}
+        dari{" "}
+        <span className="font-bold font-mono" style={{ color: "var(--ink)" }}>
+          {totalItems}
+        </span>{" "}
+        {itemLabel}
+      </div>
+
+      <div className="flex items-center gap-1.5 sm:gap-2">
+        <button
+          type="button"
+          onClick={() => onPageChange(Math.max(1, currentPage - 1))}
+          disabled={currentPage <= 1}
+          aria-label="Halaman sebelumnya"
+          className="h-9 px-3 rounded-xl border-2 font-bold text-xs inline-flex items-center gap-1 transition-all shadow-[2px_2px_0_var(--shadow-color)] disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none cursor-pointer"
+          style={{
+            backgroundColor: "var(--surface)",
+            borderColor: "var(--border)",
+            color: "var(--ink)",
+          }}
+        >
+          <Icon name="chevron-left" size={15} />
+          <span className="hidden sm:inline">Sebelumnya</span>
+        </button>
+
+        {getPageNumbers().map((p, idx) => {
+          if (p === "...") {
+            return (
+              <span
+                key={`ellipsis-${idx}`}
+                className="w-9 h-9 inline-flex items-center justify-center font-mono text-xs font-bold"
+                style={{ color: "var(--ink-muted)" }}
+              >
+                ...
+              </span>
+            );
+          }
+          const isActive = p === currentPage;
+          return (
+            <button
+              key={p}
+              type="button"
+              onClick={() => onPageChange(p)}
+              aria-label={`Halaman ${p}`}
+              aria-current={isActive ? "page" : undefined}
+              className="w-9 h-9 rounded-xl border-2 font-mono font-extrabold text-xs inline-flex items-center justify-center transition-all cursor-pointer shadow-[2px_2px_0_var(--shadow-color)] active:translate-x-0.5 active:translate-y-0.5"
+              style={{
+                backgroundColor: isActive
+                  ? "var(--google-blue)"
+                  : "var(--surface)",
+                borderColor: "var(--border)",
+                color: isActive ? "#ffffff" : "var(--ink)",
+              }}
+            >
+              {p}
+            </button>
+          );
+        })}
+
+        <button
+          type="button"
+          onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
+          disabled={currentPage >= totalPages}
+          aria-label="Halaman berikutnya"
+          className="h-9 px-3 rounded-xl border-2 font-bold text-xs inline-flex items-center gap-1 transition-all shadow-[2px_2px_0_var(--shadow-color)] disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none cursor-pointer"
+          style={{
+            backgroundColor: "var(--surface)",
+            borderColor: "var(--border)",
+            color: "var(--ink)",
+          }}
+        >
+          <span className="hidden sm:inline">Berikutnya</span>
+          <Icon name="chevron-right" size={15} />
+        </button>
+      </div>
+    </div>
+  );
+}
+
 // Section title with uppercase blue eyebrow kicker
 export function SectionHeading({
   kicker,

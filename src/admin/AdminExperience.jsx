@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Card, Chip, Icon, CustomSelect } from "../components";
+import { Card, Chip, Icon, CustomSelect, Pagination } from "../components";
 import ImageCropModal from "./ImageCropModal";
 import {
   upsertExperience,
@@ -39,6 +39,8 @@ export default function AdminExperience({ experience = [], onRefresh }) {
   const [draggedIdx, setDraggedIdx] = useState(null);
   const [dragOverIdx, setDragOverIdx] = useState(null);
   const [isReordering, setIsReordering] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 4;
 
   const handleEdit = (item) => {
     setEditingItem(item);
@@ -657,7 +659,10 @@ export default function AdminExperience({ experience = [], onRefresh }) {
             <button
               key={tab.key}
               type="button"
-              onClick={() => setFilterType(tab.key)}
+              onClick={() => {
+                setFilterType(tab.key);
+                setCurrentPage(1);
+              }}
               className="px-3.5 py-1.5 rounded-xl border-2 text-xs font-bold transition-all cursor-pointer"
               style={{
                 backgroundColor:
@@ -696,37 +701,44 @@ export default function AdminExperience({ experience = [], onRefresh }) {
               return true;
             }
           );
+          const maxPage = Math.max(1, Math.ceil(displayedList.length / pageSize));
+          const effectivePage = Math.min(currentPage, maxPage);
+          const paginatedList = displayedList.slice(
+            (effectivePage - 1) * pageSize,
+            effectivePage * pageSize
+          );
 
-          return displayedList.map((item, idx) => {
+          return paginatedList.map((item, localIdx) => {
+            const absoluteIdx = (effectivePage - 1) * pageSize + localIdx;
             const isMagang = isInternshipExperience(item);
             const canDrag = filterType !== "all" && !isReordering;
-            const isDragging = canDrag && draggedIdx === idx;
-            const isOver = canDrag && dragOverIdx === idx;
+            const isDragging = canDrag && draggedIdx === absoluteIdx;
+            const isOver = canDrag && dragOverIdx === absoluteIdx;
 
             return (
               <div
-                key={item.id || item.role + idx}
+                key={item.id || item.role + absoluteIdx}
                 draggable={canDrag}
                 onDragStart={(e) => {
                   if (!canDrag) return;
-                  setDraggedIdx(idx);
+                  setDraggedIdx(absoluteIdx);
                   e.dataTransfer.effectAllowed = "move";
-                  e.dataTransfer.setData("text/plain", String(idx));
+                  e.dataTransfer.setData("text/plain", String(absoluteIdx));
                 }}
                 onDragOver={(e) => {
                   if (!canDrag) return;
                   e.preventDefault();
                   e.dataTransfer.dropEffect = "move";
-                  if (dragOverIdx !== idx) setDragOverIdx(idx);
+                  if (dragOverIdx !== absoluteIdx) setDragOverIdx(absoluteIdx);
                 }}
                 onDragLeave={() => {
-                  if (dragOverIdx === idx) setDragOverIdx(null);
+                  if (dragOverIdx === absoluteIdx) setDragOverIdx(null);
                 }}
                 onDrop={(e) => {
                   if (!canDrag) return;
                   e.preventDefault();
-                  if (draggedIdx !== null && draggedIdx !== idx) {
-                    handleMove(draggedIdx, idx);
+                  if (draggedIdx !== null && draggedIdx !== absoluteIdx) {
+                    handleMove(draggedIdx, absoluteIdx);
                   }
                 }}
                 onDragEnd={() => {
@@ -757,7 +769,7 @@ export default function AdminExperience({ experience = [], onRefresh }) {
                             borderColor: "var(--border)",
                           }}
                         >
-                          Posisi #{idx + 1}
+                          Posisi #{absoluteIdx + 1}
                         </span>
                       </div>
 
@@ -873,6 +885,24 @@ export default function AdminExperience({ experience = [], onRefresh }) {
           });
         })()}
       </div>
+
+      <Pagination
+        currentPage={currentPage}
+        totalItems={
+          sortExperiencesLatestFirst(experience).filter((item) => {
+            if (filterType === "magang") return isInternshipExperience(item);
+            if (filterType === "organisasi")
+              return !isInternshipExperience(item);
+            return true;
+          }).length
+        }
+        pageSize={pageSize}
+        onPageChange={(page) => {
+          setCurrentPage(page);
+          window.scrollTo({ top: 300, behavior: "smooth" });
+        }}
+        itemLabel="pengalaman"
+      />
 
       {cropFile && (
         <ImageCropModal

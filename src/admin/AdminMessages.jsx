@@ -1,8 +1,11 @@
-import { Card, Icon } from "../components";
+import { useState } from "react";
+import { Card, Icon, Pagination } from "../components";
 import { supabase } from "../lib/supabase";
 
 // Contact messages inbox tab
 export default function AdminMessages({ messages = [], onRefresh }) {
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 5;
   const handleDelete = async (id) => {
     if (!window.confirm("Hapus pesan ini dari database?")) return;
     try {
@@ -56,73 +59,97 @@ export default function AdminMessages({ messages = [], onRefresh }) {
         </Card>
       ) : (
         <div className="space-y-4">
-          {messages.map((msg) => (
-            <Card key={msg.id} className="p-5 sm:p-6 space-y-4">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b-2">
-                <div>
-                  <h4 className="font-extrabold text-base">{msg.name}</h4>
-                  <a
-                    href={`mailto:${msg.email}`}
-                    className="text-xs font-mono font-bold hover:underline"
-                    style={{ color: "var(--google-blue)" }}
-                  >
-                    {msg.email}
-                  </a>
-                </div>
+          {(() => {
+            const maxPage = Math.max(1, Math.ceil(messages.length / pageSize));
+            const effectivePage = Math.min(currentPage, maxPage);
+            const paginated = messages.slice(
+              (effectivePage - 1) * pageSize,
+              effectivePage * pageSize
+            );
 
-                <div className="flex items-center gap-2">
-                  <span
-                    className="text-xs font-mono font-bold"
-                    style={{ color: "var(--ink-muted)" }}
-                  >
-                    {msg.created_at
-                      ? new Date(msg.created_at).toLocaleString("id-ID")
-                      : "-"}
-                  </span>
-                  {msg.id && (
-                    <button
-                      onClick={() => handleDelete(msg.id)}
-                      className="neo-badge text-xs font-bold py-1 px-2.5"
-                      style={{
-                        backgroundColor: "var(--google-red-bg)",
-                        color: "var(--google-red-text)",
-                        borderColor: "var(--google-red)",
-                      }}
-                    >
-                      <Icon name="trash" size={13} />
-                    </button>
-                  )}
-                </div>
-              </div>
+            return (
+              <>
+                {paginated.map((msg) => (
+                  <Card key={msg.id} className="p-5 sm:p-6 space-y-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b-2">
+                      <div>
+                        <h4 className="font-extrabold text-base">{msg.name}</h4>
+                        <a
+                          href={`mailto:${msg.email}`}
+                          className="text-xs font-mono font-bold hover:underline"
+                          style={{ color: "var(--google-blue)" }}
+                        >
+                          {msg.email}
+                        </a>
+                      </div>
 
-              <div>
-                <div
-                  className="text-xs font-bold font-mono uppercase mb-1"
-                  style={{ color: "var(--ink-muted)" }}
-                >
-                  Topik: {msg.subject || "Tanpa Topik"}
-                </div>
-                <p
-                  className="text-sm leading-relaxed whitespace-pre-wrap"
-                  style={{ color: "var(--ink)" }}
-                >
-                  {msg.message}
-                </p>
-              </div>
+                      <div className="flex items-center gap-2">
+                        <span
+                          className="text-xs font-mono font-bold"
+                          style={{ color: "var(--ink-muted)" }}
+                        >
+                          {msg.created_at
+                            ? new Date(msg.created_at).toLocaleString("id-ID")
+                            : "-"}
+                        </span>
+                        {msg.id && (
+                          <button
+                            onClick={() => handleDelete(msg.id)}
+                            className="neo-badge text-xs font-bold py-1 px-2.5"
+                            style={{
+                              backgroundColor: "var(--google-red-bg)",
+                              color: "var(--google-red-text)",
+                              borderColor: "var(--google-red)",
+                            }}
+                          >
+                            <Icon name="trash" size={13} />
+                          </button>
+                        )}
+                      </div>
+                    </div>
 
-              <div className="pt-3 border-t-2 flex justify-end">
-                <a
-                  href={`mailto:${msg.email}?subject=Re: ${encodeURIComponent(
-                    msg.subject || "Kontak Portofolio"
-                  )}`}
-                  className="neo-btn-secondary text-xs sm:text-sm font-bold inline-flex items-center gap-1.5"
-                >
-                  <Icon name="mail" size={15} />
-                  Balas via Email
-                </a>
-              </div>
-            </Card>
-          ))}
+                    <div>
+                      <div
+                        className="text-xs font-bold font-mono uppercase mb-1"
+                        style={{ color: "var(--ink-muted)" }}
+                      >
+                        Topik: {msg.subject || "Tanpa Topik"}
+                      </div>
+                      <p
+                        className="text-sm leading-relaxed whitespace-pre-wrap"
+                        style={{ color: "var(--ink)" }}
+                      >
+                        {msg.message}
+                      </p>
+                    </div>
+
+                    <div className="pt-3 border-t-2 flex justify-end">
+                      <a
+                        href={`mailto:${msg.email}?subject=Re: ${encodeURIComponent(
+                          msg.subject || "Kontak Portofolio"
+                        )}`}
+                        className="neo-btn-secondary text-xs sm:text-sm font-bold inline-flex items-center gap-1.5"
+                      >
+                        <Icon name="mail" size={15} />
+                        Balas via Email
+                      </a>
+                    </div>
+                  </Card>
+                ))}
+
+                <Pagination
+                  currentPage={currentPage}
+                  totalItems={messages.length}
+                  pageSize={pageSize}
+                  onPageChange={(page) => {
+                    setCurrentPage(page);
+                    window.scrollTo({ top: 300, behavior: "smooth" });
+                  }}
+                  itemLabel="pesan"
+                />
+              </>
+            );
+          })()}
         </div>
       )}
     </div>

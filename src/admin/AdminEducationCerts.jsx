@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Card, Chip, Icon, CustomSelect } from "../components";
+import { Card, Chip, Icon, CustomSelect, Pagination } from "../components";
 import {
   upsertEducation,
   deleteEducation,
@@ -18,6 +18,10 @@ export default function AdminEducationCerts({
   const [editingCert, setEditingCert] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedback, setFeedback] = useState(null);
+  const [eduPage, setEduPage] = useState(1);
+  const [certPage, setCertPage] = useState(1);
+  const eduPageSize = 4;
+  const certPageSize = 6;
 
   const handleEduSubmit = async (e) => {
     e.preventDefault();
@@ -623,63 +627,83 @@ export default function AdminEducationCerts({
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-stretch">
-            {education.map((edu, idx) => (
-              <Card key={edu.id || edu.school + idx} className="p-5">
-                <div className="flex items-center justify-between mb-2 pb-2 border-b-2">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-mono font-bold">
-                      {edu.period}
-                    </span>
-                    {edu.active && <Chip variant="green">Aktif</Chip>}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      aria-label="Edit pendidikan"
-                      onClick={() => {
-                        setEditingEdu(edu);
-                        window.scrollTo({ top: 0, behavior: "smooth" });
-                      }}
-                      className="neo-btn-secondary text-xs font-bold py-1 px-2.5"
-                    >
-                      <Icon name="edit" size={13} />
-                    </button>
-                    {edu.id && (
+            {(() => {
+              const maxEduPage = Math.max(1, Math.ceil(education.length / eduPageSize));
+              const effectiveEduPage = Math.min(eduPage, maxEduPage);
+              const paginatedEdu = education.slice(
+                (effectiveEduPage - 1) * eduPageSize,
+                effectiveEduPage * eduPageSize
+              );
+
+              return paginatedEdu.map((edu, idx) => (
+                <Card key={edu.id || edu.school + idx} className="p-5">
+                  <div className="flex items-center justify-between mb-2 pb-2 border-b-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-mono font-bold">
+                        {edu.period}
+                      </span>
+                      {edu.active && <Chip variant="green">Aktif</Chip>}
+                    </div>
+                    <div className="flex items-center gap-2">
                       <button
-                        onClick={() => handleDeleteEdu(edu.id)}
-                        className="neo-badge text-xs font-bold py-1 px-2.5"
-                        style={{
-                          backgroundColor: "var(--google-red-bg)",
-                          color: "var(--google-red-text)",
-                          borderColor: "var(--google-red)",
+                        type="button"
+                        aria-label="Edit pendidikan"
+                        onClick={() => {
+                          setEditingEdu(edu);
+                          window.scrollTo({ top: 0, behavior: "smooth" });
                         }}
+                        className="neo-btn-secondary text-xs font-bold py-1 px-2.5"
                       >
-                        <Icon name="trash" size={13} />
+                        <Icon name="edit" size={13} />
                       </button>
-                    )}
+                      {edu.id && (
+                        <button
+                          onClick={() => handleDeleteEdu(edu.id)}
+                          className="neo-badge text-xs font-bold py-1 px-2.5"
+                          style={{
+                            backgroundColor: "var(--google-red-bg)",
+                            color: "var(--google-red-text)",
+                            borderColor: "var(--google-red)",
+                          }}
+                        >
+                          <Icon name="trash" size={13} />
+                        </button>
+                      )}
+                    </div>
                   </div>
-                </div>
-                <h4
-                  className="font-extrabold text-base sm:text-lg"
-                  style={{ fontFamily: "var(--font-display)" }}
-                >
-                  {edu.degree}
-                </h4>
-                <div
-                  className="text-xs sm:text-sm font-bold mb-1"
-                  style={{ color: "var(--google-blue)" }}
-                >
-                  {edu.school}
-                </div>
-                <p
-                  className="text-xs sm:text-sm"
-                  style={{ color: "var(--ink-secondary)" }}
-                >
-                  {edu.focus}
-                </p>
-              </Card>
-            ))}
+                  <h4
+                    className="font-extrabold text-base sm:text-lg"
+                    style={{ fontFamily: "var(--font-display)" }}
+                  >
+                    {edu.degree}
+                  </h4>
+                  <div
+                    className="text-xs sm:text-sm font-bold mb-1"
+                    style={{ color: "var(--google-blue)" }}
+                  >
+                    {edu.school}
+                  </div>
+                  <p
+                    className="text-xs sm:text-sm"
+                    style={{ color: "var(--ink-secondary)" }}
+                  >
+                    {edu.focus}
+                  </p>
+                </Card>
+              ));
+            })()}
           </div>
+
+          <Pagination
+            currentPage={eduPage}
+            totalItems={education.length}
+            pageSize={eduPageSize}
+            onPageChange={(page) => {
+              setEduPage(page);
+              window.scrollTo({ top: 300, behavior: "smooth" });
+            }}
+            itemLabel="pendidikan"
+          />
         </div>
       )}
 
@@ -714,66 +738,86 @@ export default function AdminEducationCerts({
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {certifications.map((c, idx) => (
-              <Card key={c.id || c.credentialId || idx} className="p-4 flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center justify-between mb-2 pb-2 border-b-2">
-                    <Chip variant="blue">{c.provider}</Chip>
-                    <span className="text-xs font-mono font-bold">
-                      {c.date}
-                    </span>
-                  </div>
-                  <h4
-                    className="font-extrabold text-sm sm:text-base line-clamp-2 mb-1"
-                    style={{ fontFamily: "var(--font-display)" }}
-                  >
-                    {c.title}
-                  </h4>
-                  <div
-                    className="text-xs font-bold mb-2"
-                    style={{ color: "var(--ink-secondary)" }}
-                  >
-                    {c.issuer}
-                  </div>
-                </div>
+            {(() => {
+              const maxCertPage = Math.max(1, Math.ceil(certifications.length / certPageSize));
+              const effectiveCertPage = Math.min(certPage, maxCertPage);
+              const paginatedCerts = certifications.slice(
+                (effectiveCertPage - 1) * certPageSize,
+                effectiveCertPage * certPageSize
+              );
 
-                <div className="pt-2 border-t-2 flex items-center justify-between">
-                  <span
-                    className="text-xs font-mono truncate max-w-[150px]"
-                    style={{ color: "var(--ink-muted)" }}
-                  >
-                    {c.credentialId}
-                  </span>
-                  <div className="flex items-center gap-1.5">
-                    <button
-                      type="button"
-                      aria-label="Edit sertifikasi"
-                      onClick={() => {
-                        setEditingCert(c);
-                        window.scrollTo({ top: 0, behavior: "smooth" });
-                      }}
-                      className="neo-btn-secondary text-xs font-bold py-1 px-2"
+              return paginatedCerts.map((c, idx) => (
+                <Card key={c.id || c.credentialId || idx} className="p-4 flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center justify-between mb-2 pb-2 border-b-2">
+                      <Chip variant="blue">{c.provider}</Chip>
+                      <span className="text-xs font-mono font-bold">
+                        {c.date}
+                      </span>
+                    </div>
+                    <h4
+                      className="font-extrabold text-sm sm:text-base line-clamp-2 mb-1"
+                      style={{ fontFamily: "var(--font-display)" }}
                     >
-                      <Icon name="edit" size={12} />
-                    </button>
-                    {c.id && (
-                      <button
-                        onClick={() => handleDeleteCert(c.id)}
-                        className="neo-badge text-xs font-bold py-1 px-2"
-                        style={{
-                          backgroundColor: "var(--google-red-bg)",
-                          color: "var(--google-red-text)",
-                          borderColor: "var(--google-red)",
-                        }}
-                      >
-                        <Icon name="trash" size={12} />
-                      </button>
-                    )}
+                      {c.title}
+                    </h4>
+                    <div
+                      className="text-xs font-bold mb-2"
+                      style={{ color: "var(--ink-secondary)" }}
+                    >
+                      {c.issuer}
+                    </div>
                   </div>
-                </div>
-              </Card>
-            ))}
+
+                  <div className="pt-2 border-t-2 flex items-center justify-between">
+                    <span
+                      className="text-xs font-mono truncate max-w-[150px]"
+                      style={{ color: "var(--ink-muted)" }}
+                    >
+                      {c.credentialId}
+                    </span>
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        aria-label="Edit sertifikasi"
+                        onClick={() => {
+                          setEditingCert(c);
+                          window.scrollTo({ top: 0, behavior: "smooth" });
+                        }}
+                        className="neo-btn-secondary text-xs font-bold py-1 px-2"
+                      >
+                        <Icon name="edit" size={12} />
+                      </button>
+                      {c.id && (
+                        <button
+                          onClick={() => handleDeleteCert(c.id)}
+                          className="neo-badge text-xs font-bold py-1 px-2"
+                          style={{
+                            backgroundColor: "var(--google-red-bg)",
+                            color: "var(--google-red-text)",
+                            borderColor: "var(--google-red)",
+                          }}
+                        >
+                          <Icon name="trash" size={12} />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </Card>
+              ));
+            })()}
           </div>
+
+          <Pagination
+            currentPage={certPage}
+            totalItems={certifications.length}
+            pageSize={certPageSize}
+            onPageChange={(page) => {
+              setCertPage(page);
+              window.scrollTo({ top: 300, behavior: "smooth" });
+            }}
+            itemLabel="sertifikasi"
+          />
         </div>
       )}
     </div>
