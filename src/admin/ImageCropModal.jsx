@@ -20,6 +20,7 @@ export default function ImageCropModal({
   onCancel,
 }) {
   const containerRef = useRef(null);
+  const imgRef = useRef(null);
   const [naturalSize, setNaturalSize] = useState({ width: 1, height: 1 });
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
@@ -27,6 +28,7 @@ export default function ImageCropModal({
   const [activeRatio, setActiveRatio] = useState(aspectRatio);
   const [isDragging, setIsDragging] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const dragStartRef = useRef({ x: 0, y: 0, panX: 0, panY: 0 });
   const pendingPanRef = useRef({ x: 0, y: 0 });
   const pendingZoomRef = useRef(1);
@@ -49,21 +51,13 @@ export default function ImageCropModal({
 
   // Create object URL from selected file
   const imageSrc = useMemo(() => {
-    if (!file) return null;
-    return URL.createObjectURL(file);
+    return file ? URL.createObjectURL(file) : null;
   }, [file]);
 
-  // Synchronize natural image dimensions and cleanup object URL
+  // Safely revoke object URL on unmount or file change
   useEffect(() => {
-    if (!imageSrc) return;
-    const img = new Image();
-    img.onload = () => {
-      setNaturalSize({ width: img.naturalWidth, height: img.naturalHeight });
-    };
-    img.src = imageSrc;
-
     return () => {
-      URL.revokeObjectURL(imageSrc);
+      if (imageSrc) URL.revokeObjectURL(imageSrc);
     };
   }, [imageSrc]);
 
@@ -196,13 +190,20 @@ export default function ImageCropModal({
     setTimeout(() => setIsTransitioning(false), 220);
   };
 
-  // Export cropped canvas to File
+  // Export cropped canvas to File using already loaded DOM image
   const handleApply = () => {
-    if (!imageSrc) return;
+    if (isProcessing) return;
+    setIsProcessing(true);
 
-    const img = new Image();
-    img.crossOrigin = "anonymous";
-    img.onload = () => {
+    try {
+      const sourceImg = imgRef.current;
+      const nw = sourceImg?.naturalWidth || naturalSize.width;
+      const nh = sourceImg?.naturalHeight || naturalSize.height;
+
+      if (!sourceImg || nw <= 0 || nh <= 0) {
+        throw new Error("Gambar belum siap.");
+      }
+
       // Determine output dimensions with crisp high-DPI resolution
       const targetW = Math.min(Math.round(cropBox.width * 2), 1600);
       const targetH = Math.round(targetW * (cropBox.height / cropBox.width));
@@ -212,7 +213,9 @@ export default function ImageCropModal({
       canvas.height = targetH;
       const ctx = canvas.getContext("2d", { alpha: false });
 
-      if (!ctx) return;
+      if (!ctx) {
+        throw new Error("Gagal menginisialisasi canvas.");
+      }
 
       // Background fill
       ctx.fillStyle = "#ffffff";
@@ -231,26 +234,53 @@ export default function ImageCropModal({
       const drawW = baseW * S * zoom;
       const drawH = baseH * S * zoom;
 
-      ctx.drawImage(img, -drawW / 2, -drawH / 2, drawW, drawH);
+      ctx.drawImage(sourceImg, -drawW / 2, -drawH / 2, drawW, drawH);
       ctx.restore();
 
-      canvas.toBlob(
-        (blob) => {
-          if (!blob) return;
-          const fileName = file.name
-            ? file.name.replace(/\.[^/.]+$/, "") + "-cropped.jpg"
-            : "cropped-photo.jpg";
-          const croppedFile = new File([blob], fileName, {
-            type: "image/jpeg",
+      const finishCrop = (blob) => {
+        const fileName = file.name
+          ? file.name.replace(/\.[^/.]+$/, "") + "-cropped.jpg"
+          : "cropped-photo.jpg";
+        const croppedFile = new File([blob], fileName, {
+          type: "image/jpeg",
+        });
+        const previewUrl = URL.createObjectURL(blob);
+        onConfirm(croppedFile, previewUrl);
+      };
+
+      if (canvas.toBlob) {
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              finishCrop(blob);
+            } else {
+              const dataUrl = canvas.toDataURL("image/jpeg", 0.92);
+              fetch(dataUrl)
+                .then((res) => res.blob())
+                .then(finishCrop)
+                .catch(() => {
+                  onConfirm(file, dataUrl);
+                });
+            }
+          },
+          "image/jpeg",
+          0.92
+        );
+      } else {
+        const dataUrl = canvas.toDataURL("image/jpeg", 0.92);
+        fetch(dataUrl)
+          .then((res) => res.blob())
+          .then(finishCrop)
+          .catch(() => {
+            onConfirm(file, dataUrl);
           });
-          const previewUrl = URL.createObjectURL(blob);
-          onConfirm(croppedFile, previewUrl);
-        },
-        "image/jpeg",
-        0.92
-      );
-    };
-    img.src = imageSrc;
+      }
+    } catch (err) {
+      console.error("Gagal memotong gambar:", err);
+      setIsProcessing(false);
+      const fallbackUrl = imageSrc || URL.createObjectURL(file);
+      onConfirm(file, fallbackUrl);
+    }
   };
 
   return (
@@ -378,8 +408,17 @@ export default function ImageCropModal({
               }}
             >
               <img
+                ref={imgRef}
                 src={imageSrc}
                 alt="Source preview"
+                onLoad={(e) => {
+                  if (e.currentTarget.naturalWidth && e.currentTarget.naturalHeight) {
+                    setNaturalSize({
+                      width: e.currentTarget.naturalWidth,
+                      height: e.currentTarget.naturalHeight,
+                    });
+                  }
+                }}
                 className="w-full h-full object-fill select-none pointer-events-none"
                 draggable={false}
               />
@@ -511,10 +550,11 @@ export default function ImageCropModal({
           <button
             type="button"
             onClick={handleApply}
+            disabled={isProcessing}
             className="neo-btn-primary text-xs sm:text-sm font-bold py-2 px-5 flex items-center gap-1.5"
           >
-            <Icon name="check" size={16} />
-            Gunakan Foto Ini
+            <Icon name={isProcessing ? "loader" : "check"} size={16} />
+            {isProcessing ? "Menyimpan Foto..." : "Gunakan Foto Ini"}
           </button>
         </div>
       </div>

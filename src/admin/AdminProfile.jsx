@@ -30,11 +30,28 @@ export default function AdminProfile({ initialInfo, onUpdateInfo }) {
     try {
       const fileName = `avatar-${Date.now()}-${croppedFile.name.replace(/\s+/g, "-")}`;
       const url = await uploadStorageFile("media", fileName, croppedFile);
-      handleChange("avatar", url);
-      setFeedback({
-        type: "success",
-        text: "Foto profil berhasil disesuaikan dan diunggah.",
-      });
+      const effectiveUrl = url || previewUrl;
+      handleChange("avatar", effectiveUrl);
+
+      // Auto-save site settings so the new avatar is immediately persisted
+      try {
+        const saved = await saveSiteSettings(
+          formData.rawId || "default-site-settings",
+          { ...formData, avatar: effectiveUrl }
+        );
+        if (onUpdateInfo) {
+          onUpdateInfo(saved || { ...formData, avatar: effectiveUrl });
+        }
+        setFeedback({
+          type: "success",
+          text: "Foto profil berhasil disesuaikan dan otomatis disimpan.",
+        });
+      } catch {
+        setFeedback({
+          type: "success",
+          text: "Foto profil berhasil disesuaikan dan diperbarui di form.",
+        });
+      }
     } catch {
       handleChange("avatar", previewUrl);
       setFeedback({
@@ -416,17 +433,46 @@ export default function AdminProfile({ initialInfo, onUpdateInfo }) {
             <label className="block text-xs font-bold font-mono uppercase mb-1.5">
               URL Foto Profil
             </label>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={formData.avatar || ""}
-                onChange={(e) => handleChange("avatar", e.target.value)}
-                className="w-full px-3.5 py-2 rounded-xl border-2 font-medium text-sm"
-                style={{
-                  backgroundColor: "var(--surface-alt)",
-                  borderColor: "var(--border)",
-                }}
-              />
+            <div className="flex items-center gap-3">
+              {formData.avatar ? (
+                <div
+                  className="w-14 h-14 rounded-xl border-2 overflow-hidden shrink-0 flex items-center justify-center"
+                  style={{
+                    backgroundColor: "var(--surface-alt)",
+                    borderColor: "var(--border)",
+                    boxShadow: "2px 2px 0 var(--shadow-color)",
+                  }}
+                >
+                  <img
+                    src={formData.avatar}
+                    alt="Pratinjau Avatar"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ) : (
+                <div
+                  className="w-14 h-14 rounded-xl border-2 border-dashed shrink-0 flex items-center justify-center text-[var(--ink-secondary)]"
+                  style={{
+                    backgroundColor: "var(--surface-alt)",
+                    borderColor: "var(--border)",
+                  }}
+                >
+                  <Icon name="user" size={20} />
+                </div>
+              )}
+              <div className="flex-1 min-w-0">
+                <input
+                  type="text"
+                  value={formData.avatar || ""}
+                  onChange={(e) => handleChange("avatar", e.target.value)}
+                  placeholder="https://..."
+                  className="w-full px-3.5 py-2 rounded-xl border-2 font-medium text-sm"
+                  style={{
+                    backgroundColor: "var(--surface-alt)",
+                    borderColor: "var(--border)",
+                  }}
+                />
+              </div>
             </div>
             <div className="mt-2 flex items-center gap-2">
               <label className="neo-btn-secondary text-xs font-bold cursor-pointer py-1.5 px-3">

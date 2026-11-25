@@ -396,23 +396,52 @@ export default function AdminProjects({
               <label className="block text-xs font-bold font-mono uppercase mb-1.5">
                 URL Gambar Mockup / Thumbnail
               </label>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  required
-                  value={editingProject.image}
-                  onChange={(e) =>
-                    setEditingProject({
-                      ...editingProject,
-                      image: e.target.value,
-                    })
-                  }
-                  className="w-full px-3.5 py-2 rounded-xl border-2 font-medium text-sm"
-                  style={{
-                    backgroundColor: "var(--surface-alt)",
-                    borderColor: "var(--border)",
-                  }}
-                />
+              <div className="flex items-center gap-3">
+                {editingProject.image ? (
+                  <div
+                    className="w-16 h-12 rounded-xl border-2 overflow-hidden shrink-0 flex items-center justify-center"
+                    style={{
+                      backgroundColor: "var(--surface-alt)",
+                      borderColor: "var(--border)",
+                      boxShadow: "2px 2px 0 var(--shadow-color)",
+                    }}
+                  >
+                    <img
+                      src={editingProject.image}
+                      alt="Pratinjau Mockup"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div
+                    className="w-16 h-12 rounded-xl border-2 border-dashed shrink-0 flex items-center justify-center text-[var(--ink-secondary)]"
+                    style={{
+                      backgroundColor: "var(--surface-alt)",
+                      borderColor: "var(--border)",
+                    }}
+                  >
+                    <Icon name="briefcase" size={18} />
+                  </div>
+                )}
+                <div className="flex-1 min-w-0">
+                  <input
+                    type="text"
+                    required
+                    value={editingProject.image}
+                    onChange={(e) =>
+                      setEditingProject({
+                        ...editingProject,
+                        image: e.target.value,
+                      })
+                    }
+                    placeholder="https://..."
+                    className="w-full px-3.5 py-2 rounded-xl border-2 font-medium text-sm"
+                    style={{
+                      backgroundColor: "var(--surface-alt)",
+                      borderColor: "var(--border)",
+                    }}
+                  />
+                </div>
               </div>
               <div className="mt-2 flex items-center gap-2">
                 <label className="neo-btn-secondary text-xs font-bold cursor-pointer py-1.5 px-3">

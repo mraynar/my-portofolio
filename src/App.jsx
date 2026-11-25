@@ -405,8 +405,8 @@ function About({
             </div>
           </div>
 
-          {/* Formal education cards */}
-          <div className="flex flex-col justify-between">
+          {/* Formal education cards with connected academic timeline track */}
+          <div className="flex flex-col">
             <div className="flex items-center gap-2 mb-3">
               <Icon
                 name="education"
@@ -421,53 +421,78 @@ function About({
               </span>
             </div>
 
-            <div className="flex flex-col justify-between gap-4 h-full">
-              {education.map((edu, idx) => (
-                <div
-                  key={edu.school + edu.degree}
-                  className="neo-card-flat p-5 sm:p-6 border-l-4 flex-1 flex flex-col justify-between"
-                  style={{
-                    borderLeftColor:
-                      idx === 0 ? "var(--google-blue)" : "var(--google-green)",
-                  }}
-                >
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <span
-                        className="text-xs font-bold font-mono"
-                        style={{ color: "var(--ink-muted)" }}
+            <div className="relative pl-10 sm:pl-12 space-y-4">
+              {/* Timeline spine connecting milestones */}
+              <div
+                className="absolute left-4 sm:left-5 -translate-x-1/2 top-4 bottom-4 w-1 z-0 pointer-events-none"
+                style={{ backgroundColor: "var(--border)" }}
+              />
+
+              {education.map((edu, idx) => {
+                const nodeColor =
+                  idx === 0 ? "var(--google-blue)" : "var(--google-green)";
+
+                return (
+                  <div key={edu.school + edu.degree} className="relative">
+                    {/* Milestone node marker on the timeline spine */}
+                    <div className="absolute -left-10 sm:-left-12 top-4 z-10 flex items-center justify-center">
+                      <div
+                        className="w-8 h-8 rounded-xl border-2 border-[var(--border)] flex items-center justify-center font-extrabold font-mono text-xs shadow-[2px_2px_0_var(--shadow-color)]"
+                        style={{
+                          backgroundColor: nodeColor,
+                          color: "#ffffff",
+                        }}
                       >
-                        {edu.period}
-                      </span>
-                      {edu.active && <Chip variant="green">Aktif</Chip>}
+                        {String(idx + 1).padStart(2, "0")}
+                      </div>
+                      {/* Horizontal connector arm to education card */}
+                      <div
+                        className="w-4 sm:w-6 h-0.5"
+                        style={{ backgroundColor: "var(--border)" }}
+                      />
                     </div>
-                    <h4
-                      className="font-extrabold text-lg sm:text-xl mb-1"
+
+                    {/* Compact education milestone card */}
+                    <div
+                      className="neo-card-flat p-4 sm:p-5 border-l-4"
                       style={{
-                        color: "var(--ink)",
-                        fontFamily: "var(--font-display)",
+                        borderLeftColor: nodeColor,
                       }}
                     >
-                      {edu.degree}
-                    </h4>
-                    <p
-                      className="text-sm font-bold mb-2"
-                      style={{
-                        color:
-                          idx === 0 ? "var(--google-blue)" : "var(--google-green)",
-                      }}
-                    >
-                      {edu.school}
-                    </p>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span
+                          className="text-xs font-bold font-mono"
+                          style={{ color: "var(--ink-muted)" }}
+                        >
+                          {edu.period}
+                        </span>
+                        {edu.active && <Chip variant="green">Aktif</Chip>}
+                      </div>
+                      <h4
+                        className="font-extrabold text-base sm:text-lg mb-0.5"
+                        style={{
+                          color: "var(--ink)",
+                          fontFamily: "var(--font-display)",
+                        }}
+                      >
+                        {edu.degree}
+                      </h4>
+                      <p
+                        className="text-xs sm:text-sm font-bold mb-1.5"
+                        style={{ color: nodeColor }}
+                      >
+                        {edu.school}
+                      </p>
+                      <p
+                        className="text-xs sm:text-sm leading-relaxed"
+                        style={{ color: "var(--ink-secondary)" }}
+                      >
+                        {edu.focus}
+                      </p>
+                    </div>
                   </div>
-                  <p
-                    className="text-xs sm:text-sm leading-relaxed"
-                    style={{ color: "var(--ink-secondary)" }}
-                  >
-                    {edu.focus}
-                  </p>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>
