@@ -126,8 +126,8 @@ function Hero({ info = PERSONAL_INFO }) {
     >
       <Container className="relative z-10 w-full my-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-8 xl:gap-10 items-stretch">
-          {/* Left column: narrative and actions (7 cols) */}
-          <div className="lg:col-span-7 flex flex-col justify-between">
+          {/* Left column: narrative and actions */}
+          <div className="lg:col-span-7 xl:col-span-6 flex flex-col justify-between">
             <div>
               <div className="mb-3">
                 <Chip variant="blue">{kicker}</Chip>
@@ -245,8 +245,8 @@ function Hero({ info = PERSONAL_INFO }) {
           </div>
 
         {/* Profile photo card on desktop */}
-          <div className="hidden lg:flex lg:col-span-5 justify-center lg:justify-end">
-            <div className="w-full max-w-[420px] lg:max-w-[460px] xl:max-w-[480px] h-full">
+          <div className="hidden lg:flex lg:col-span-5 xl:col-span-6 justify-center lg:justify-end">
+            <div className="w-full max-w-[440px] lg:max-w-[480px] xl:max-w-[540px] h-full">
               <Card variant="flat" className="p-0 overflow-hidden h-full flex flex-col">
                 <div
                   className="h-9 sm:h-10 px-3.5 flex items-center justify-between border-b-2 flex-shrink-0"
