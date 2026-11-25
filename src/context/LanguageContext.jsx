@@ -376,6 +376,20 @@ export function LanguageProvider({ children }) {
     }
   }, [language]);
 
+  // Synchronize language across tabs and external storage changes
+  useEffect(() => {
+    const handleStorage = (e) => {
+      if (
+        e.key === "app_language" &&
+        (e.newValue === "en" || e.newValue === "id")
+      ) {
+        setLanguageState(e.newValue);
+      }
+    };
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, []);
+
   const t = useMemo(() => {
     const dict = TRANSLATIONS[language] || TRANSLATIONS.id;
     return (key, fallback = "") => dict[key] || fallback || key;

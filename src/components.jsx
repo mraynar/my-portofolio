@@ -1826,32 +1826,47 @@ export function Navbar({ info = {} }) {
         <div className="flex items-center gap-1.5 sm:gap-2.5">
           {/* Language toggle switch (ID / EN) */}
           <div
-            className="inline-flex items-center p-0.5 sm:p-1 h-[30px] sm:h-[34px] rounded-full border-2 border-[var(--border)] shadow-[2px_2px_0_var(--shadow-color)] box-border shrink-0"
+            onClick={(e) => {
+              if (e.target === e.currentTarget) {
+                const rect = e.currentTarget.getBoundingClientRect();
+                const isRight = e.clientX - rect.left > rect.width / 2;
+                setLanguage(isRight ? "en" : "id");
+              }
+            }}
+            className="inline-flex items-stretch p-0.5 h-[32px] sm:h-[36px] rounded-full border-2 border-[var(--border)] shadow-[2px_2px_0_var(--shadow-color)] box-border shrink-0 cursor-pointer select-none"
             style={{ backgroundColor: "var(--surface-alt)" }}
             role="group"
             aria-label="Pilih Bahasa / Select Language"
           >
             <button
               type="button"
-              onClick={() => setLanguage("id")}
-              className={`h-full px-2 sm:px-2.5 flex items-center justify-center rounded-full text-[10px] sm:text-xs font-mono font-extrabold transition-all cursor-pointer ${
+              onClick={(e) => {
+                e.stopPropagation();
+                setLanguage("id");
+              }}
+              className={`flex-1 min-w-[34px] sm:min-w-[40px] px-2 flex items-center justify-center rounded-full text-xs font-mono font-extrabold transition-all cursor-pointer ${
                 language === "id"
                   ? "bg-[var(--google-blue)] text-white shadow-[1px_1px_0_var(--shadow-color)]"
-                  : "text-[var(--ink-secondary)] hover:text-[var(--ink)]"
+                  : "text-[var(--ink-secondary)] hover:text-[var(--ink)] hover:bg-[var(--surface)]"
               }`}
               title="Bahasa Indonesia"
+              aria-pressed={language === "id"}
             >
               ID
             </button>
             <button
               type="button"
-              onClick={() => setLanguage("en")}
-              className={`h-full px-2 sm:px-2.5 flex items-center justify-center rounded-full text-[10px] sm:text-xs font-mono font-extrabold transition-all cursor-pointer ${
+              onClick={(e) => {
+                e.stopPropagation();
+                setLanguage("en");
+              }}
+              className={`flex-1 min-w-[34px] sm:min-w-[40px] px-2 flex items-center justify-center rounded-full text-xs font-mono font-extrabold transition-all cursor-pointer ${
                 language === "en"
                   ? "bg-[var(--google-blue)] text-white shadow-[1px_1px_0_var(--shadow-color)]"
-                  : "text-[var(--ink-secondary)] hover:text-[var(--ink)]"
+                  : "text-[var(--ink-secondary)] hover:text-[var(--ink)] hover:bg-[var(--surface)]"
               }`}
               title="English"
+              aria-pressed={language === "en"}
             >
               EN
             </button>
@@ -1910,28 +1925,43 @@ export function Navbar({ info = {} }) {
                 Bahasa / Language:
               </span>
               <div
-                className="inline-flex items-center p-1 h-[38px] rounded-full border-2 border-[var(--border)] shadow-[2px_2px_0_var(--shadow-color)] box-border"
+                onClick={(e) => {
+                  if (e.target === e.currentTarget) {
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    const isRight = e.clientX - rect.left > rect.width / 2;
+                    setLanguage(isRight ? "en" : "id");
+                  }
+                }}
+                className="inline-flex items-stretch p-0.5 h-[36px] rounded-full border-2 border-[var(--border)] shadow-[2px_2px_0_var(--shadow-color)] box-border cursor-pointer select-none"
                 style={{ backgroundColor: "var(--surface-alt)" }}
               >
                 <button
                   type="button"
-                  onClick={() => setLanguage("id")}
-                  className={`h-full px-2.5 flex items-center justify-center rounded-full text-xs font-mono font-extrabold transition-all cursor-pointer ${
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setLanguage("id");
+                  }}
+                  className={`flex-1 min-w-[42px] px-3 flex items-center justify-center rounded-full text-xs font-mono font-extrabold transition-all cursor-pointer ${
                     language === "id"
                       ? "bg-[var(--google-blue)] text-white shadow-[1px_1px_0_var(--shadow-color)]"
-                      : "text-[var(--ink-secondary)] hover:text-[var(--ink)]"
+                      : "text-[var(--ink-secondary)] hover:text-[var(--ink)] hover:bg-[var(--surface)]"
                   }`}
+                  aria-pressed={language === "id"}
                 >
                   ID
                 </button>
                 <button
                   type="button"
-                  onClick={() => setLanguage("en")}
-                  className={`h-full px-2.5 flex items-center justify-center rounded-full text-xs font-mono font-extrabold transition-all cursor-pointer ${
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setLanguage("en");
+                  }}
+                  className={`flex-1 min-w-[42px] px-3 flex items-center justify-center rounded-full text-xs font-mono font-extrabold transition-all cursor-pointer ${
                     language === "en"
                       ? "bg-[var(--google-blue)] text-white shadow-[1px_1px_0_var(--shadow-color)]"
-                      : "text-[var(--ink-secondary)] hover:text-[var(--ink)]"
+                      : "text-[var(--ink-secondary)] hover:text-[var(--ink)] hover:bg-[var(--surface)]"
                   }`}
+                  aria-pressed={language === "en"}
                 >
                   EN
                 </button>
