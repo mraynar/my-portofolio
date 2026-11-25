@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 import {
   Card,
   Chip,
@@ -58,6 +58,8 @@ export default function AdminExperience({
   const [dragOverIdx, setDragOverIdx] = useState(null);
   const [isReordering, setIsReordering] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [targetPosition, setTargetPosition] = useState(1);
+  const [originalPosition, setOriginalPosition] = useState(1);
   const pageSize = 4;
 
   const handleEdit = (item) => {
@@ -65,14 +67,37 @@ export default function AdminExperience({
     setBulletsText((item.bullets || []).join("\n"));
     setTagsText((item.tags || []).join(", "));
     setFeedback(null);
+
+    // Compute current 1-based position in active view
+    const currentList = sortExperiencesLatestFirst(experience).filter((it) => {
+      if (filterType === "magang") return isInternshipExperience(it);
+      if (filterType === "organisasi") return !isInternshipExperience(it);
+      return true;
+    });
+    const idx = currentList.findIndex(
+      (it) =>
+        (item.id && it.id === item.id) ||
+        (item.role && it.role === item.role && it.org === item.org)
+    );
+    const pos = idx >= 0 ? idx + 1 : 1;
+    setTargetPosition(pos);
+    setOriginalPosition(pos);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleCreate = () => {
-    setEditingItem({ ...EMPTY_EXP, order_index: experience.length });
+    const currentList = sortExperiencesLatestFirst(experience).filter((it) => {
+      if (filterType === "magang") return isInternshipExperience(it);
+      if (filterType === "organisasi") return !isInternshipExperience(it);
+      return true;
+    });
+    const defaultPos = currentList.length + 1;
+    setEditingItem({ ...EMPTY_EXP, order_index: experience.length + 1 });
     setBulletsText("");
     setTagsText("");
     setFeedback(null);
+    setTargetPosition(defaultPos);
+    setOriginalPosition(null);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -187,6 +212,54 @@ export default function AdminExperience({
     }
   };
 
+  // Generate options for position selector dropdown
+  const positionOptions = useMemo(() => {
+    if (!editingItem) return [];
+    const isNew = !experience.some(
+      (e) =>
+        (editingItem.id && e.id === editingItem.id) ||
+        (editingItem.role &&
+          e.role === editingItem.role &&
+          e.org === editingItem.org)
+    );
+
+    const currentList = sortExperiencesLatestFirst(experience).filter((it) => {
+      if (filterType === "magang") return isInternshipExperience(it);
+      if (filterType === "organisasi") return !isInternshipExperience(it);
+      return true;
+    });
+
+    const totalSlots = isNew
+      ? currentList.length + 1
+      : Math.max(currentList.length, 1);
+    const options = [];
+
+    for (let pos = 1; pos <= totalSlots; pos++) {
+      let label = `Posisi #${pos}`;
+      const existingItem = currentList[pos - 1];
+
+      if (isNew) {
+        if (pos === totalSlots) {
+          label += " (Posisi Terakhir / Baru)";
+        } else if (existingItem) {
+          const shortName = existingItem.role || existingItem.org || "Item";
+          label += ` (Geser: ${shortName})`;
+        }
+      } else {
+        if (pos === originalPosition) {
+          label += " (Posisi Saat Ini)";
+        } else if (existingItem) {
+          const shortName = existingItem.role || existingItem.org || "Item";
+          label += ` (Saat Ini: ${shortName})`;
+        }
+      }
+
+      options.push({ value: String(pos), label });
+    }
+
+    return options;
+  }, [editingItem, experience, filterType, originalPosition]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -214,10 +287,79 @@ export default function AdminExperience({
     };
 
     try {
-      await upsertExperience(payload);
+      const masterList = sortExperiencesLatestFirst(experience);
+      const isMagangTab = filterType === "magang";
+      const isOrganisasiTab = filterType === "organisasi";
+
+      let newMaster;
+
+      if (isMagangTab || isOrganisasiTab) {
+        const categoryItems = masterList.filter((item) =>
+          isMagangTab ? isInternshipExperience(item) : !isInternshipExperience(item)
+        );
+        const otherItems = masterList.filter((item) =>
+          isMagangTab ? !isInternshipExperience(item) : isInternshipExperience(item)
+        );
+
+        const currentIdx = categoryItems.findIndex(
+          (it) =>
+            (payload.id && it.id === payload.id) ||
+            (payload.role && it.role === payload.role && it.org === payload.org)
+        );
+
+        const updatedCategory = [...categoryItems];
+        if (currentIdx >= 0) {
+          updatedCategory.splice(currentIdx, 1);
+        }
+        const safeTarget = Math.max(
+          1,
+          Math.min(targetPosition, updatedCategory.length + 1)
+        );
+        updatedCategory.splice(safeTarget - 1, 0, payload);
+
+        newMaster = isMagangTab
+          ? [...updatedCategory, ...otherItems]
+          : [...otherItems, ...updatedCategory];
+      } else {
+        const currentIdx = masterList.findIndex(
+          (it) =>
+            (payload.id && it.id === payload.id) ||
+            (payload.role && it.role === payload.role && it.org === payload.org)
+        );
+
+        const updatedMaster = [...masterList];
+        if (currentIdx >= 0) {
+          updatedMaster.splice(currentIdx, 1);
+        }
+        const safeTarget = Math.max(
+          1,
+          Math.min(targetPosition, updatedMaster.length + 1)
+        );
+        updatedMaster.splice(safeTarget - 1, 0, payload);
+        newMaster = updatedMaster;
+      }
+
+      const indexedMaster = newMaster.map((item, idx) => ({
+        ...item,
+        order_index: idx + 1,
+      }));
+
+      await reorderExperience(indexedMaster);
+
+      const savedPayload =
+        indexedMaster.find(
+          (it) =>
+            (payload.id && it.id === payload.id) ||
+            (it.role === payload.role && it.org === payload.org)
+        ) || payload;
+      await upsertExperience(savedPayload);
+
+      const safeTargetPage = Math.max(1, Math.ceil(targetPosition / pageSize));
+      setCurrentPage(safeTargetPage);
+
       setFeedback({
         type: "success",
-        text: "Data pengalaman berhasil disimpan.",
+        text: `Data pengalaman berhasil disimpan di Posisi #${targetPosition}.`,
       });
       await onRefresh();
       setEditingItem(null);
@@ -422,23 +564,41 @@ export default function AdminExperience({
                     borderColor: "var(--border)",
                   }}
                 />
+                <div className="mt-2.5">
+                  <label className="inline-flex items-center gap-2 cursor-pointer font-bold text-xs select-none">
+                    <input
+                      type="checkbox"
+                      checked={editingItem.active || false}
+                      onChange={(e) =>
+                        setEditingItem({
+                          ...editingItem,
+                          active: e.target.checked,
+                        })
+                      }
+                      className="w-4 h-4 rounded"
+                    />
+                    <span>Masih Aktif / Sekarang</span>
+                  </label>
+                </div>
               </div>
 
-              <div className="flex items-center gap-2 pt-6">
-                <label className="flex items-center gap-2 cursor-pointer font-bold text-sm">
-                  <input
-                    type="checkbox"
-                    checked={editingItem.active || false}
-                    onChange={(e) =>
-                      setEditingItem({
-                        ...editingItem,
-                        active: e.target.checked,
-                      })
-                    }
-                    className="w-4 h-4 rounded"
-                  />
-                  <span>Masih Aktif / Sekarang</span>
+              <div>
+                <label className="block text-xs font-bold font-mono uppercase mb-1.5">
+                  Urutan Posisi Tampilan
                 </label>
+                <CustomSelect
+                  value={String(targetPosition)}
+                  onChange={(e) =>
+                    setTargetPosition(parseInt(e.target.value, 10) || 1)
+                  }
+                  options={positionOptions}
+                />
+                <span
+                  className="text-[11px] block mt-1.5"
+                  style={{ color: "var(--ink-secondary)" }}
+                >
+                  Item di posisi terpilih otomatis bergeser ke nomor berikutnya.
+                </span>
               </div>
             </div>
 
