@@ -127,18 +127,18 @@ function Hero({ info = PERSONAL_INFO }) {
       }}
     >
       <Container className="relative z-10 w-full my-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-8 xl:gap-10 items-stretch">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-8 xl:gap-10 items-center">
           {/* Left column: narrative and actions (7 cols) */}
-          <div className="lg:col-span-7 flex flex-col justify-between">
+          <div className="lg:col-span-7 flex flex-col justify-center space-y-5 sm:space-y-6">
             <div>
-              <Cluster gap={8} className="mb-3.5">
+              <Cluster gap={8} className="mb-3">
                 <Chip variant="blue">{kicker}</Chip>
                 <Chip variant="green">{statusBadge}</Chip>
               </Cluster>
 
               {/* Main heading limited to two lines */}
               <h1
-                className="font-extrabold tracking-tight mb-3.5"
+                className="font-extrabold tracking-tight mb-3"
                 style={{
                   fontFamily: "var(--font-display)",
                   fontSize: "clamp(2.3rem, 4.4vw, 3.8rem)",
@@ -161,13 +161,13 @@ function Hero({ info = PERSONAL_INFO }) {
               </p>
             </div>
 
-            {/* Bottom actions and connections group */}
-            <div className="pt-6 sm:pt-8 lg:pt-0 space-y-3.5 sm:space-y-4">
-              {/* Primary actions anchored near social links */}
+            {/* Actions and connections group */}
+            <div className="space-y-3.5 sm:space-y-4">
+              {/* Primary actions */}
               <div className="flex flex-row gap-3 sm:gap-4">
                 <button
                   onClick={() => scrollToSection("projects")}
-                  className="neo-btn-primary flex-1 sm:flex-none justify-center font-bold text-sm sm:text-base py-3 sm:py-3.5 px-3.5 sm:px-6"
+                  className="neo-btn-primary flex-1 sm:flex-none justify-center font-bold text-sm sm:text-base py-3 sm:py-3.5 px-4 sm:px-6"
                 >
                   {t("hero_view_projects")}
                   <Icon name="arrow-right" size={18} />
@@ -177,14 +177,14 @@ function Hero({ info = PERSONAL_INFO }) {
                   href={cvUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="neo-btn-secondary flex-1 sm:flex-none justify-center font-bold text-sm sm:text-base py-3 sm:py-3.5 px-3.5 sm:px-6"
+                  className="neo-btn-secondary flex-1 sm:flex-none justify-center font-bold text-sm sm:text-base py-3 sm:py-3.5 px-4 sm:px-6"
                 >
                   <Icon name="download" size={18} />
                   {t("download_cv")}
                 </a>
               </div>
 
-              {/* Social link pills aligned with card baseline */}
+              {/* Social link pills */}
               <div className="flex flex-nowrap sm:flex-wrap items-center gap-1.5 sm:gap-2">
               <span
                 className="text-[10px] sm:text-xs font-bold uppercase tracking-wider font-mono shrink-0 mr-0.5"
