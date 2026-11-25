@@ -381,6 +381,12 @@ function About({
 
   const displayStartYear = info.startYear || "2021";
   const displayCodeQuality = info.codeQuality || "100%";
+  const rawPrincipleQuote =
+    info.principleQuote ||
+    "Menghubungkan proses bisnis nyata dengan arsitektur perangkat lunak yang fungsional, terukur, dan efisien.";
+  const displayPrincipleQuote = rawPrincipleQuote
+    .replace(/^["“']+|["”']+$/g, "")
+    .trim();
 
   return (
     <Section id="about" style={{ backgroundColor: "transparent" }}>
@@ -400,7 +406,7 @@ function About({
           {/* Narrative description and engineering philosophy */}
           <div className="flex flex-col justify-between">
             <div
-              className="space-y-4 text-base sm:text-lg leading-relaxed mb-6"
+              className="space-y-3 text-base leading-relaxed mb-4"
               style={{ color: "var(--ink-secondary)" }}
             >
               <p>
@@ -439,7 +445,7 @@ function About({
 
             {/* Engineering principle quote card */}
             <div
-              className="neo-card p-5 sm:p-6 border-2"
+              className="neo-card p-4 sm:p-5 border-2"
               style={{
                 backgroundColor: "var(--google-blue-bg)",
                 borderColor: "var(--google-blue)",
@@ -456,10 +462,7 @@ function About({
                 className="text-base sm:text-lg font-bold leading-snug"
                 style={{ color: "var(--google-blue-text)" }}
               >
-                &ldquo;
-                {info.principleQuote ||
-                  "Menghubungkan proses bisnis nyata dengan arsitektur perangkat lunak yang fungsional, terukur, dan efisien."}
-                &rdquo;
+                &ldquo;{displayPrincipleQuote}&rdquo;
               </blockquote>
             </div>
           </div>
