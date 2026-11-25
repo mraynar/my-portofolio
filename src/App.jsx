@@ -148,7 +148,7 @@ function Hero({ info = PERSONAL_INFO }) {
               </h1>
 
               <p
-                className="text-base sm:text-lg leading-relaxed mb-5 font-normal"
+                className="text-base sm:text-lg leading-relaxed font-normal"
                 style={{
                   color: "var(--ink-secondary)",
                   maxWidth: "64ch",
@@ -156,9 +156,12 @@ function Hero({ info = PERSONAL_INFO }) {
               >
                 {valueProp}
               </p>
+            </div>
 
-              {/* Primary actions */}
-              <div className="flex flex-row gap-3 sm:gap-4 mb-5">
+            {/* Bottom actions and connections group */}
+            <div className="pt-6 sm:pt-8 lg:pt-0 space-y-3.5 sm:space-y-4">
+              {/* Primary actions anchored near social links */}
+              <div className="flex flex-row gap-3 sm:gap-4">
                 <button
                   onClick={() => scrollToSection("projects")}
                   className="neo-btn-primary flex-1 sm:flex-none justify-center font-bold text-sm sm:text-base py-3 sm:py-3.5 px-3.5 sm:px-6"
@@ -177,10 +180,9 @@ function Hero({ info = PERSONAL_INFO }) {
                   {t("download_cv")}
                 </a>
               </div>
-            </div>
 
-            {/* Social link pills aligned with card baseline */}
-            <div className="pt-2 lg:pt-0 flex flex-nowrap sm:flex-wrap items-center gap-1.5 sm:gap-2">
+              {/* Social link pills aligned with card baseline */}
+              <div className="flex flex-nowrap sm:flex-wrap items-center gap-1.5 sm:gap-2">
               <span
                 className="text-[10px] sm:text-xs font-bold uppercase tracking-wider font-mono shrink-0 mr-0.5"
                 style={{ color: "var(--ink-muted)" }}
@@ -243,8 +245,9 @@ function Hero({ info = PERSONAL_INFO }) {
               </a>
             </div>
           </div>
+        </div>
 
-          {/* Profile photo card on desktop */}
+        {/* Profile photo card on desktop */}
           <div className="hidden lg:flex lg:col-span-5 justify-center lg:justify-end">
             <div className="w-full max-w-[420px] lg:max-w-[460px] xl:max-w-[480px] h-full">
               <Card variant="flat" className="p-0 overflow-hidden h-full flex flex-col">
