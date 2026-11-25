@@ -1284,7 +1284,7 @@ export function Navbar({ info = {} }) {
         {/* Clean brand wordmark */}
         <a
           href="/#home"
-          className="font-extrabold text-2xl tracking-tight no-underline flex items-center"
+          className="font-extrabold text-xl sm:text-2xl tracking-tight no-underline flex items-center"
           style={{ fontFamily: "var(--font-display)", color: "var(--ink)" }}
         >
           <span>mraynar</span>
@@ -1325,10 +1325,10 @@ export function Navbar({ info = {} }) {
         </nav>
 
         {/* Action buttons */}
-        <div className="flex items-center gap-2.5 sm:gap-3">
+        <div className="flex items-center gap-1.5 sm:gap-2.5">
           {/* Language toggle switch (ID / EN) */}
           <div
-            className="inline-flex items-center p-1 h-[38px] rounded-full border-2 border-[var(--border)] shadow-[2px_2px_0_var(--shadow-color)] box-border"
+            className="inline-flex items-center p-0.5 sm:p-1 h-[30px] sm:h-[34px] rounded-full border-2 border-[var(--border)] shadow-[2px_2px_0_var(--shadow-color)] box-border shrink-0"
             style={{ backgroundColor: "var(--surface-alt)" }}
             role="group"
             aria-label="Pilih Bahasa / Select Language"
@@ -1336,7 +1336,7 @@ export function Navbar({ info = {} }) {
             <button
               type="button"
               onClick={() => setLanguage("id")}
-              className={`h-full px-2.5 flex items-center justify-center rounded-full text-xs font-mono font-extrabold transition-all cursor-pointer ${
+              className={`h-full px-2 sm:px-2.5 flex items-center justify-center rounded-full text-[10px] sm:text-xs font-mono font-extrabold transition-all cursor-pointer ${
                 language === "id"
                   ? "bg-[var(--google-blue)] text-white shadow-[1px_1px_0_var(--shadow-color)]"
                   : "text-[var(--ink-secondary)] hover:text-[var(--ink)]"
@@ -1348,7 +1348,7 @@ export function Navbar({ info = {} }) {
             <button
               type="button"
               onClick={() => setLanguage("en")}
-              className={`h-full px-2.5 flex items-center justify-center rounded-full text-xs font-mono font-extrabold transition-all cursor-pointer ${
+              className={`h-full px-2 sm:px-2.5 flex items-center justify-center rounded-full text-[10px] sm:text-xs font-mono font-extrabold transition-all cursor-pointer ${
                 language === "en"
                   ? "bg-[var(--google-blue)] text-white shadow-[1px_1px_0_var(--shadow-color)]"
                   : "text-[var(--ink-secondary)] hover:text-[var(--ink)]"
@@ -1363,19 +1363,22 @@ export function Navbar({ info = {} }) {
             href={cvUrl}
             target="_blank"
             rel="noreferrer"
-            className="hidden sm:inline-flex neo-btn-primary neo-btn-sm font-bold h-[38px] items-center"
+            className="inline-flex items-center justify-center font-bold font-mono h-[30px] sm:h-[34px] px-2.5 sm:px-3 text-[11px] sm:text-xs gap-1 sm:gap-1.5 rounded-full border-2 border-[var(--border)] shadow-[2px_2px_0_var(--shadow-color)] hover:translate-x-[-1px] hover:translate-y-[-1px] transition-all cursor-pointer text-white shrink-0"
+            style={{
+              backgroundColor: "var(--google-blue)",
+            }}
           >
-            <Icon name="download" size={14} />
-            {t("download_cv")}
+            <Icon name="download" size={13} />
+            <span>{t("download_cv")}</span>
           </a>
 
           <button
             onClick={() => setOpen(!open)}
-            className="md:hidden flex items-center justify-center w-10 h-10 rounded-full border-2 border-[var(--border)] bg-[var(--surface)] shadow-[2px_2px_0_var(--shadow-color)] hover:translate-x-[-1px] hover:translate-y-[-1px] cursor-pointer"
+            className="md:hidden flex items-center justify-center w-[30px] h-[30px] sm:w-[34px] sm:h-[34px] rounded-full border-2 border-[var(--border)] bg-[var(--surface)] shadow-[2px_2px_0_var(--shadow-color)] hover:translate-x-[-1px] hover:translate-y-[-1px] cursor-pointer shrink-0"
             aria-label={open ? "Tutup menu" : "Buka menu"}
             aria-expanded={open}
           >
-            <Icon name={open ? "x" : "menu"} size={22} />
+            <Icon name={open ? "x" : "menu"} size={16} />
           </button>
         </div>
       </Container>

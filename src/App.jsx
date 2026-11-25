@@ -180,9 +180,9 @@ function Hero({ info = PERSONAL_INFO }) {
             </div>
 
             {/* Social link pills aligned with card baseline */}
-            <Cluster gap={8} className="pt-2 lg:pt-0">
+            <div className="pt-2 lg:pt-0 flex flex-nowrap sm:flex-wrap items-center gap-1.5 sm:gap-2">
               <span
-                className="text-xs sm:text-sm font-bold uppercase tracking-wider font-mono mr-1"
+                className="text-[10px] sm:text-xs font-bold uppercase tracking-wider font-mono shrink-0 mr-0.5"
                 style={{ color: "var(--ink-muted)" }}
               >
                 {t("hero_links")}
@@ -191,20 +191,21 @@ function Hero({ info = PERSONAL_INFO }) {
                 href={github}
                 target="_blank"
                 rel="noreferrer"
-                className="neo-badge text-xs sm:text-sm font-bold inline-flex items-center gap-1.5"
+                className="neo-badge text-[10px] sm:text-xs font-bold inline-flex items-center gap-1 px-2 sm:px-3 py-0.5 sm:py-1 min-h-[26px] sm:min-h-[30px] shrink-0"
                 style={{
                   backgroundColor: "var(--surface)",
                   color: "var(--ink)",
+                  borderColor: "var(--border)",
                 }}
               >
                 GitHub
-                <Icon name="github" size={14} />
+                <Icon name="github" size={13} />
               </a>
               <a
                 href={linkedin}
                 target="_blank"
                 rel="noreferrer"
-                className="neo-badge text-xs sm:text-sm font-bold inline-flex items-center gap-1.5"
+                className="neo-badge text-[10px] sm:text-xs font-bold inline-flex items-center gap-1 px-2 sm:px-3 py-0.5 sm:py-1 min-h-[26px] sm:min-h-[30px] shrink-0"
                 style={{
                   backgroundColor: "var(--google-blue-bg)",
                   color: "var(--google-blue-text)",
@@ -212,13 +213,13 @@ function Hero({ info = PERSONAL_INFO }) {
                 }}
               >
                 LinkedIn
-                <Icon name="linkedin" size={14} />
+                <Icon name="linkedin" size={13} />
               </a>
               <a
                 href={instagram}
                 target="_blank"
                 rel="noreferrer"
-                className="neo-badge text-xs sm:text-sm font-bold inline-flex items-center gap-1.5"
+                className="!hidden sm:!inline-flex neo-badge text-[10px] sm:text-xs font-bold items-center gap-1 px-2 sm:px-3 py-0.5 sm:py-1 min-h-[26px] sm:min-h-[30px] shrink-0"
                 style={{
                   backgroundColor: "var(--google-yellow-bg)",
                   color: "var(--google-yellow-text)",
@@ -226,11 +227,11 @@ function Hero({ info = PERSONAL_INFO }) {
                 }}
               >
                 Instagram
-                <Icon name="instagram" size={14} />
+                <Icon name="instagram" size={13} />
               </a>
               <a
                 href={`mailto:${email}`}
-                className="neo-badge text-xs sm:text-sm font-bold inline-flex items-center gap-1.5"
+                className="neo-badge text-[10px] sm:text-xs font-bold inline-flex items-center gap-1 px-2 sm:px-3 py-0.5 sm:py-1 min-h-[26px] sm:min-h-[30px] shrink-0"
                 style={{
                   backgroundColor: "var(--google-red-bg)",
                   color: "var(--google-red-text)",
@@ -238,9 +239,9 @@ function Hero({ info = PERSONAL_INFO }) {
                 }}
               >
                 Email
-                <Icon name="mail" size={14} />
+                <Icon name="mail" size={13} />
               </a>
-            </Cluster>
+            </div>
           </div>
 
           {/* Profile photo card on desktop */}
