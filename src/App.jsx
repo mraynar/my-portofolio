@@ -99,6 +99,8 @@ function Hero({ info = PERSONAL_INFO }) {
   const kicker = info.kicker || t("hero_tag");
   const headline = info.headline || "Muhammad Raynar";
   const headlineAccent = info.headlineAccent || "Hammam";
+  const headlineWords = headline.split(" ").filter(Boolean);
+  const accentWords = headlineAccent ? headlineAccent.split(" ").filter(Boolean) : [];
   const valueProp =
     language === "en"
       ? info.valuePropEn || t("hero_bio")
@@ -133,18 +135,30 @@ function Hero({ info = PERSONAL_INFO }) {
                 <Chip variant="blue">{kicker}</Chip>
               </div>
 
-              {/* Main heading limited to two lines */}
+              {/* Heading with one word per line */}
               <h1
-                className="font-extrabold tracking-tight mb-3"
+                className="font-extrabold tracking-tight mb-3 sm:mb-4 select-none"
                 style={{
                   fontFamily: "var(--font-display)",
-                  fontSize: "clamp(2.3rem, 4.4vw, 3.8rem)",
-                  lineHeight: 1.1,
+                  fontSize: "clamp(2.75rem, 5.5vw, 5.4rem)",
+                  lineHeight: 1.0,
                   color: "var(--ink)",
                 }}
               >
-                {headline} <br />
-                <span style={{ color: "var(--google-blue)" }}>{headlineAccent}</span>
+                {headlineWords.map((word, idx) => (
+                  <span key={`hw-${idx}`} className="block">
+                    {word}
+                  </span>
+                ))}
+                {accentWords.map((word, idx) => (
+                  <span
+                    key={`aw-${idx}`}
+                    className="block"
+                    style={{ color: "var(--google-blue)" }}
+                  >
+                    {word}
+                  </span>
+                ))}
               </h1>
 
               <p
