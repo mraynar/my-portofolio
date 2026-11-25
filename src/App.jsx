@@ -675,10 +675,10 @@ function About({
                           </p>
                         </div>
 
-                        {/* Nilai or IPK score badge */}
+                        {/* Nilai or IPK score badge with uniform size */}
                         {(edu.score || edu.ipk) && (
                           <div
-                            className="shrink-0 sm:self-center px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl border-2 text-left sm:text-right"
+                            className="w-full sm:w-44 shrink-0 sm:self-center px-3 sm:px-3.5 py-1.5 sm:py-2.5 rounded-xl border-2 flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-1 sm:gap-0.5 transition-transform hover:scale-[1.02]"
                             style={{
                               backgroundColor:
                                 idx === 0
@@ -689,7 +689,7 @@ function About({
                             }}
                           >
                             <span
-                              className="block text-[10px] font-black font-mono uppercase tracking-wider mb-0.5"
+                              className="text-[10px] font-black font-mono uppercase tracking-wider whitespace-nowrap"
                               style={{ color: "var(--ink-muted)" }}
                             >
                               {edu.scoreLabel ||
@@ -700,7 +700,7 @@ function About({
                                     : "NILAI AKHIR")}
                             </span>
                             <span
-                              className="block text-sm sm:text-base font-black font-mono tracking-tight"
+                              className="text-xs sm:text-base font-black font-mono tracking-tight whitespace-nowrap"
                               style={{ color: nodeColor }}
                             >
                               [{String(edu.score || edu.ipk).replace(/^\[+|\]+$/g, "").trim()}]
