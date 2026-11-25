@@ -230,7 +230,7 @@ export default function ImageCropModal({
       // High-DPI crop output capped for optimal performance & storage
       const targetW = Math.min(
         Math.max(Math.round(cropBox.width * 2), 600),
-        1200
+        850
       );
       const targetH = Math.round(targetW * (cropBox.height / cropBox.width));
 
@@ -255,7 +255,7 @@ export default function ImageCropModal({
       ctx.drawImage(img, -drawW / 2, -drawH / 2, drawW, drawH);
       ctx.restore();
 
-      const dataUrl = canvas.toDataURL("image/jpeg", 0.88);
+      const dataUrl = canvas.toDataURL("image/jpeg", 0.82);
       const fileName =
         file && typeof file === "object" && file.name
           ? file.name.replace(/\.[^/.]+$/, "") + "-cropped.jpg"

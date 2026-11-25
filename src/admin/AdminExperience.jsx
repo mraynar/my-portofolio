@@ -120,13 +120,18 @@ export default function AdminExperience({
       const url = await uploadStorageFile("media", path, croppedFile);
       const effectiveUrl = url || previewUrl;
 
-      if (!editingItem && targetExpForCrop) {
+      if (editingItem) {
+        const updated = { ...editingItem, photo: effectiveUrl };
+        setEditingItem(updated);
+        if (updated.id) {
+          await upsertExperience(updated);
+          if (onRefresh) onRefresh();
+        }
+      } else if (targetExpForCrop) {
         const updated = { ...targetExpForCrop, photo: effectiveUrl };
         await upsertExperience(updated);
         if (onRefresh) onRefresh();
         setTargetExpForCrop(null);
-      } else {
-        setEditingItem((prev) => ({ ...prev, photo: effectiveUrl }));
       }
 
       setFeedback({
@@ -135,10 +140,18 @@ export default function AdminExperience({
       });
     } catch {
       // Fallback preview for offline environments
-      if (!editingItem && targetExpForCrop) {
+      if (editingItem) {
+        const updated = { ...editingItem, photo: previewUrl };
+        setEditingItem(updated);
+        if (updated.id) {
+          await upsertExperience(updated);
+          if (onRefresh) onRefresh();
+        }
+      } else if (targetExpForCrop) {
+        const updated = { ...targetExpForCrop, photo: previewUrl };
+        await upsertExperience(updated);
+        if (onRefresh) onRefresh();
         setTargetExpForCrop(null);
-      } else {
-        setEditingItem((prev) => ({ ...prev, photo: previewUrl }));
       }
       setFeedback({
         type: "success",

@@ -716,8 +716,19 @@ export async function upsertExperience(item) {
       CACHE_KEYS.EXPERIENCE,
       JSON.stringify(sortExperiencesLatestFirst(updated))
     );
-  } catch {
-    // Ignore
+  } catch (err) {
+    // Evict non-essential items if quota exceeded
+    if (err && err.name === "QuotaExceededError") {
+      try {
+        localStorage.removeItem("portfolio_contact_messages");
+        localStorage.setItem(
+          CACHE_KEYS.EXPERIENCE,
+          JSON.stringify(sortExperiencesLatestFirst(updated))
+        );
+      } catch {
+        // Retain local memory state
+      }
+    }
   }
 
   if (supabase) {
@@ -760,8 +771,19 @@ export async function deleteExperience(id) {
       CACHE_KEYS.EXPERIENCE,
       JSON.stringify(sortExperiencesLatestFirst(updated))
     );
-  } catch {
-    // Ignore
+  } catch (err) {
+    // Evict non-essential items if quota exceeded
+    if (err && err.name === "QuotaExceededError") {
+      try {
+        localStorage.removeItem("portfolio_contact_messages");
+        localStorage.setItem(
+          CACHE_KEYS.EXPERIENCE,
+          JSON.stringify(sortExperiencesLatestFirst(updated))
+        );
+      } catch {
+        // Retain local memory state
+      }
+    }
   }
 
   if (supabase) {
@@ -790,8 +812,16 @@ export async function reorderExperience(orderedList = []) {
       CACHE_KEYS.EXPERIENCE,
       JSON.stringify(updated)
     );
-  } catch {
-    // Ignore
+  } catch (err) {
+    // Evict non-essential items if quota exceeded
+    if (err && err.name === "QuotaExceededError") {
+      try {
+        localStorage.removeItem("portfolio_contact_messages");
+        localStorage.setItem(CACHE_KEYS.EXPERIENCE, JSON.stringify(updated));
+      } catch {
+        // Retain local memory state
+      }
+    }
   }
 
   if (supabase) {
