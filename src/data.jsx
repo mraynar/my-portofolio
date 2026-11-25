@@ -41,6 +41,18 @@ export const PERSONAL_INFO = {
   contactSubtitle: "Terbuka untuk peluang magang, proyek kolaboratif, atau konsultasi teknis.",
   numbersKicker: "BY THE NUMBERS",
   numbersTitle: "Dampak & Pencapaian Riil",
+  stat1Value: "20+",
+  stat1Label: "PROYEK DIGITAL",
+  stat1Desc: "Aplikasi web full-stack, mobile lintas platform, dan sistem informasi bisnis operasional.",
+  stat2Value: "15+",
+  stat2Label: "SERTIFIKASI RESMI",
+  stat2Desc: "Kompetensi terverifikasi dari IBM, Dicoding, DQLab, Udemy & AWS.",
+  stat3Value: "2021",
+  stat3Label: "REKAYASA SOFTWARE",
+  stat3Desc: "Fondasi pemrograman terstruktur dimulai dari bangku SMK RPL hingga S1 Sistem Informasi.",
+  stat4Value: "100%",
+  stat4Label: "INTEGRITAS SOLUSI",
+  stat4Desc: "Komitmen arsitektur bersih, performa terukur, dan dokumentasi yang transparan.",
 };
 
 export const NAV_LINKS = [

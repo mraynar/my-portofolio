@@ -65,6 +65,18 @@ create table if not exists public.site_settings (
   contact_subtitle text,
   numbers_kicker text default 'BY THE NUMBERS',
   numbers_title text default 'Dampak & Pencapaian Riil',
+  stat1_value text default '20+',
+  stat1_label text default 'PROYEK DIGITAL',
+  stat1_desc text default 'Aplikasi web full-stack, mobile lintas platform, dan sistem informasi bisnis operasional.',
+  stat2_value text default '15+',
+  stat2_label text default 'SERTIFIKASI RESMI',
+  stat2_desc text default 'Kompetensi terverifikasi dari IBM, Dicoding, DQLab, Udemy & AWS.',
+  stat3_value text default '2021',
+  stat3_label text default 'REKAYASA SOFTWARE',
+  stat3_desc text default 'Fondasi pemrograman terstruktur dimulai dari bangku SMK RPL hingga S1 Sistem Informasi.',
+  stat4_value text default '100%',
+  stat4_label text default 'INTEGRITAS SOLUSI',
+  stat4_desc text default 'Komitmen arsitektur bersih, performa terukur, dan dokumentasi yang transparan.',
   updated_at timestamptz default now()
 );
 

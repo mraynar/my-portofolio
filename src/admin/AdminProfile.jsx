@@ -740,17 +740,22 @@ export default function AdminProfile({ initialInfo, onUpdateInfo }) {
       {/* Tab 3: Metrics & Numbers */}
       {activeTab === "stats" && (
         <Card className="p-6 sm:p-8 space-y-6">
-          <h3
-            className="text-lg sm:text-xl font-extrabold pb-3 border-b-2"
-            style={{ fontFamily: "var(--font-display)" }}
-          >
-            Kustomisasi Kartu Statistik (By The Numbers)
-          </h3>
+          <div className="pb-3 border-b-2">
+            <h3
+              className="text-lg sm:text-xl font-extrabold"
+              style={{ fontFamily: "var(--font-display)" }}
+            >
+              Kustomisasi Kartu Statistik (By The Numbers)
+            </h3>
+            <p className="text-xs text-[var(--ink-secondary)] mt-0.5">
+              Kelola judul section dan keseluruhan konten 4 kartu capaian.
+            </p>
+          </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-4 border-b-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-6 border-b-2">
             <div>
               <label className="block text-xs font-bold font-mono uppercase mb-1.5">
-                Kicker Section Statistik
+                Kicker Section
               </label>
               <input
                 type="text"
@@ -767,7 +772,7 @@ export default function AdminProfile({ initialInfo, onUpdateInfo }) {
 
             <div>
               <label className="block text-xs font-bold font-mono uppercase mb-1.5">
-                Judul Utama Section Statistik
+                Judul Utama Section
               </label>
               <input
                 type="text"
@@ -783,90 +788,344 @@ export default function AdminProfile({ initialInfo, onUpdateInfo }) {
             </div>
           </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div>
-            <label className="block text-xs font-bold font-mono uppercase mb-1.5">
-              Total Proyek Digital
-            </label>
-            <input
-              type="text"
-              value={formData.customProjectCount || ""}
-              onChange={(e) =>
-                handleChange("customProjectCount", e.target.value)
-              }
-              placeholder="8+ (atau misal 15+)"
-              className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm"
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Card 1: Blue */}
+            <div
+              className="p-5 rounded-2xl border-2 flex flex-col justify-between space-y-4"
               style={{
+                borderColor: "var(--google-blue)",
                 backgroundColor: "var(--surface-alt)",
-                borderColor: "var(--border)",
+                boxShadow: "3px 3px 0 var(--shadow-color)",
               }}
-            />
-            <span className="text-[11px] text-[var(--ink-secondary)] block mt-1">
-              Kustomisasi jumlah riil proyek yang pernah dikerjakan.
-            </span>
-          </div>
+            >
+              <div className="flex items-center justify-between pb-3 border-b-2">
+                <span
+                  className="text-xs font-black font-mono uppercase tracking-wider px-2.5 py-1 rounded-lg"
+                  style={{
+                    backgroundColor: "var(--google-blue)",
+                    color: "#fff",
+                  }}
+                >
+                  Kartu 1 • Biru (Proyek)
+                </span>
+                <span
+                  className="text-base font-extrabold font-mono"
+                  style={{ color: "var(--google-blue)" }}
+                >
+                  [{formData.stat1Value || formData.customProjectCount || "20+"}]
+                </span>
+              </div>
 
-          <div>
-            <label className="block text-xs font-bold font-mono uppercase mb-1.5">
-              Total Sertifikasi Resmi
-            </label>
-            <input
-              type="text"
-              value={formData.customCertCount || ""}
-              onChange={(e) => handleChange("customCertCount", e.target.value)}
-              placeholder="9+ (atau misal 12+)"
-              className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm"
-              style={{
-                backgroundColor: "var(--surface-alt)",
-                borderColor: "var(--border)",
-              }}
-            />
-            <span className="text-[11px] text-[var(--ink-secondary)] block mt-1">
-              Kustomisasi jumlah sertifikasi pada kartu hijau.
-            </span>
-          </div>
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-xs font-bold font-mono uppercase mb-1">
+                    Nilai Angka
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.stat1Value ?? formData.customProjectCount ?? ""}
+                    onChange={(e) => {
+                      handleChange("stat1Value", e.target.value);
+                      handleChange("customProjectCount", e.target.value);
+                    }}
+                    placeholder="20+"
+                    className="w-full px-3 py-2 rounded-xl border-2 font-mono font-bold text-sm"
+                    style={{
+                      backgroundColor: "var(--surface)",
+                      borderColor: "var(--border)",
+                    }}
+                  />
+                </div>
 
-          <div>
-            <label className="block text-xs font-bold font-mono uppercase mb-1.5">
-              Tahun Mulai Rekayasa
-            </label>
-            <input
-              type="text"
-              value={formData.startYear || ""}
-              onChange={(e) => handleChange("startYear", e.target.value)}
-              placeholder="2021"
-              className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm"
-              style={{
-                backgroundColor: "var(--surface-alt)",
-                borderColor: "var(--border)",
-              }}
-            />
-            <span className="text-[11px] text-[var(--ink-secondary)] block mt-1">
-              Tahun fondasi rekayasa pada kartu kuning.
-            </span>
-          </div>
+                <div>
+                  <label className="block text-xs font-bold font-mono uppercase mb-1">
+                    Label / Judul Kartu
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.stat1Label ?? ""}
+                    onChange={(e) => handleChange("stat1Label", e.target.value)}
+                    placeholder="PROYEK DIGITAL"
+                    className="w-full px-3 py-2 rounded-xl border-2 font-bold text-sm"
+                    style={{
+                      backgroundColor: "var(--surface)",
+                      borderColor: "var(--border)",
+                    }}
+                  />
+                </div>
 
-          <div>
-            <label className="block text-xs font-bold font-mono uppercase mb-1.5">
-              Nilai Integritas Solusi
-            </label>
-            <input
-              type="text"
-              value={formData.codeQuality || ""}
-              onChange={(e) => handleChange("codeQuality", e.target.value)}
-              placeholder="100%"
-              className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm"
+                <div>
+                  <label className="block text-xs font-bold font-mono uppercase mb-1">
+                    Deskripsi / Keterangan
+                  </label>
+                  <textarea
+                    rows={2}
+                    value={formData.stat1Desc ?? ""}
+                    onChange={(e) => handleChange("stat1Desc", e.target.value)}
+                    placeholder="Aplikasi web full-stack, mobile lintas platform, dan sistem informasi bisnis operasional."
+                    className="w-full px-3 py-2 rounded-xl border-2 font-medium text-xs resize-y"
+                    style={{
+                      backgroundColor: "var(--surface)",
+                      borderColor: "var(--border)",
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Card 2: Green */}
+            <div
+              className="p-5 rounded-2xl border-2 flex flex-col justify-between space-y-4"
               style={{
+                borderColor: "var(--google-green)",
                 backgroundColor: "var(--surface-alt)",
-                borderColor: "var(--border)",
+                boxShadow: "3px 3px 0 var(--shadow-color)",
               }}
-            />
-            <span className="text-[11px] text-[var(--ink-secondary)] block mt-1">
-              Nilai komitmen mutu pada kartu merah.
-            </span>
+            >
+              <div className="flex items-center justify-between pb-3 border-b-2">
+                <span
+                  className="text-xs font-black font-mono uppercase tracking-wider px-2.5 py-1 rounded-lg"
+                  style={{
+                    backgroundColor: "var(--google-green)",
+                    color: "#fff",
+                  }}
+                >
+                  Kartu 2 • Hijau (Sertifikasi)
+                </span>
+                <span
+                  className="text-base font-extrabold font-mono"
+                  style={{ color: "var(--google-green)" }}
+                >
+                  [{formData.stat2Value || formData.customCertCount || "15+"}]
+                </span>
+              </div>
+
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-xs font-bold font-mono uppercase mb-1">
+                    Nilai Angka
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.stat2Value ?? formData.customCertCount ?? ""}
+                    onChange={(e) => {
+                      handleChange("stat2Value", e.target.value);
+                      handleChange("customCertCount", e.target.value);
+                    }}
+                    placeholder="15+"
+                    className="w-full px-3 py-2 rounded-xl border-2 font-mono font-bold text-sm"
+                    style={{
+                      backgroundColor: "var(--surface)",
+                      borderColor: "var(--border)",
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold font-mono uppercase mb-1">
+                    Label / Judul Kartu
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.stat2Label ?? ""}
+                    onChange={(e) => handleChange("stat2Label", e.target.value)}
+                    placeholder="SERTIFIKASI RESMI"
+                    className="w-full px-3 py-2 rounded-xl border-2 font-bold text-sm"
+                    style={{
+                      backgroundColor: "var(--surface)",
+                      borderColor: "var(--border)",
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold font-mono uppercase mb-1">
+                    Deskripsi / Keterangan
+                  </label>
+                  <textarea
+                    rows={2}
+                    value={formData.stat2Desc ?? ""}
+                    onChange={(e) => handleChange("stat2Desc", e.target.value)}
+                    placeholder="Kompetensi terverifikasi dari IBM, Dicoding, DQLab, Udemy & AWS."
+                    className="w-full px-3 py-2 rounded-xl border-2 font-medium text-xs resize-y"
+                    style={{
+                      backgroundColor: "var(--surface)",
+                      borderColor: "var(--border)",
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Card 3: Yellow */}
+            <div
+              className="p-5 rounded-2xl border-2 flex flex-col justify-between space-y-4"
+              style={{
+                borderColor: "var(--google-yellow-hover)",
+                backgroundColor: "var(--surface-alt)",
+                boxShadow: "3px 3px 0 var(--shadow-color)",
+              }}
+            >
+              <div className="flex items-center justify-between pb-3 border-b-2">
+                <span
+                  className="text-xs font-black font-mono uppercase tracking-wider px-2.5 py-1 rounded-lg"
+                  style={{
+                    backgroundColor: "var(--google-yellow-hover)",
+                    color: "#fff",
+                  }}
+                >
+                  Kartu 3 • Kuning (Tahun / Pengalaman)
+                </span>
+                <span
+                  className="text-base font-extrabold font-mono"
+                  style={{ color: "var(--google-yellow-hover)" }}
+                >
+                  [{formData.stat3Value || formData.startYear || "2021"}]
+                </span>
+              </div>
+
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-xs font-bold font-mono uppercase mb-1">
+                    Nilai Angka / Tahun
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.stat3Value ?? formData.startYear ?? ""}
+                    onChange={(e) => {
+                      handleChange("stat3Value", e.target.value);
+                      handleChange("startYear", e.target.value);
+                    }}
+                    placeholder="2021"
+                    className="w-full px-3 py-2 rounded-xl border-2 font-mono font-bold text-sm"
+                    style={{
+                      backgroundColor: "var(--surface)",
+                      borderColor: "var(--border)",
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold font-mono uppercase mb-1">
+                    Label / Judul Kartu
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.stat3Label ?? ""}
+                    onChange={(e) => handleChange("stat3Label", e.target.value)}
+                    placeholder="REKAYASA SOFTWARE"
+                    className="w-full px-3 py-2 rounded-xl border-2 font-bold text-sm"
+                    style={{
+                      backgroundColor: "var(--surface)",
+                      borderColor: "var(--border)",
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold font-mono uppercase mb-1">
+                    Deskripsi / Keterangan
+                  </label>
+                  <textarea
+                    rows={2}
+                    value={formData.stat3Desc ?? ""}
+                    onChange={(e) => handleChange("stat3Desc", e.target.value)}
+                    placeholder="Fondasi pemrograman terstruktur dimulai dari bangku SMK RPL hingga S1 Sistem Informasi."
+                    className="w-full px-3 py-2 rounded-xl border-2 font-medium text-xs resize-y"
+                    style={{
+                      backgroundColor: "var(--surface)",
+                      borderColor: "var(--border)",
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Card 4: Red */}
+            <div
+              className="p-5 rounded-2xl border-2 flex flex-col justify-between space-y-4"
+              style={{
+                borderColor: "var(--google-red)",
+                backgroundColor: "var(--surface-alt)",
+                boxShadow: "3px 3px 0 var(--shadow-color)",
+              }}
+            >
+              <div className="flex items-center justify-between pb-3 border-b-2">
+                <span
+                  className="text-xs font-black font-mono uppercase tracking-wider px-2.5 py-1 rounded-lg"
+                  style={{
+                    backgroundColor: "var(--google-red)",
+                    color: "#fff",
+                  }}
+                >
+                  Kartu 4 • Merah (Kualitas / Integritas)
+                </span>
+                <span
+                  className="text-base font-extrabold font-mono"
+                  style={{ color: "var(--google-red)" }}
+                >
+                  [{formData.stat4Value || formData.codeQuality || "100%"}]
+                </span>
+              </div>
+
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-xs font-bold font-mono uppercase mb-1">
+                    Nilai Angka / Persentase
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.stat4Value ?? formData.codeQuality ?? ""}
+                    onChange={(e) => {
+                      handleChange("stat4Value", e.target.value);
+                      handleChange("codeQuality", e.target.value);
+                    }}
+                    placeholder="100%"
+                    className="w-full px-3 py-2 rounded-xl border-2 font-mono font-bold text-sm"
+                    style={{
+                      backgroundColor: "var(--surface)",
+                      borderColor: "var(--border)",
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold font-mono uppercase mb-1">
+                    Label / Judul Kartu
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.stat4Label ?? ""}
+                    onChange={(e) => handleChange("stat4Label", e.target.value)}
+                    placeholder="INTEGRITAS SOLUSI"
+                    className="w-full px-3 py-2 rounded-xl border-2 font-bold text-sm"
+                    style={{
+                      backgroundColor: "var(--surface)",
+                      borderColor: "var(--border)",
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold font-mono uppercase mb-1">
+                    Deskripsi / Keterangan
+                  </label>
+                  <textarea
+                    rows={2}
+                    value={formData.stat4Desc ?? ""}
+                    onChange={(e) => handleChange("stat4Desc", e.target.value)}
+                    placeholder="Komitmen arsitektur bersih, performa terukur, dan dokumentasi yang transparan."
+                    className="w-full px-3 py-2 rounded-xl border-2 font-medium text-xs resize-y"
+                    style={{
+                      backgroundColor: "var(--surface)",
+                      borderColor: "var(--border)",
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-      </Card>
+        </Card>
       )}
 
       <div className="flex justify-end">

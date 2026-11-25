@@ -228,6 +228,74 @@ export async function getSiteSettings() {
             data.numbers_title ||
             cachedSettings.numbersTitle ||
             PERSONAL_INFO.numbersTitle,
+          stat1Value:
+            data.stat1_value !== undefined &&
+            data.stat1_value !== null &&
+            data.stat1_value !== ""
+              ? data.stat1_value
+              : cachedSettings.stat1Value ||
+                data.custom_project_count ||
+                cachedSettings.customProjectCount ||
+                PERSONAL_INFO.stat1Value,
+          stat1Label:
+            data.stat1_label ||
+            cachedSettings.stat1Label ||
+            PERSONAL_INFO.stat1Label,
+          stat1Desc:
+            data.stat1_desc ||
+            cachedSettings.stat1Desc ||
+            PERSONAL_INFO.stat1Desc,
+          stat2Value:
+            data.stat2_value !== undefined &&
+            data.stat2_value !== null &&
+            data.stat2_value !== ""
+              ? data.stat2_value
+              : cachedSettings.stat2Value ||
+                data.custom_cert_count ||
+                cachedSettings.customCertCount ||
+                PERSONAL_INFO.stat2Value,
+          stat2Label:
+            data.stat2_label ||
+            cachedSettings.stat2Label ||
+            PERSONAL_INFO.stat2Label,
+          stat2Desc:
+            data.stat2_desc ||
+            cachedSettings.stat2Desc ||
+            PERSONAL_INFO.stat2Desc,
+          stat3Value:
+            data.stat3_value !== undefined &&
+            data.stat3_value !== null &&
+            data.stat3_value !== ""
+              ? data.stat3_value
+              : cachedSettings.stat3Value ||
+                data.start_year ||
+                cachedSettings.startYear ||
+                PERSONAL_INFO.stat3Value,
+          stat3Label:
+            data.stat3_label ||
+            cachedSettings.stat3Label ||
+            PERSONAL_INFO.stat3Label,
+          stat3Desc:
+            data.stat3_desc ||
+            cachedSettings.stat3Desc ||
+            PERSONAL_INFO.stat3Desc,
+          stat4Value:
+            data.stat4_value !== undefined &&
+            data.stat4_value !== null &&
+            data.stat4_value !== ""
+              ? data.stat4_value
+              : cachedSettings.stat4Value ||
+                data.code_quality ||
+                cachedSettings.codeQuality ||
+                PERSONAL_INFO.stat4Value,
+          stat4Label:
+            data.stat4_label ||
+            cachedSettings.stat4Label ||
+            PERSONAL_INFO.stat4Label,
+          stat4Desc:
+            data.stat4_desc ||
+            cachedSettings.stat4Desc ||
+            PERSONAL_INFO.stat4Desc,
           rawId: data.id,
         };
         try {
@@ -287,28 +355,111 @@ export async function saveSiteSettings(id, fields) {
         about_p3: fields.aboutP3 || updated.aboutP3 || "",
         principle_title: fields.principleTitle || updated.principleTitle || "",
         principle_quote: fields.principleQuote || updated.principleQuote || "",
+        numbers_kicker:
+          fields.numbersKicker || updated.numbersKicker || "BY THE NUMBERS",
+        numbers_title:
+          fields.numbersTitle ||
+          updated.numbersTitle ||
+          "Dampak & Pencapaian Riil",
+        stat1_value:
+          fields.stat1Value !== undefined
+            ? fields.stat1Value
+            : updated.stat1Value || "",
+        stat1_label:
+          fields.stat1Label !== undefined
+            ? fields.stat1Label
+            : updated.stat1Label || "",
+        stat1_desc:
+          fields.stat1Desc !== undefined
+            ? fields.stat1Desc
+            : updated.stat1Desc || "",
+        stat2_value:
+          fields.stat2Value !== undefined
+            ? fields.stat2Value
+            : updated.stat2Value || "",
+        stat2_label:
+          fields.stat2Label !== undefined
+            ? fields.stat2Label
+            : updated.stat2Label || "",
+        stat2_desc:
+          fields.stat2Desc !== undefined
+            ? fields.stat2Desc
+            : updated.stat2Desc || "",
+        stat3_value:
+          fields.stat3Value !== undefined
+            ? fields.stat3Value
+            : updated.stat3Value || "",
+        stat3_label:
+          fields.stat3Label !== undefined
+            ? fields.stat3Label
+            : updated.stat3Label || "",
+        stat3_desc:
+          fields.stat3Desc !== undefined
+            ? fields.stat3Desc
+            : updated.stat3Desc || "",
+        stat4_value:
+          fields.stat4Value !== undefined
+            ? fields.stat4Value
+            : updated.stat4Value || "",
+        stat4_label:
+          fields.stat4Label !== undefined
+            ? fields.stat4Label
+            : updated.stat4Label || "",
+        stat4_desc:
+          fields.stat4Desc !== undefined
+            ? fields.stat4Desc
+            : updated.stat4Desc || "",
         custom_project_count:
-          fields.customProjectCount !== undefined
-            ? fields.customProjectCount
-            : updated.customProjectCount || "",
+          fields.stat1Value ||
+          fields.customProjectCount ||
+          updated.stat1Value ||
+          updated.customProjectCount ||
+          "",
         custom_cert_count:
-          fields.customCertCount !== undefined
-            ? fields.customCertCount
-            : updated.customCertCount || "",
+          fields.stat2Value ||
+          fields.customCertCount ||
+          updated.stat2Value ||
+          updated.customCertCount ||
+          "",
         start_year:
-          fields.startYear !== undefined
-            ? fields.startYear
-            : updated.startYear || "",
+          fields.stat3Value ||
+          fields.startYear ||
+          updated.stat3Value ||
+          updated.startYear ||
+          "",
         code_quality:
-          fields.codeQuality !== undefined
-            ? fields.codeQuality
-            : updated.codeQuality || "",
+          fields.stat4Value ||
+          fields.codeQuality ||
+          updated.stat4Value ||
+          updated.codeQuality ||
+          "",
         updated_at: new Date().toISOString(),
       };
-      if (id && id !== "default-site-settings") {
-        await supabase.from("site_settings").update(payload).eq("id", id);
-      } else {
-        await supabase.from("site_settings").upsert(payload);
+      try {
+        if (id && id !== "default-site-settings") {
+          await supabase.from("site_settings").update(payload).eq("id", id);
+        } else {
+          await supabase.from("site_settings").upsert(payload);
+        }
+      } catch {
+        const fallback = { ...payload };
+        delete fallback.stat1_value;
+        delete fallback.stat1_label;
+        delete fallback.stat1_desc;
+        delete fallback.stat2_value;
+        delete fallback.stat2_label;
+        delete fallback.stat2_desc;
+        delete fallback.stat3_value;
+        delete fallback.stat3_label;
+        delete fallback.stat3_desc;
+        delete fallback.stat4_value;
+        delete fallback.stat4_label;
+        delete fallback.stat4_desc;
+        if (id && id !== "default-site-settings") {
+          await supabase.from("site_settings").update(fallback).eq("id", id);
+        } else {
+          await supabase.from("site_settings").upsert(fallback);
+        }
       }
     } catch {
       // Retain local cached state

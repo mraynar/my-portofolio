@@ -682,6 +682,14 @@ export function translateInfo(info, lang = "en") {
     contactSubtitle: translateText(info.contactSubtitle, lang),
     numbersKicker: translateText(info.numbersKicker, lang),
     numbersTitle: translateText(info.numbersTitle, lang),
+    stat1Label: translateText(info.stat1Label, lang),
+    stat1Desc: translateText(info.stat1Desc, lang),
+    stat2Label: translateText(info.stat2Label, lang),
+    stat2Desc: translateText(info.stat2Desc, lang),
+    stat3Label: translateText(info.stat3Label, lang),
+    stat3Desc: translateText(info.stat3Desc, lang),
+    stat4Label: translateText(info.stat4Label, lang),
+    stat4Desc: translateText(info.stat4Desc, lang),
   };
 }
 

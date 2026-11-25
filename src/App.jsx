@@ -376,28 +376,70 @@ function About({
   projectCount = 8,
   certCount = 9,
 }) {
-  const { t, tText, language } = useLanguage();
+  const { t, language } = useLanguage();
   const university = info.university || PERSONAL_INFO.university;
 
-  // Resolve custom impact metrics or fall back to actual records count
-  const rawProjectCount =
-    info.customProjectCount && String(info.customProjectCount).trim() !== ""
-      ? String(info.customProjectCount).trim()
-      : `${projectCount}+`;
-  const displayProjectCount = rawProjectCount.includes("+")
-    ? rawProjectCount
-    : `${rawProjectCount}+`;
+  // Format metric value ensuring clean brackets
+  const cleanStatValue = (val, fallback = "") => {
+    const str = String(
+      val !== undefined && val !== null && val !== "" ? val : fallback
+    ).trim();
+    const cleaned = str.replace(/^\[+|\]+$/g, "").trim();
+    return cleaned || fallback;
+  };
 
-  const rawCertCount =
-    info.customCertCount && String(info.customCertCount).trim() !== ""
-      ? String(info.customCertCount).trim()
-      : `${certCount}+`;
-  const displayCertCount = rawCertCount.includes("+")
-    ? rawCertCount
-    : `${rawCertCount}+`;
+  const stat1Val = cleanStatValue(
+    info.stat1Value || info.customProjectCount,
+    `${projectCount}+`
+  );
+  const stat1Label =
+    info.stat1Label ||
+    (language === "en" ? "DIGITAL PROJECTS" : "PROYEK DIGITAL");
+  const stat1Desc =
+    info.stat1Desc ||
+    (language === "en"
+      ? "Full-stack web applications, cross-platform mobile apps, and operational business information systems."
+      : "Aplikasi web full-stack, mobile lintas platform, dan sistem informasi bisnis operasional.");
 
-  const displayStartYear = info.startYear || "2021";
-  const displayCodeQuality = info.codeQuality || "100%";
+  const stat2Val = cleanStatValue(
+    info.stat2Value || info.customCertCount,
+    `${certCount}+`
+  );
+  const stat2Label =
+    info.stat2Label ||
+    (language === "en" ? "OFFICIAL CERTIFICATIONS" : "SERTIFIKASI RESMI");
+  const stat2Desc =
+    info.stat2Desc ||
+    (language === "en"
+      ? "Verified competencies from IBM, Dicoding, DQLab, Udemy & AWS."
+      : "Kompetensi terverifikasi dari IBM, Dicoding, DQLab, Udemy & AWS.");
+
+  const stat3Val = cleanStatValue(
+    info.stat3Value || info.startYear,
+    "2021"
+  );
+  const stat3Label =
+    info.stat3Label ||
+    (language === "en" ? "SOFTWARE ENGINEERING" : "REKAYASA SOFTWARE");
+  const stat3Desc =
+    info.stat3Desc ||
+    (language === "en"
+      ? "Structured programming foundation spanning from vocational high school to B.S. in Information Systems."
+      : "Fondasi pemrograman terstruktur dimulai dari bangku SMK RPL hingga S1 Sistem Informasi.");
+
+  const stat4Val = cleanStatValue(
+    info.stat4Value || info.codeQuality,
+    "100%"
+  );
+  const stat4Label =
+    info.stat4Label ||
+    (language === "en" ? "SOLUTION INTEGRITY" : "INTEGRITAS SOLUSI");
+  const stat4Desc =
+    info.stat4Desc ||
+    (language === "en"
+      ? "Commitment to clean architecture, measurable performance, and transparent documentation."
+      : "Komitmen arsitektur bersih, performa terukur, dan dokumentasi yang transparan.");
+
   const rawPrincipleQuote =
     info.principleQuote ||
     (language === "en"
@@ -664,17 +706,21 @@ function About({
                   className="text-4xl sm:text-5xl font-extrabold font-mono tracking-tight mb-2"
                   style={{ color: "var(--google-blue)" }}
                 >
-                  [{displayProjectCount}]
+                  [{stat1Val}]
                 </div>
                 <div className="text-sm sm:text-base font-extrabold uppercase tracking-wider mb-2">
-                  {tText("PROYEK DIGITAL")}
+                  {language === "en"
+                    ? translateText(stat1Label, "en")
+                    : stat1Label}
                 </div>
               </div>
               <p
                 className="text-xs sm:text-sm font-medium leading-relaxed"
                 style={{ color: "var(--ink-secondary)" }}
               >
-                {tText("Aplikasi web full-stack, mobile lintas platform, dan sistem informasi bisnis operasional.")}
+                {language === "en"
+                  ? translateText(stat1Desc, "en")
+                  : stat1Desc}
               </p>
             </div>
 
@@ -685,17 +731,21 @@ function About({
                   className="text-4xl sm:text-5xl font-extrabold font-mono tracking-tight mb-2"
                   style={{ color: "var(--google-green)" }}
                 >
-                  [{displayCertCount}]
+                  [{stat2Val}]
                 </div>
                 <div className="text-sm sm:text-base font-extrabold uppercase tracking-wider mb-2">
-                  {tText("SERTIFIKASI RESMI")}
+                  {language === "en"
+                    ? translateText(stat2Label, "en")
+                    : stat2Label}
                 </div>
               </div>
               <p
                 className="text-xs sm:text-sm font-medium leading-relaxed"
                 style={{ color: "var(--ink-secondary)" }}
               >
-                {tText("Kompetensi terverifikasi dari IBM, Dicoding, DQLab, Udemy & AWS.")}
+                {language === "en"
+                  ? translateText(stat2Desc, "en")
+                  : stat2Desc}
               </p>
             </div>
 
@@ -706,17 +756,21 @@ function About({
                   className="text-4xl sm:text-5xl font-extrabold font-mono tracking-tight mb-2"
                   style={{ color: "var(--google-yellow-hover)" }}
                 >
-                  [{displayStartYear}]
+                  [{stat3Val}]
                 </div>
                 <div className="text-sm sm:text-base font-extrabold uppercase tracking-wider mb-2">
-                  {tText("REKAYASA SOFTWARE")}
+                  {language === "en"
+                    ? translateText(stat3Label, "en")
+                    : stat3Label}
                 </div>
               </div>
               <p
                 className="text-xs sm:text-sm font-medium leading-relaxed"
                 style={{ color: "var(--ink-secondary)" }}
               >
-                {tText("Fondasi pemrograman terstruktur dimulai dari bangku SMK RPL hingga S1 Sistem Informasi.")}
+                {language === "en"
+                  ? translateText(stat3Desc, "en")
+                  : stat3Desc}
               </p>
             </div>
 
@@ -727,17 +781,21 @@ function About({
                   className="text-4xl sm:text-5xl font-extrabold font-mono tracking-tight mb-2"
                   style={{ color: "var(--google-red)" }}
                 >
-                  [{displayCodeQuality}]
+                  [{stat4Val}]
                 </div>
                 <div className="text-sm sm:text-base font-extrabold uppercase tracking-wider mb-2">
-                  {tText("INTEGRITAS SOLUSI")}
+                  {language === "en"
+                    ? translateText(stat4Label, "en")
+                    : stat4Label}
                 </div>
               </div>
               <p
                 className="text-xs sm:text-sm font-medium leading-relaxed"
                 style={{ color: "var(--ink-secondary)" }}
               >
-                {tText("Komitmen arsitektur bersih, performa terukur, dan dokumentasi yang transparan.")}
+                {language === "en"
+                  ? translateText(stat4Desc, "en")
+                  : stat4Desc}
               </p>
             </div>
           </div>
