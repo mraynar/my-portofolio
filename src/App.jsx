@@ -162,7 +162,7 @@ function Hero({ info = PERSONAL_INFO }) {
             </div>
 
             {/* Actions and connections group */}
-            <div className="space-y-3.5 sm:space-y-4">
+            <div className="space-y-7 sm:space-y-4">
               {/* Primary actions */}
               <div className="flex flex-row gap-3 sm:gap-4">
                 <button
@@ -185,7 +185,7 @@ function Hero({ info = PERSONAL_INFO }) {
               </div>
 
               {/* Social link pills */}
-              <div className="flex flex-nowrap sm:flex-wrap items-center gap-1.5 sm:gap-2">
+              <div className="pt-3 sm:pt-0 flex flex-nowrap sm:flex-wrap items-center gap-1.5 sm:gap-2">
               <span
                 className="text-[10px] sm:text-xs font-bold uppercase tracking-wider font-mono shrink-0 mr-0.5"
                 style={{ color: "var(--ink-muted)" }}
