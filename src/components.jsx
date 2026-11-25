@@ -1222,14 +1222,10 @@ export function Navbar({ info = {} }) {
         {/* Clean brand wordmark */}
         <a
           href="/#home"
-          className="font-extrabold text-2xl tracking-tight no-underline flex items-center gap-1.5"
+          className="font-extrabold text-2xl tracking-tight no-underline flex items-center"
           style={{ fontFamily: "var(--font-display)", color: "var(--ink)" }}
         >
           <span>mraynar</span>
-          <span
-            className="w-2.5 h-2.5 rounded-full inline-block"
-            style={{ backgroundColor: "var(--google-blue)" }}
-          />
         </a>
 
         {/* Desktop links */}
