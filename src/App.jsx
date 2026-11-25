@@ -4,7 +4,6 @@ import { LanguageProvider, useLanguage } from "./context/LanguageContext";
 import {
   Container,
   Section,
-  Cluster,
   Card,
   Chip,
   SectionHeading,
@@ -98,7 +97,6 @@ function Hero({ info = PERSONAL_INFO }) {
   const { t, language } = useLanguage();
   const [heroZoomOpen, setHeroZoomOpen] = useState(false);
   const kicker = info.kicker || t("hero_tag");
-  const statusBadge = info.statusBadge || "UPN Veteran Jawa Timur";
   const headline = info.headline || "Muhammad Raynar";
   const headlineAccent = info.headlineAccent || "Hammam";
   const valueProp =
@@ -127,14 +125,13 @@ function Hero({ info = PERSONAL_INFO }) {
       }}
     >
       <Container className="relative z-10 w-full my-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-8 xl:gap-10 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-8 xl:gap-10 items-stretch">
           {/* Left column: narrative and actions (7 cols) */}
-          <div className="lg:col-span-7 flex flex-col justify-center space-y-5 sm:space-y-6">
+          <div className="lg:col-span-7 flex flex-col justify-between">
             <div>
-              <Cluster gap={8} className="mb-3">
+              <div className="mb-3">
                 <Chip variant="blue">{kicker}</Chip>
-                <Chip variant="green">{statusBadge}</Chip>
-              </Cluster>
+              </div>
 
               {/* Main heading limited to two lines */}
               <h1
@@ -162,7 +159,7 @@ function Hero({ info = PERSONAL_INFO }) {
             </div>
 
             {/* Actions and connections group */}
-            <div className="space-y-7 sm:space-y-4">
+            <div className="mt-8 sm:mt-10 lg:mt-auto space-y-5 sm:space-y-4">
               {/* Primary actions */}
               <div className="flex flex-row gap-3 sm:gap-4">
                 <button
@@ -185,7 +182,7 @@ function Hero({ info = PERSONAL_INFO }) {
               </div>
 
               {/* Social link pills */}
-              <div className="pt-3 sm:pt-0 flex flex-nowrap sm:flex-wrap items-center gap-1.5 sm:gap-2">
+              <div className="pt-1.5 sm:pt-0 flex flex-nowrap sm:flex-wrap items-center gap-1.5 sm:gap-2">
               <span
                 className="text-[10px] sm:text-xs font-bold uppercase tracking-wider font-mono shrink-0 mr-0.5"
                 style={{ color: "var(--ink-muted)" }}
