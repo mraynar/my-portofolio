@@ -43,11 +43,30 @@ import ExperiencePage from "./ExperiencePage";
 import AdminLogin from "./admin/AdminLogin";
 import AdminLayout from "./admin/AdminLayout";
 
+// Disable automatic scroll restoration to ensure clean top alignment on reload
+if (typeof window !== "undefined" && "scrollRestoration" in window.history) {
+  window.history.scrollRestoration = "manual";
+}
+
 // Scroll to target hash or top on route change
 function ScrollToTop() {
   const { pathname, hash } = useLocation();
 
   useEffect(() => {
+    // Default to hero section at top when refreshing the home page
+    const isReload =
+      window.performance?.navigation?.type === 1 ||
+      (window.performance?.getEntriesByType &&
+        window.performance.getEntriesByType("navigation")[0]?.type === "reload");
+
+    if (isReload && pathname === "/") {
+      if (window.location.hash) {
+        window.history.replaceState(null, "", "/");
+      }
+      window.scrollTo(0, 0);
+      return;
+    }
+
     if (hash) {
       const targetId = hash.replace("#", "");
       const targetEl = document.getElementById(targetId);
@@ -96,10 +115,15 @@ function Hero({ info = PERSONAL_INFO }) {
   return (
     <Section
       id="home"
-      className="relative min-h-[calc(100dvh-var(--nav-h,64px))] flex items-center justify-center py-8 sm:py-10 lg:py-12"
-      style={{ backgroundColor: "transparent" }}
+      noPadding
+      className="relative min-h-[100dvh] flex flex-col justify-center items-center"
+      style={{
+        backgroundColor: "transparent",
+        paddingTop: "var(--nav-h, 72px)",
+        paddingBottom: 0,
+      }}
     >
-      <Container className="relative z-10 w-full">
+      <Container className="relative z-10 w-full my-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-8 xl:gap-10 items-stretch">
           {/* Left column: narrative and actions (7 cols) */}
           <div className="lg:col-span-7 flex flex-col justify-between">

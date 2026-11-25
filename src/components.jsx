@@ -145,11 +145,17 @@ export function Container({ children, className = "", style = {} }) {
 }
 
 // Section wrapper with sticky navbar clearance and balanced padding
-export function Section({ id, children, className = "", style = {} }) {
+export function Section({
+  id,
+  children,
+  className = "",
+  style = {},
+  noPadding = false,
+}) {
   return (
     <section
       id={id}
-      className={`py-10 sm:py-14 lg:py-16 border-b-2 ${className}`}
+      className={`${noPadding ? "" : "py-10 sm:py-14 lg:py-16"} border-b-2 ${className}`}
       style={{
         borderColor: "var(--border)",
         scrollMarginTop: "calc(var(--nav-h) + 12px)",
@@ -1230,9 +1236,14 @@ export function Navbar({ info = {} }) {
         <nav className="hidden md:flex items-center gap-6 lg:gap-8">
           {navLinks.map((item) => {
             const isInternal = item.href.startsWith("/#");
+            const isHomeActive =
+              item.href === "/#home" &&
+              location.pathname === "/" &&
+              (!location.hash || location.hash === "#home");
             const isActive = isInternal
-              ? location.pathname === "/" &&
-              location.hash === item.href.replace("/", "")
+              ? isHomeActive ||
+                (location.pathname === "/" &&
+                  location.hash === item.href.replace("/", ""))
               : location.pathname === item.href;
 
             return (
