@@ -632,6 +632,45 @@ export async function upsertSkillCategory(cat) {
   return payload;
 }
 
+// Batch reorder skill categories and persist
+export async function reorderSkillCategories(orderedList = []) {
+  const updated = orderedList.map((item, idx) => ({
+    ...item,
+    order_index: idx + 1,
+  }));
+
+  try {
+    localStorage.setItem(CACHE_KEYS.SKILLS, JSON.stringify(updated));
+  } catch {
+    // Ignore storage quota
+  }
+
+  if (supabase) {
+    try {
+      const updates = updated.map((item) => {
+        const isUuid =
+          item.id &&
+          /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+            item.id
+          );
+        return {
+          ...(isUuid ? { id: item.id } : {}),
+          name: item.name,
+          skills: item.skills || [],
+          order_index: item.order_index,
+        };
+      });
+
+      await supabase.from("skill_categories").upsert(updates);
+    } catch {
+      // Retain local state
+    }
+  }
+
+  notifyDataChanged();
+  return updated;
+}
+
 // Delete skill category
 export async function deleteSkillCategory(id) {
   const current = await getSkillCategories();

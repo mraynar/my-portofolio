@@ -657,7 +657,13 @@ function Skills({ categories = SKILL_CATEGORIES }) {
         />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
-          {categories.map((cat, idx) => (
+          {[...categories]
+            .sort(
+              (a, b) =>
+                (a.order_index ?? a.orderIndex ?? 0) -
+                (b.order_index ?? b.orderIndex ?? 0)
+            )
+            .map((cat, idx) => (
             <Card key={cat.id || cat.name} className="flex flex-col justify-between h-full">
               <div className="flex flex-col h-full">
                 {/* Fixed-height header ensures divider baseline alignment */}

@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { Card, Chip, Icon } from "../components";
-import { upsertSkillCategory, deleteSkillCategory } from "../lib/supabase";
+import {
+  upsertSkillCategory,
+  deleteSkillCategory,
+  reorderSkillCategories,
+} from "../lib/supabase";
 
 // Technical skills management tab
 export default function AdminSkills({ skills = [], onRefresh }) {
@@ -9,6 +13,44 @@ export default function AdminSkills({ skills = [], onRefresh }) {
   const [newSkillInput, setNewSkillInput] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedback, setFeedback] = useState(null);
+  const [draggedIdx, setDraggedIdx] = useState(null);
+  const [dragOverIdx, setDragOverIdx] = useState(null);
+  const [isReordering, setIsReordering] = useState(false);
+
+  // Reorder skill category item to a new position via drag and drop
+  const handleMove = async (fromIdx, toIdx) => {
+    if (fromIdx === toIdx || isReordering) return;
+    const sorted = [...skills].sort(
+      (a, b) =>
+        (a.order_index ?? a.orderIndex ?? 0) -
+        (b.order_index ?? b.orderIndex ?? 0)
+    );
+    const movedItem = sorted[fromIdx];
+    if (!movedItem) return;
+
+    const newOrder = [...sorted];
+    const [moved] = newOrder.splice(fromIdx, 1);
+    newOrder.splice(toIdx, 0, moved);
+
+    setIsReordering(true);
+    try {
+      await reorderSkillCategories(newOrder);
+      setFeedback({
+        type: "success",
+        text: `Urutan disimpan: "${moved.name}" kini di posisi #${toIdx + 1}.`,
+      });
+      await onRefresh();
+    } catch (err) {
+      setFeedback({
+        type: "error",
+        text: err.message || "Gagal memperbarui urutan kategori keahlian.",
+      });
+    } finally {
+      setIsReordering(false);
+      setDraggedIdx(null);
+      setDragOverIdx(null);
+    }
+  };
 
   const handleEdit = (cat) => {
     setEditingCat(cat);
@@ -365,57 +407,107 @@ export default function AdminSkills({ skills = [], onRefresh }) {
 
       {/* Categories grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-6 items-stretch">
-        {skills.map((cat, idx) => (
-          <Card
-            key={cat.id || cat.name + idx}
-            className="p-5 flex flex-col justify-between h-full"
-          >
-            <div>
-              <div
-                className="flex items-center justify-between mb-4 pb-3 border-b-2 min-h-[56px]"
-                style={{ borderColor: "var(--border)" }}
-              >
-                <h4
-                  className="font-extrabold text-base sm:text-lg"
-                  style={{ fontFamily: "var(--font-display)" }}
-                >
-                  {cat.name}
-                </h4>
-                <div className="flex items-center gap-1.5 shrink-0">
-                  <button
-                    type="button"
-                    onClick={() => handleEdit(cat)}
-                    className="neo-btn-secondary text-xs font-bold py-1 px-2.5"
-                    aria-label={`Edit ${cat.name}`}
-                  >
-                    <Icon name="edit" size={12} />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleDelete(cat.id || cat.name)}
-                    className="neo-badge text-xs font-bold py-1 px-2.5"
-                    style={{
-                      backgroundColor: "var(--google-red-bg)",
-                      color: "var(--google-red-text)",
-                      borderColor: "var(--google-red)",
-                    }}
-                    aria-label={`Hapus ${cat.name}`}
-                  >
-                    <Icon name="trash" size={12} />
-                  </button>
-                </div>
-              </div>
+        {(() => {
+          const sortedSkills = [...skills].sort(
+            (a, b) =>
+              (a.order_index ?? a.orderIndex ?? 0) -
+              (b.order_index ?? b.orderIndex ?? 0)
+          );
 
-              <div className="flex flex-wrap gap-2">
-                {(cat.skills || []).map((skill) => (
-                  <Chip key={skill} variant="default">
-                    {skill}
-                  </Chip>
-                ))}
+          return sortedSkills.map((cat, idx) => {
+            const isDragging = draggedIdx === idx;
+            const isOver = dragOverIdx === idx;
+
+            return (
+              <div
+                key={cat.id || cat.name + idx}
+                draggable={!isReordering}
+                onDragStart={(e) => {
+                  setDraggedIdx(idx);
+                  e.dataTransfer.effectAllowed = "move";
+                  e.dataTransfer.setData("text/plain", String(idx));
+                }}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  e.dataTransfer.dropEffect = "move";
+                  if (dragOverIdx !== idx) setDragOverIdx(idx);
+                }}
+                onDragLeave={() => {
+                  if (dragOverIdx === idx) setDragOverIdx(null);
+                }}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  const from =
+                    draggedIdx ??
+                    parseInt(e.dataTransfer.getData("text/plain"), 10);
+                  if (from !== null && !isNaN(from) && from !== idx) {
+                    handleMove(from, idx);
+                  }
+                  setDraggedIdx(null);
+                  setDragOverIdx(null);
+                }}
+                onDragEnd={() => {
+                  setDraggedIdx(null);
+                  setDragOverIdx(null);
+                }}
+                className={`transition-all duration-200 cursor-grab active:cursor-grabbing ${
+                  isDragging ? "opacity-40 scale-95" : ""
+                } ${
+                  isOver && !isDragging
+                    ? "ring-2 ring-[var(--google-blue)] ring-offset-2 scale-[1.02]"
+                    : ""
+                }`}
+              >
+                <Card className="p-5 flex flex-col justify-between h-full">
+                  <div>
+                    <div
+                      className="flex items-center justify-between mb-4 pb-3 border-b-2 min-h-[56px]"
+                      style={{ borderColor: "var(--border)" }}
+                    >
+                      <h4
+                        className="font-extrabold text-base sm:text-lg"
+                        style={{ fontFamily: "var(--font-display)" }}
+                      >
+                        {cat.name}
+                      </h4>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <button
+                          type="button"
+                          onClick={() => handleEdit(cat)}
+                          className="neo-btn-secondary text-xs font-bold py-1 px-2.5"
+                          aria-label={`Edit ${cat.name}`}
+                        >
+                          <Icon name="edit" size={12} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDelete(cat.id || cat.name)}
+                          className="neo-badge text-xs font-bold py-1 px-2.5"
+                          style={{
+                            backgroundColor: "var(--google-red-bg)",
+                            color: "var(--google-red-text)",
+                            borderColor: "var(--google-red)",
+                          }}
+                          aria-label={`Hapus ${cat.name}`}
+                        >
+                          <Icon name="trash" size={12} />
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2">
+                      {(cat.skills || []).map((skill) => (
+                        <Chip key={skill} variant="default">
+                          {skill}
+                        </Chip>
+                      ))}
+                    </div>
+                  </div>
+                </Card>
               </div>
-            </div>
-          </Card>
-        ))}
+            );
+          });
+        })()}
       </div>
     </div>
   );
