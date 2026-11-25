@@ -158,10 +158,10 @@ function Hero({ info = PERSONAL_INFO }) {
               </p>
 
               {/* Primary actions */}
-              <Cluster gap={16} className="mb-5">
+              <div className="flex flex-row gap-3 sm:gap-4 mb-5">
                 <button
                   onClick={() => scrollToSection("projects")}
-                  className="neo-btn-primary font-bold text-base"
+                  className="neo-btn-primary flex-1 sm:flex-none justify-center font-bold text-sm sm:text-base py-3 sm:py-3.5 px-3.5 sm:px-6"
                 >
                   {t("hero_view_projects")}
                   <Icon name="arrow-right" size={18} />
@@ -171,12 +171,12 @@ function Hero({ info = PERSONAL_INFO }) {
                   href={cvUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="neo-btn-secondary font-bold text-base"
+                  className="neo-btn-secondary flex-1 sm:flex-none justify-center font-bold text-sm sm:text-base py-3 sm:py-3.5 px-3.5 sm:px-6"
                 >
                   <Icon name="download" size={18} />
                   {t("download_cv")}
                 </a>
-              </Cluster>
+              </div>
             </div>
 
             {/* Social link pills aligned with card baseline */}
@@ -243,8 +243,8 @@ function Hero({ info = PERSONAL_INFO }) {
             </Cluster>
           </div>
 
-          {/* Right column: profile photo card (5 cols) */}
-          <div className="lg:col-span-5 flex justify-center lg:justify-end">
+          {/* Profile photo card on desktop */}
+          <div className="hidden lg:flex lg:col-span-5 justify-center lg:justify-end">
             <div className="w-full max-w-[420px] lg:max-w-[460px] xl:max-w-[480px] h-full">
               <Card variant="flat" className="p-0 overflow-hidden h-full flex flex-col">
                 <div
