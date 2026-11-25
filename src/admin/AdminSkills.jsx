@@ -23,7 +23,41 @@ export default function AdminSkills({
   const [dragOverIdx, setDragOverIdx] = useState(null);
   const [draggedSkillIdx, setDraggedSkillIdx] = useState(null);
   const [dragOverSkillIdx, setDragOverSkillIdx] = useState(null);
+  const [editingSkillIdx, setEditingSkillIdx] = useState(null);
+  const [editingSkillText, setEditingSkillText] = useState("");
   const [isReordering, setIsReordering] = useState(false);
+
+  // Start inline editing for a specific skill item
+  const handleStartEditSkill = (idx, text) => {
+    setEditingSkillIdx(idx);
+    setEditingSkillText(text);
+  };
+
+  // Save edited skill text into current editing list
+  const handleSaveSkillText = (idx) => {
+    if (editingSkillIdx === null) return;
+    const trimmed = editingSkillText.trim();
+    if (trimmed && trimmed !== editingSkillsList[idx]) {
+      const isDuplicate = editingSkillsList.some(
+        (s, i) => i !== idx && s.toLowerCase() === trimmed.toLowerCase()
+      );
+      if (!isDuplicate) {
+        setEditingSkillsList((prev) => {
+          const next = [...prev];
+          next[idx] = trimmed;
+          return next;
+        });
+      }
+    }
+    setEditingSkillIdx(null);
+    setEditingSkillText("");
+  };
+
+  // Cancel inline editing of skill item
+  const handleCancelEditSkill = () => {
+    setEditingSkillIdx(null);
+    setEditingSkillText("");
+  };
 
   // Reorder skill item within editing category
   const handleMoveSkill = (fromIdx, toIdx) => {
@@ -78,6 +112,8 @@ export default function AdminSkills({
     setFeedback(null);
     setDraggedSkillIdx(null);
     setDragOverSkillIdx(null);
+    setEditingSkillIdx(null);
+    setEditingSkillText("");
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -88,6 +124,8 @@ export default function AdminSkills({
     setFeedback(null);
     setDraggedSkillIdx(null);
     setDragOverSkillIdx(null);
+    setEditingSkillIdx(null);
+    setEditingSkillText("");
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -131,8 +169,17 @@ export default function AdminSkills({
     setIsSubmitting(true);
     setFeedback(null);
 
+    // Commit active inline skill edit if any
+    let currentSkills = [...editingSkillsList];
+    if (editingSkillIdx !== null) {
+      const trimmedEdit = editingSkillText.trim();
+      if (trimmedEdit) {
+        currentSkills[editingSkillIdx] = trimmedEdit;
+      }
+    }
+
     // Combine list with any pending text in input
-    const finalSkills = [...editingSkillsList];
+    const finalSkills = [...currentSkills];
     const pending = newSkillInput.trim();
     if (pending && !finalSkills.includes(pending)) {
       finalSkills.push(pending);
@@ -253,19 +300,19 @@ export default function AdminSkills({
               />
             </div>
 
-            {/* Interactive tag list with drag-and-drop reordering */}
+            {/* Interactive tag list with drag-and-drop and inline edit */}
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <label className="block text-xs font-bold font-mono uppercase">
                   Daftar Keahlian ({editingSkillsList.length})
                 </label>
-                {editingSkillsList.length > 1 && (
+                {editingSkillsList.length > 0 && (
                   <span
                     className="text-[11px] font-mono inline-flex items-center gap-1"
                     style={{ color: "var(--ink-muted)" }}
                   >
                     <Icon name="grip" size={12} />
-                    Tarik untuk mengatur urutan
+                    Tarik urutan, klik 2x untuk edit teks
                   </span>
                 )}
               </div>
@@ -288,11 +335,65 @@ export default function AdminSkills({
                   editingSkillsList.map((skill, idx) => {
                     const isDragging = draggedSkillIdx === idx;
                     const isOver = dragOverSkillIdx === idx;
+                    const isEditing = editingSkillIdx === idx;
+
+                    if (isEditing) {
+                      return (
+                        <span
+                          key={`edit-${idx}`}
+                          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border-2 ring-2 ring-[var(--google-blue)] shadow-sm"
+                          style={{
+                            backgroundColor: "var(--surface)",
+                            borderColor: "var(--google-blue)",
+                            color: "var(--ink)",
+                          }}
+                        >
+                          <Icon
+                            name="edit"
+                            size={12}
+                            className="text-[var(--google-blue)] shrink-0"
+                          />
+                          <input
+                            type="text"
+                            value={editingSkillText}
+                            onChange={(e) =>
+                              setEditingSkillText(e.target.value)
+                            }
+                            onBlur={() => handleSaveSkillText(idx)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") {
+                                e.preventDefault();
+                                handleSaveSkillText(idx);
+                              } else if (e.key === "Escape") {
+                                e.preventDefault();
+                                handleCancelEditSkill();
+                              }
+                            }}
+                            autoFocus
+                            className="bg-transparent border-none outline-none font-bold text-xs p-0 min-w-[70px] max-w-[160px]"
+                            style={{ color: "var(--ink)" }}
+                          />
+                          <button
+                            type="button"
+                            onMouseDown={(e) => {
+                              e.preventDefault();
+                              handleSaveSkillText(idx);
+                            }}
+                            className="hover:opacity-75 focus:outline-none cursor-pointer text-[var(--google-blue)] shrink-0"
+                            aria-label="Simpan perubahan nama keahlian"
+                            title="Simpan"
+                          >
+                            <Icon name="check" size={12} />
+                          </button>
+                        </span>
+                      );
+                    }
 
                     return (
                       <span
-                        key={skill}
-                        draggable
+                        key={skill + idx}
+                        draggable={editingSkillIdx === null}
+                        onDoubleClick={() => handleStartEditSkill(idx, skill)}
                         onDragStart={(e) => {
                           setDraggedSkillIdx(idx);
                           e.dataTransfer.effectAllowed = "move";
@@ -340,7 +441,7 @@ export default function AdminSkills({
                               : "var(--border)",
                           color: "var(--ink)",
                         }}
-                        title="Tarik untuk mengatur posisi"
+                        title="Tarik urutan, klik 2x untuk edit teks"
                       >
                         <Icon
                           name="grip"
@@ -352,6 +453,7 @@ export default function AdminSkills({
                           type="button"
                           draggable={false}
                           onMouseDown={(e) => e.stopPropagation()}
+                          onDoubleClick={(e) => e.stopPropagation()}
                           onClick={() => handleRemoveSkill(skill)}
                           className="hover:opacity-75 focus:outline-none cursor-pointer shrink-0 ml-0.5"
                           aria-label={`Hapus ${skill}`}
