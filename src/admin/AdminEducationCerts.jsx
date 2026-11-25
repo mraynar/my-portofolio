@@ -7,6 +7,7 @@ import {
   Pagination,
   FloatingAlert,
 } from "../components";
+import AdminSectionHeaderEditor from "./AdminSectionHeaderEditor";
 import {
   upsertEducation,
   deleteEducation,
@@ -19,6 +20,8 @@ export default function AdminEducationCerts({
   education = [],
   certifications = [],
   onRefresh,
+  info,
+  onUpdateInfo,
 }) {
   const [activeSubTab, setActiveSubTab] = useState("education");
   const [editingEdu, setEditingEdu] = useState(null);
@@ -645,6 +648,26 @@ export default function AdminEducationCerts({
       {/* Certifications tab view */}
       {activeSubTab === "certifications" && (
         <div className="space-y-6">
+          <AdminSectionHeaderEditor
+            sectionKey="certs"
+            sectionName="Sertifikasi & Lisensi"
+            fields={{
+              kicker: "certsKicker",
+              title: "certsTitle",
+              titleAccent: "certsTitleAccent",
+              subtitle: "certsSubtitle",
+            }}
+            defaultValues={{
+              kicker: "KREDENSIAL PROFESIONAL",
+              title: "Sertifikasi &",
+              titleAccent: "Lisensi",
+              subtitle:
+                "Sertifikasi resmi kompetensi teknis dari platform pembelajaran dan industri global.",
+            }}
+            info={info}
+            onUpdateInfo={onUpdateInfo}
+          />
+
           <div className="flex items-center justify-between">
             <h3
               className="text-lg font-extrabold"

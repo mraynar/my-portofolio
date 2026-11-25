@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Card, Chip, Icon, FloatingAlert } from "../components";
+import AdminSectionHeaderEditor from "./AdminSectionHeaderEditor";
 import {
   upsertSkillCategory,
   deleteSkillCategory,
@@ -7,7 +8,12 @@ import {
 } from "../lib/supabase";
 
 // Technical skills management tab
-export default function AdminSkills({ skills = [], onRefresh }) {
+export default function AdminSkills({
+  skills = [],
+  onRefresh,
+  info,
+  onUpdateInfo,
+}) {
   const [editingCat, setEditingCat] = useState(null);
   const [editingSkillsList, setEditingSkillsList] = useState([]);
   const [newSkillInput, setNewSkillInput] = useState("");
@@ -356,6 +362,27 @@ export default function AdminSkills({ skills = [], onRefresh }) {
       </div>
 
       <FloatingAlert feedback={feedback} onClose={() => setFeedback(null)} />
+
+      {/* Section Heading Customization */}
+      <AdminSectionHeaderEditor
+        sectionKey="skills"
+        sectionName="Keahlian & Teknologi"
+        fields={{
+          kicker: "skillsKicker",
+          title: "skillsTitle",
+          titleAccent: "skillsTitleAccent",
+          subtitle: "skillsSubtitle",
+        }}
+        defaultValues={{
+          kicker: "KEAHLIAN TEKNIS",
+          title: "Keahlian &",
+          titleAccent: "Teknologi",
+          subtitle:
+            "Teknologi yang saya gunakan secara aktif dalam pengembangan perangkat lunak dan manajemen sistem informasi.",
+        }}
+        info={info}
+        onUpdateInfo={onUpdateInfo}
+      />
 
       {/* Categories grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-6 items-stretch">

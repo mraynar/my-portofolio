@@ -9,6 +9,7 @@ import {
   ImageLightboxModal,
 } from "../components";
 import ImageCropModal from "./ImageCropModal";
+import AdminSectionHeaderEditor from "./AdminSectionHeaderEditor";
 import {
   upsertExperience,
   deleteExperience,
@@ -36,7 +37,12 @@ const EMPTY_EXP = {
 };
 
 // Experience timeline management tab
-export default function AdminExperience({ experience = [], onRefresh }) {
+export default function AdminExperience({
+  experience = [],
+  onRefresh,
+  info,
+  onUpdateInfo,
+}) {
   const [editingItem, setEditingItem] = useState(null);
   const [filterType, setFilterType] = useState("all");
   const [bulletsText, setBulletsText] = useState("");
@@ -673,6 +679,27 @@ export default function AdminExperience({ experience = [], onRefresh }) {
       </div>
 
       <FloatingAlert feedback={feedback} onClose={() => setFeedback(null)} />
+
+      {/* Section Heading Customization */}
+      <AdminSectionHeaderEditor
+        sectionKey="exp"
+        sectionName="Pengalaman"
+        fields={{
+          kicker: "expKicker",
+          title: "expTitle",
+          titleAccent: "expTitleAccent",
+          subtitle: "expSubtitle",
+        }}
+        defaultValues={{
+          kicker: "REKAM JEJAK PROFESIONAL",
+          title: "Pengalaman",
+          titleAccent: "Magang & Organisasi",
+          subtitle:
+            "Riwayat magang industri dan kepengurusan organisasi dalam kepemimpinan dan rekayasa perangkat lunak.",
+        }}
+        info={info}
+        onUpdateInfo={onUpdateInfo}
+      />
 
       {/* Filter tabs and reorder instructions */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2">

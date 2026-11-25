@@ -589,11 +589,18 @@ export default function AdminLayout({
                 <AdminExperience
                   experience={experience}
                   onRefresh={loadCmsData}
+                  info={info}
+                  onUpdateInfo={(updated) => setInfo(updated)}
                 />
               )}
 
               {activeTab === "skills" && (
-                <AdminSkills skills={skills} onRefresh={loadCmsData} />
+                <AdminSkills
+                  skills={skills}
+                  onRefresh={loadCmsData}
+                  info={info}
+                  onUpdateInfo={(updated) => setInfo(updated)}
+                />
               )}
 
               {activeTab === "education" && (
@@ -601,11 +608,18 @@ export default function AdminLayout({
                   education={education}
                   certifications={certifications}
                   onRefresh={loadCmsData}
+                  info={info}
+                  onUpdateInfo={(updated) => setInfo(updated)}
                 />
               )}
 
               {activeTab === "messages" && (
-                <AdminMessages messages={messages} onRefresh={loadCmsData} />
+                <AdminMessages
+                  messages={messages}
+                  onRefresh={loadCmsData}
+                  info={info}
+                  onUpdateInfo={(updated) => setInfo(updated)}
+                />
               )}
             </div>
           </div>

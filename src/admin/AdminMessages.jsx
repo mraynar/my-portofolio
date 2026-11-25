@@ -1,9 +1,15 @@
 import { useState } from "react";
 import { Card, Icon, Pagination } from "../components";
+import AdminSectionHeaderEditor from "./AdminSectionHeaderEditor";
 import { supabase } from "../lib/supabase";
 
 // Contact messages inbox tab
-export default function AdminMessages({ messages = [], onRefresh }) {
+export default function AdminMessages({
+  messages = [],
+  onRefresh,
+  info,
+  onUpdateInfo,
+}) {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 5;
   const handleDelete = async (id) => {
@@ -34,6 +40,27 @@ export default function AdminMessages({ messages = [], onRefresh }) {
           Pesan pertanyaan, tawaran magang, dan kolaborasi dari formulir kontak.
         </p>
       </div>
+
+      {/* Section Heading Customization */}
+      <AdminSectionHeaderEditor
+        sectionKey="contact"
+        sectionName="Formulir Kontak & Kolaborasi"
+        fields={{
+          kicker: "contactKicker",
+          title: "contactTitle",
+          titleAccent: "contactTitleAccent",
+          subtitle: "contactSubtitle",
+        }}
+        defaultValues={{
+          kicker: "HUBUNGI SAYA",
+          title: "Mari",
+          titleAccent: "Berkolaborasi",
+          subtitle:
+            "Terbuka untuk peluang magang, proyek kolaboratif, atau konsultasi teknis.",
+        }}
+        info={info}
+        onUpdateInfo={onUpdateInfo}
+      />
 
       {messages.length === 0 ? (
         <Card className="p-12 text-center">

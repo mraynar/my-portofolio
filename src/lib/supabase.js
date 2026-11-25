@@ -75,6 +75,14 @@ export async function signOutAdmin() {
 
 // Fetch site configuration with dynamic persistence
 export async function getSiteSettings() {
+  let cachedSettings = {};
+  try {
+    const raw = localStorage.getItem(CACHE_KEYS.SETTINGS);
+    if (raw) cachedSettings = JSON.parse(raw);
+  } catch {
+    // Ignore error
+  }
+
   if (supabase) {
     try {
       const { data, error } = await supabase
@@ -115,6 +123,111 @@ export async function getSiteSettings() {
           customCertCount: data.custom_cert_count || "",
           startYear: data.start_year || "",
           codeQuality: data.code_quality || "",
+          // Custom section headings with fallback chain
+          aboutKicker:
+            data.about_kicker ||
+            cachedSettings.aboutKicker ||
+            PERSONAL_INFO.aboutKicker,
+          aboutTitle:
+            data.about_title ||
+            cachedSettings.aboutTitle ||
+            PERSONAL_INFO.aboutTitle,
+          aboutTitleAccent:
+            data.about_title_accent ||
+            cachedSettings.aboutTitleAccent ||
+            PERSONAL_INFO.aboutTitleAccent,
+          aboutSubtitle:
+            data.about_subtitle ||
+            cachedSettings.aboutSubtitle ||
+            PERSONAL_INFO.aboutSubtitle,
+          skillsKicker:
+            data.skills_kicker ||
+            cachedSettings.skillsKicker ||
+            PERSONAL_INFO.skillsKicker,
+          skillsTitle:
+            data.skills_title ||
+            cachedSettings.skillsTitle ||
+            PERSONAL_INFO.skillsTitle,
+          skillsTitleAccent:
+            data.skills_title_accent ||
+            cachedSettings.skillsTitleAccent ||
+            PERSONAL_INFO.skillsTitleAccent,
+          skillsSubtitle:
+            data.skills_subtitle ||
+            cachedSettings.skillsSubtitle ||
+            PERSONAL_INFO.skillsSubtitle,
+          projectsKicker:
+            data.projects_kicker ||
+            cachedSettings.projectsKicker ||
+            PERSONAL_INFO.projectsKicker,
+          projectsTitle:
+            data.projects_title ||
+            cachedSettings.projectsTitle ||
+            PERSONAL_INFO.projectsTitle,
+          projectsTitleAccent:
+            data.projects_title_accent ||
+            cachedSettings.projectsTitleAccent ||
+            PERSONAL_INFO.projectsTitleAccent,
+          projectsSubtitle:
+            data.projects_subtitle ||
+            cachedSettings.projectsSubtitle ||
+            PERSONAL_INFO.projectsSubtitle,
+          expKicker:
+            data.exp_kicker ||
+            cachedSettings.expKicker ||
+            PERSONAL_INFO.expKicker,
+          expTitle:
+            data.exp_title ||
+            cachedSettings.expTitle ||
+            PERSONAL_INFO.expTitle,
+          expTitleAccent:
+            data.exp_title_accent ||
+            cachedSettings.expTitleAccent ||
+            PERSONAL_INFO.expTitleAccent,
+          expSubtitle:
+            data.exp_subtitle ||
+            cachedSettings.expSubtitle ||
+            PERSONAL_INFO.expSubtitle,
+          certsKicker:
+            data.certs_kicker ||
+            cachedSettings.certsKicker ||
+            PERSONAL_INFO.certsKicker,
+          certsTitle:
+            data.certs_title ||
+            cachedSettings.certsTitle ||
+            PERSONAL_INFO.certsTitle,
+          certsTitleAccent:
+            data.certs_title_accent ||
+            cachedSettings.certsTitleAccent ||
+            PERSONAL_INFO.certsTitleAccent,
+          certsSubtitle:
+            data.certs_subtitle ||
+            cachedSettings.certsSubtitle ||
+            PERSONAL_INFO.certsSubtitle,
+          contactKicker:
+            data.contact_kicker ||
+            cachedSettings.contactKicker ||
+            PERSONAL_INFO.contactKicker,
+          contactTitle:
+            data.contact_title ||
+            cachedSettings.contactTitle ||
+            PERSONAL_INFO.contactTitle,
+          contactTitleAccent:
+            data.contact_title_accent ||
+            cachedSettings.contactTitleAccent ||
+            PERSONAL_INFO.contactTitleAccent,
+          contactSubtitle:
+            data.contact_subtitle ||
+            cachedSettings.contactSubtitle ||
+            PERSONAL_INFO.contactSubtitle,
+          numbersKicker:
+            data.numbers_kicker ||
+            cachedSettings.numbersKicker ||
+            PERSONAL_INFO.numbersKicker,
+          numbersTitle:
+            data.numbers_title ||
+            cachedSettings.numbersTitle ||
+            PERSONAL_INFO.numbersTitle,
           rawId: data.id,
         };
         try {
@@ -129,13 +242,7 @@ export async function getSiteSettings() {
     }
   }
 
-  try {
-    const cached = localStorage.getItem(CACHE_KEYS.SETTINGS);
-    if (cached) return JSON.parse(cached);
-  } catch {
-    // Ignore error
-  }
-  return { ...PERSONAL_INFO };
+  return { ...PERSONAL_INFO, ...cachedSettings };
 }
 
 // Update site configuration

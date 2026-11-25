@@ -9,6 +9,7 @@ import {
   ImageLightboxModal,
 } from "../components";
 import ImageCropModal from "./ImageCropModal";
+import AdminSectionHeaderEditor from "./AdminSectionHeaderEditor";
 import {
   upsertProject,
   deleteProject,
@@ -878,6 +879,28 @@ export default function AdminProjects({
             Tambah Proyek Baru
           </button>
       </div>
+
+      {!editingProject && (
+        <AdminSectionHeaderEditor
+          sectionKey="projects"
+          sectionName="Portofolio Proyek"
+          fields={{
+            kicker: "projectsKicker",
+            title: "projectsTitle",
+            titleAccent: "projectsTitleAccent",
+            subtitle: "projectsSubtitle",
+          }}
+          defaultValues={{
+            kicker: "PORTOFOLIO DIGITAL",
+            title: "Proyek",
+            titleAccent: "Unggulan",
+            subtitle:
+              "Studi kasus arsitektur perangkat lunak terkurasi dengan pemodelan sistem bisnis dan performa terukur.",
+          }}
+          info={info}
+          onUpdateInfo={onUpdateInfo}
+        />
+      )}
 
       {!editingProject && (
         <Card className="p-4 sm:p-5 space-y-4">

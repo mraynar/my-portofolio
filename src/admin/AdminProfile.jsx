@@ -561,6 +561,98 @@ export default function AdminProfile({ initialInfo, onUpdateInfo }) {
             Narasi Tentang Saya & Prinsip Rekayasa
           </h3>
 
+          {/* Section heading customizer for About section */}
+          <div
+            className="p-4 rounded-xl border-2 space-y-4"
+            style={{
+              backgroundColor: "var(--surface-alt)",
+              borderColor: "var(--border)",
+            }}
+          >
+            <div className="flex items-center gap-2">
+              <Icon
+                name="sliders"
+                size={16}
+                style={{ color: "var(--google-blue)" }}
+              />
+              <h4 className="text-xs font-mono font-bold uppercase tracking-wider">
+                Header Section Tentang Saya
+              </h4>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-xs font-bold font-mono uppercase mb-1.5">
+                  Kicker / Tag Section
+                </label>
+                <input
+                  type="text"
+                  value={formData.aboutKicker ?? "TENTANG SAYA"}
+                  onChange={(e) => handleChange("aboutKicker", e.target.value)}
+                  placeholder="TENTANG SAYA"
+                  className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm"
+                  style={{
+                    backgroundColor: "var(--surface)",
+                    borderColor: "var(--border)",
+                  }}
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold font-mono uppercase mb-1.5">
+                  Judul Utama
+                </label>
+                <input
+                  type="text"
+                  value={formData.aboutTitle ?? "Tentang"}
+                  onChange={(e) => handleChange("aboutTitle", e.target.value)}
+                  placeholder="Tentang"
+                  className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm"
+                  style={{
+                    backgroundColor: "var(--surface)",
+                    borderColor: "var(--border)",
+                  }}
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold font-mono uppercase mb-1.5">
+                  Aksen Judul (Biru)
+                </label>
+                <input
+                  type="text"
+                  value={formData.aboutTitleAccent ?? "Saya"}
+                  onChange={(e) =>
+                    handleChange("aboutTitleAccent", e.target.value)
+                  }
+                  placeholder="Saya"
+                  className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm"
+                  style={{
+                    backgroundColor: "var(--surface)",
+                    borderColor: "var(--border)",
+                  }}
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold font-mono uppercase mb-1.5">
+                Keterangan Tambahan / Subtitle
+              </label>
+              <textarea
+                rows={2}
+                value={formData.aboutSubtitle ?? ""}
+                onChange={(e) => handleChange("aboutSubtitle", e.target.value)}
+                placeholder="Latar belakang akademik, rekayasa perangkat lunak..."
+                className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm resize-y"
+                style={{
+                  backgroundColor: "var(--surface)",
+                  borderColor: "var(--border)",
+                }}
+              />
+            </div>
+          </div>
+
         <div>
           <label className="block text-xs font-bold font-mono uppercase mb-1.5">
             Paragraf 1 (Latar Belakang Akademik)
@@ -654,6 +746,42 @@ export default function AdminProfile({ initialInfo, onUpdateInfo }) {
           >
             Kustomisasi Kartu Statistik (By The Numbers)
           </h3>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-4 border-b-2">
+            <div>
+              <label className="block text-xs font-bold font-mono uppercase mb-1.5">
+                Kicker Section Statistik
+              </label>
+              <input
+                type="text"
+                value={formData.numbersKicker ?? "BY THE NUMBERS"}
+                onChange={(e) => handleChange("numbersKicker", e.target.value)}
+                placeholder="BY THE NUMBERS"
+                className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm"
+                style={{
+                  backgroundColor: "var(--surface-alt)",
+                  borderColor: "var(--border)",
+                }}
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold font-mono uppercase mb-1.5">
+                Judul Utama Section Statistik
+              </label>
+              <input
+                type="text"
+                value={formData.numbersTitle ?? "Dampak & Pencapaian Riil"}
+                onChange={(e) => handleChange("numbersTitle", e.target.value)}
+                placeholder="Dampak & Pencapaian Riil"
+                className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm"
+                style={{
+                  backgroundColor: "var(--surface-alt)",
+                  borderColor: "var(--border)",
+                }}
+              />
+            </div>
+          </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div>

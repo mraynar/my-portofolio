@@ -392,13 +392,14 @@ function About({
     <Section id="about" style={{ backgroundColor: "transparent" }}>
       <Container>
         <SectionHeading
-          kicker={t("about_kicker")}
-          title={language === "en" ? "About" : "Tentang"}
-          accent={language === "en" ? "Me" : "Saya"}
+          kicker={info.aboutKicker || t("about_kicker")}
+          title={info.aboutTitle || (language === "en" ? "About" : "Tentang")}
+          accent={info.aboutTitleAccent || (language === "en" ? "Me" : "Saya")}
           subtitle={
-            language === "en"
+            info.aboutSubtitle ||
+            (language === "en"
               ? "Academic background, software engineering, and practical approaches in business information systems."
-              : "Latar belakang akademik, rekayasa perangkat lunak, dan pendekatan praktis dalam membangun sistem informasi bisnis."
+              : "Latar belakang akademik, rekayasa perangkat lunak, dan pendekatan praktis dalam membangun sistem informasi bisnis.")
           }
         />
 
@@ -566,13 +567,13 @@ function About({
         >
           <div className="mb-6">
             <div className="kicker mb-2 text-xs sm:text-sm font-extrabold">
-              BY THE NUMBERS
+              {info.numbersKicker || "BY THE NUMBERS"}
             </div>
             <h3
               className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight"
               style={{ fontFamily: "var(--font-display)", color: "var(--ink)" }}
             >
-              Dampak & Pencapaian Riil
+              {info.numbersTitle || "Dampak & Pencapaian Riil"}
             </h3>
           </div>
 
@@ -671,7 +672,7 @@ function About({
 }
 
 // Skills section
-function Skills({ categories = SKILL_CATEGORIES }) {
+function Skills({ categories = SKILL_CATEGORIES, info = PERSONAL_INFO }) {
   const { t, language } = useLanguage();
   const categoryBarColors = [
     "var(--google-blue)",
@@ -684,10 +685,10 @@ function Skills({ categories = SKILL_CATEGORIES }) {
     <Section id="skills" style={{ backgroundColor: "transparent" }}>
       <Container>
         <SectionHeading
-          kicker={t("skills_kicker")}
-          title={language === "en" ? "Skills &" : "Keahlian &"}
-          accent={language === "en" ? "Technology" : "Teknologi"}
-          subtitle={t("skills_desc")}
+          kicker={info.skillsKicker || t("skills_kicker")}
+          title={info.skillsTitle || (language === "en" ? "Skills &" : "Keahlian &")}
+          accent={info.skillsTitleAccent || (language === "en" ? "Technology" : "Teknologi")}
+          subtitle={info.skillsSubtitle || t("skills_desc")}
         />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
@@ -744,7 +745,11 @@ function Skills({ categories = SKILL_CATEGORIES }) {
 }
 
 // Projects preview
-function ProjectsPreview({ projects = PROJECTS, onOpenCaseStudy }) {
+function ProjectsPreview({
+  projects = PROJECTS,
+  onOpenCaseStudy,
+  info = PERSONAL_INFO,
+}) {
   const { t, language } = useLanguage();
   const featured = projects.filter((p) => p.featured);
   const displayProjects =
@@ -755,10 +760,10 @@ function ProjectsPreview({ projects = PROJECTS, onOpenCaseStudy }) {
       <Container>
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
           <SectionHeading
-            kicker={t("projects_kicker")}
-            title={language === "en" ? "Featured" : "Proyek"}
-            accent={language === "en" ? "Projects" : "Unggulan"}
-            subtitle={t("projects_desc")}
+            kicker={info.projectsKicker || t("projects_kicker")}
+            title={info.projectsTitle || (language === "en" ? "Featured" : "Proyek")}
+            accent={info.projectsTitleAccent || (language === "en" ? "Projects" : "Unggulan")}
+            subtitle={info.projectsSubtitle || t("projects_desc")}
           />
           <Link
             to="/projects"
@@ -784,7 +789,10 @@ function ProjectsPreview({ projects = PROJECTS, onOpenCaseStudy }) {
 }
 
 // Experience preview separating internships and organizations with pathway
-function ExperiencePreview({ experience = EXPERIENCE }) {
+function ExperiencePreview({
+  experience = EXPERIENCE,
+  info = PERSONAL_INFO,
+}) {
   const { t, language } = useLanguage();
   const sortedAll = sortExperiencesLatestFirst(experience);
   const internships = sortedAll.filter(isInternshipExperience);
@@ -795,10 +803,10 @@ function ExperiencePreview({ experience = EXPERIENCE }) {
       <Container>
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
           <SectionHeading
-            kicker={t("exp_kicker")}
-            title={language === "en" ? "Experience:" : "Pengalaman"}
-            accent={language === "en" ? "Internship & Org" : "Magang & Organisasi"}
-            subtitle={t("exp_desc")}
+            kicker={info.expKicker || t("exp_kicker")}
+            title={info.expTitle || (language === "en" ? "Experience:" : "Pengalaman")}
+            accent={info.expTitleAccent || (language === "en" ? "Internship & Org" : "Magang & Organisasi")}
+            subtitle={info.expSubtitle || t("exp_desc")}
           />
           <Link
             to="/experience"
@@ -951,7 +959,10 @@ function ExperiencePreview({ experience = EXPERIENCE }) {
 }
 
 // Certifications section
-function CertificationsSection({ certifications = CERTIFICATIONS }) {
+function CertificationsSection({
+  certifications = CERTIFICATIONS,
+  info = PERSONAL_INFO,
+}) {
   const { t, language } = useLanguage();
   const providerColors = {
     Coursera: "var(--google-blue)",
@@ -964,10 +975,10 @@ function CertificationsSection({ certifications = CERTIFICATIONS }) {
     <Section id="certifications" style={{ backgroundColor: "transparent" }}>
       <Container>
         <SectionHeading
-          kicker={t("edu_kicker")}
-          title={language === "en" ? "Certifications &" : "Sertifikasi &"}
-          accent={language === "en" ? "Licenses" : "Lisensi"}
-          subtitle={t("edu_desc")}
+          kicker={info.certsKicker || t("edu_kicker")}
+          title={info.certsTitle || (language === "en" ? "Certifications &" : "Sertifikasi &")}
+          accent={info.certsTitleAccent || (language === "en" ? "Licenses" : "Lisensi")}
+          subtitle={info.certsSubtitle || t("edu_desc")}
         />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -1127,7 +1138,7 @@ function Contact({ info = PERSONAL_INFO }) {
               <div className="lg:col-span-5 flex flex-col justify-between">
                 <div>
                   <div className="kicker mb-3 text-xs sm:text-sm font-extrabold">
-                    {t("contact_kicker")}
+                    {info.contactKicker || t("contact_kicker")}
                   </div>
 
                   <h2
@@ -1138,9 +1149,9 @@ function Contact({ info = PERSONAL_INFO }) {
                       color: "var(--ink)",
                     }}
                   >
-                    {t("contact_title_1")}{" "}
+                    {info.contactTitle || t("contact_title_1")}{" "}
                     <span style={{ color: "var(--google-blue)" }}>
-                      {t("contact_title_2")}
+                      {info.contactTitleAccent || t("contact_title_2")}
                     </span>
                   </h2>
 
@@ -1148,7 +1159,7 @@ function Contact({ info = PERSONAL_INFO }) {
                     className="text-sm sm:text-base mb-6 leading-relaxed"
                     style={{ color: "var(--ink-secondary)" }}
                   >
-                    {t("contact_desc")}
+                    {info.contactSubtitle || t("contact_desc")}
                   </p>
 
                   <div className="space-y-3 mb-6">
@@ -1367,13 +1378,17 @@ function HomePage({
         projectCount={projects.length}
         certCount={certifications.length}
       />
-      <Skills categories={categories} />
+      <Skills categories={categories} info={info} />
       <ProjectsPreview
         projects={projects}
+        info={info}
         onOpenCaseStudy={onOpenCaseStudy}
       />
-      <ExperiencePreview experience={experience} />
-      <CertificationsSection certifications={certifications} />
+      <ExperiencePreview experience={experience} info={info} />
+      <CertificationsSection
+        certifications={certifications}
+        info={info}
+      />
       <Contact info={info} />
     </main>
   );
@@ -1488,6 +1503,7 @@ export default function App() {
               <PublicLayout dark={dark} toggleDark={toggleDark} info={info}>
                 <ProjectPage
                   projects={projects}
+                  info={info}
                   onOpenCaseStudy={setSelectedCaseStudy}
                 />
               </PublicLayout>
@@ -1500,6 +1516,7 @@ export default function App() {
                 <ExperiencePage
                   experience={experience}
                   education={education}
+                  info={info}
                 />
               </PublicLayout>
             }
