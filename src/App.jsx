@@ -170,31 +170,31 @@ function Hero({ info = PERSONAL_INFO }) {
               >
                 {valueProp}
               </p>
-            </div>
 
-            {/* Primary actions */}
-            <div className="my-7 lg:my-0 flex flex-row gap-3 sm:gap-4">
-              <button
-                onClick={() => scrollToSection("projects")}
-                className="neo-btn-primary flex-1 sm:flex-none justify-center font-bold text-sm sm:text-base py-3 sm:py-3.5 px-4 sm:px-6"
-              >
-                {t("hero_view_projects")}
-                <Icon name="arrow-right" size={18} />
-              </button>
+              {/* Primary actions */}
+              <div className="mt-7 sm:mt-8 flex flex-row gap-3 sm:gap-4">
+                <button
+                  onClick={() => scrollToSection("projects")}
+                  className="neo-btn-primary flex-1 sm:flex-none justify-center font-bold text-sm sm:text-base py-3 sm:py-3.5 px-4 sm:px-6"
+                >
+                  {t("hero_view_projects")}
+                  <Icon name="arrow-right" size={18} />
+                </button>
 
-              <a
-                href={cvUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="neo-btn-secondary flex-1 sm:flex-none justify-center font-bold text-sm sm:text-base py-3 sm:py-3.5 px-4 sm:px-6"
-              >
-                <Icon name="download" size={18} />
-                {t("download_cv")}
-              </a>
+                <a
+                  href={cvUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="neo-btn-secondary flex-1 sm:flex-none justify-center font-bold text-sm sm:text-base py-3 sm:py-3.5 px-4 sm:px-6"
+                >
+                  <Icon name="download" size={18} />
+                  {t("download_cv")}
+                </a>
+              </div>
             </div>
 
             {/* Social link pills */}
-            <div className="flex flex-nowrap sm:flex-wrap items-center gap-1.5 sm:gap-2.5">
+            <div className="mt-8 lg:mt-0 flex flex-nowrap sm:flex-wrap items-center gap-1.5 sm:gap-2.5">
               <span
                 className="text-xs sm:text-sm font-extrabold uppercase tracking-wider font-mono shrink-0 mr-0.5 sm:mr-1"
                 style={{ color: "var(--ink-muted)" }}
