@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Card, Chip, Icon } from "../components";
+import { Card, Chip, Icon, CustomSelect } from "../components";
 import {
   upsertEducation,
   deleteEducation,
@@ -420,7 +420,7 @@ export default function AdminEducationCerts({
                     <label className="block text-xs font-bold font-mono uppercase mb-1.5">
                       Platform Provider
                     </label>
-                    <select
+                    <CustomSelect
                       value={editingCert.provider}
                       onChange={(e) =>
                         setEditingCert({
@@ -428,19 +428,15 @@ export default function AdminEducationCerts({
                           provider: e.target.value,
                         })
                       }
-                      className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm"
-                      style={{
-                        backgroundColor: "var(--surface-alt)",
-                        borderColor: "var(--border)",
-                      }}
-                    >
-                      <option value="Coursera">Coursera</option>
-                      <option value="Dicoding">Dicoding</option>
-                      <option value="Udemy">Udemy</option>
-                      <option value="Karirnex">Karirnex</option>
-                      <option value="AWS">AWS</option>
-                      <option value="Lainnya">Lainnya</option>
-                    </select>
+                      options={[
+                        "Coursera",
+                        "Dicoding",
+                        "Udemy",
+                        "Karirnex",
+                        "AWS",
+                        "Lainnya",
+                      ]}
+                    />
                   </div>
 
                   <div>

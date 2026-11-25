@@ -248,6 +248,44 @@ section[id] {
   white-space: nowrap;
 }
 
+/* Standardized form input heights and styling */
+input[type="text"],
+input[type="email"],
+input[type="url"],
+input[type="number"],
+input[type="password"],
+.neo-form-input {
+  height: 46px;
+  min-height: 46px;
+  box-sizing: border-box;
+}
+
+/* Styled native select fallback */
+select {
+  height: 46px;
+  min-height: 46px;
+  padding: 0.625rem 2.5rem 0.625rem 1rem;
+  border-radius: 0.75rem;
+  border: 2px solid var(--border);
+  background-color: var(--surface-alt);
+  color: var(--ink);
+  font-size: 0.875rem;
+  font-weight: 500;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%231a73e8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  box-sizing: border-box;
+  cursor: pointer;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+select:focus {
+  outline: none;
+  border-color: var(--google-blue);
+  box-shadow: 0 0 0 2px var(--google-blue);
+}
+
 .kicker {
   font-family: 'Plus Jakarta Sans', monospace, sans-serif;
   font-weight: 800;

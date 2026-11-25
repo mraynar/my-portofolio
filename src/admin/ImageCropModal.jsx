@@ -26,8 +26,26 @@ export default function ImageCropModal({
   const [rotation, setRotation] = useState(0);
   const [activeRatio, setActiveRatio] = useState(aspectRatio);
   const [isDragging, setIsDragging] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const dragStartRef = useRef({ x: 0, y: 0, panX: 0, panY: 0 });
+  const pendingPanRef = useRef({ x: 0, y: 0 });
+  const pendingZoomRef = useRef(1);
+  const rafRef = useRef(null);
+  const wheelRafRef = useRef(null);
   const [containerSize, setContainerSize] = useState({ width: 500, height: 350 });
+
+  // Keep pendingZoomRef synced
+  useEffect(() => {
+    pendingZoomRef.current = zoom;
+  }, [zoom]);
+
+  // Cleanup pending animation frames on unmount
+  useEffect(() => {
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      if (wheelRafRef.current) cancelAnimationFrame(wheelRafRef.current);
+    };
+  }, []);
 
   // Create object URL from selected file
   const imageSrc = useMemo(() => {
@@ -98,6 +116,7 @@ export default function ImageCropModal({
   // Pointer drag event handlers for mouse and touch
   const handlePointerDown = (e) => {
     e.preventDefault();
+    setIsTransitioning(false);
     setIsDragging(true);
     e.currentTarget.setPointerCapture(e.pointerId);
     dragStartRef.current = {
@@ -106,20 +125,33 @@ export default function ImageCropModal({
       panX: pan.x,
       panY: pan.y,
     };
+    pendingPanRef.current = { x: pan.x, y: pan.y };
   };
 
   const handlePointerMove = (e) => {
     if (!isDragging) return;
     const dx = e.clientX - dragStartRef.current.x;
     const dy = e.clientY - dragStartRef.current.y;
-    setPan({
+    pendingPanRef.current = {
       x: dragStartRef.current.panX + dx,
       y: dragStartRef.current.panY + dy,
-    });
+    };
+
+    if (!rafRef.current) {
+      rafRef.current = requestAnimationFrame(() => {
+        setPan(pendingPanRef.current);
+        rafRef.current = null;
+      });
+    }
   };
 
   const handlePointerUp = (e) => {
     if (isDragging) {
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
+      }
+      setPan(pendingPanRef.current);
       setIsDragging(false);
       try {
         e.currentTarget.releasePointerCapture(e.pointerId);
@@ -129,23 +161,39 @@ export default function ImageCropModal({
     }
   };
 
-  // Wheel zoom handler
+  // Silky smooth wheel and trackpad pinch zoom handler
   const handleWheel = (e) => {
     e.preventDefault();
-    const delta = e.deltaY < 0 ? 0.08 : -0.08;
-    setZoom((prev) => Math.min(Math.max(prev + delta, 1), 3));
+    setIsTransitioning(false);
+    const zoomFactor = 1 - Math.min(Math.max(e.deltaY * 0.002, -0.12), 0.12);
+    const targetZoom = Math.min(
+      Math.max(pendingZoomRef.current * zoomFactor, 1),
+      3
+    );
+    pendingZoomRef.current = targetZoom;
+
+    if (!wheelRafRef.current) {
+      wheelRafRef.current = requestAnimationFrame(() => {
+        setZoom(Number(pendingZoomRef.current.toFixed(3)));
+        wheelRafRef.current = null;
+      });
+    }
   };
 
-  // Rotate 90 degrees clockwise
+  // Rotate 90 degrees clockwise with smooth animation
   const handleRotate = () => {
+    setIsTransitioning(true);
     setRotation((prev) => (prev + 90) % 360);
+    setTimeout(() => setIsTransitioning(false), 220);
   };
 
-  // Reset positioning and zoom
+  // Reset positioning and zoom with smooth animation
   const handleReset = () => {
+    setIsTransitioning(true);
     setZoom(1);
     setPan({ x: 0, y: 0 });
     setRotation(0);
+    setTimeout(() => setIsTransitioning(false), 220);
   };
 
   // Export cropped canvas to File
@@ -273,8 +321,10 @@ export default function ImageCropModal({
                   key={p.id}
                   type="button"
                   onClick={() => {
+                    setIsTransitioning(true);
                     setActiveRatio(p.ratio);
                     setPan({ x: 0, y: 0 });
+                    setTimeout(() => setIsTransitioning(false), 220);
                   }}
                   className="px-2.5 py-1 rounded-lg text-xs font-bold font-mono border cursor-pointer transition-all"
                   style={{
@@ -315,12 +365,16 @@ export default function ImageCropModal({
           {/* Base image being transformed */}
           {imageSrc && (
             <div
-              className="absolute pointer-events-none transition-transform duration-75"
+              className={`absolute pointer-events-none ${
+                isTransitioning ? "transition-transform duration-200 ease-out" : ""
+              }`}
               style={{
                 width: `${baseW}px`,
                 height: `${baseH}px`,
-                transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom}) rotate(${rotation}deg)`,
+                transform: `translate3d(${pan.x}px, ${pan.y}px, 0px) scale(${zoom}) rotate(${rotation}deg)`,
                 transformOrigin: "center center",
+                willChange: "transform",
+                backfaceVisibility: "hidden",
               }}
             >
               <img
@@ -376,7 +430,11 @@ export default function ImageCropModal({
           <div className="flex items-center gap-2 w-full sm:w-auto">
             <button
               type="button"
-              onClick={() => setZoom((prev) => Math.max(prev - 0.15, 1))}
+              onClick={() => {
+                setIsTransitioning(true);
+                setZoom((prev) => Math.max(Number((prev - 0.15).toFixed(2)), 1));
+                setTimeout(() => setIsTransitioning(false), 200);
+              }}
               disabled={zoom <= 1}
               aria-label="Perkecil zoom"
               className="w-8 h-8 rounded-lg border flex items-center justify-center cursor-pointer hover:bg-[var(--surface-alt)] disabled:opacity-40"
@@ -390,9 +448,12 @@ export default function ImageCropModal({
                 type="range"
                 min="1"
                 max="3"
-                step="0.05"
+                step="0.01"
                 value={zoom}
-                onChange={(e) => setZoom(parseFloat(e.target.value))}
+                onChange={(e) => {
+                  setIsTransitioning(false);
+                  setZoom(parseFloat(e.target.value));
+                }}
                 className="w-full accent-[var(--google-blue)] cursor-pointer"
                 aria-label="Tingkat perbesaran foto"
               />
@@ -400,7 +461,11 @@ export default function ImageCropModal({
 
             <button
               type="button"
-              onClick={() => setZoom((prev) => Math.min(prev + 0.15, 3))}
+              onClick={() => {
+                setIsTransitioning(true);
+                setZoom((prev) => Math.min(Number((prev + 0.15).toFixed(2)), 3));
+                setTimeout(() => setIsTransitioning(false), 200);
+              }}
               disabled={zoom >= 3}
               aria-label="Perbesar zoom"
               className="w-8 h-8 rounded-lg border flex items-center justify-center cursor-pointer hover:bg-[var(--surface-alt)] disabled:opacity-40"

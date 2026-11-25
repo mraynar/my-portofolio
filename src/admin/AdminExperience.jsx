@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Card, Chip, Icon } from "../components";
+import { Card, Chip, Icon, CustomSelect } from "../components";
 import ImageCropModal from "./ImageCropModal";
 import {
   upsertExperience,
@@ -336,7 +336,7 @@ export default function AdminExperience({ experience = [], onRefresh }) {
                 <label className="block text-xs font-bold font-mono uppercase mb-1.5">
                   Bagian / Tipe Pengalaman
                 </label>
-                <select
+                <CustomSelect
                   value={
                     editingItem.type ||
                     (isInternshipExperience(editingItem) ? "Magang" : "Organisasi")
@@ -353,19 +353,17 @@ export default function AdminExperience({ experience = [], onRefresh }) {
                           : "Organisasi Kampus"),
                     });
                   }}
-                  className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm"
-                  style={{
-                    backgroundColor: "var(--surface-alt)",
-                    borderColor: "var(--border)",
-                  }}
-                >
-                  <option value="Magang">
-                    Pengalaman Magang & Profesional (Bagian Atas)
-                  </option>
-                  <option value="Organisasi">
-                    Pengalaman Organisasi & Komunitas (Bagian Bawah)
-                  </option>
-                </select>
+                  options={[
+                    {
+                      value: "Magang",
+                      label: "Pengalaman Magang & Profesional (Bagian Atas)",
+                    },
+                    {
+                      value: "Organisasi",
+                      label: "Pengalaman Organisasi & Komunitas (Bagian Bawah)",
+                    },
+                  ]}
+                />
               </div>
 
               <div>

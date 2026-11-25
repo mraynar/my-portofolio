@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import { PERSONAL_INFO } from "./data";
 import { Icon } from "./components/icons/Icon";
@@ -6,6 +6,131 @@ import { useLanguage } from "./context/LanguageContext";
 
 export { Icon } from "./components/icons/Icon";
 export { ICON_REGISTRY, ICON_KEYS } from "./components/icons/registry.js";
+
+// Neo-brutalist custom select dropdown
+export function CustomSelect({
+  value,
+  onChange,
+  options = [],
+  placeholder = "Pilih opsi...",
+  className = "",
+  disabled = false,
+  ariaLabel,
+}) {
+  const [open, setOpen] = useState(false);
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (containerRef.current && !containerRef.current.contains(e.target)) {
+        setOpen(false);
+      }
+    }
+    if (open) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [open]);
+
+  useEffect(() => {
+    function handleKeyDown(e) {
+      if (e.key === "Escape") setOpen(false);
+    }
+    if (open) {
+      window.addEventListener("keydown", handleKeyDown);
+    }
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [open]);
+
+  const normalizedOptions = options.map((opt) =>
+    typeof opt === "object" && opt !== null ? opt : { value: opt, label: opt }
+  );
+
+  const selectedOpt = normalizedOptions.find(
+    (opt) => String(opt.value) === String(value)
+  );
+
+  const handleSelect = (optValue) => {
+    if (onChange) {
+      onChange({ target: { value: optValue } });
+    }
+    setOpen(false);
+  };
+
+  return (
+    <div ref={containerRef} className={`relative w-full ${className}`}>
+      <button
+        type="button"
+        disabled={disabled}
+        onClick={() => setOpen(!open)}
+        className="w-full h-[46px] px-4 rounded-xl border-2 flex items-center justify-between text-sm font-medium transition-all cursor-pointer text-left focus:outline-none"
+        style={{
+          backgroundColor: "var(--surface-alt)",
+          borderColor: open ? "var(--google-blue)" : "var(--border)",
+          color: "var(--ink)",
+          boxShadow: open ? "0 0 0 2px var(--google-blue)" : "none",
+        }}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        aria-label={ariaLabel}
+      >
+        <span className="truncate">
+          {selectedOpt ? selectedOpt.label : placeholder}
+        </span>
+        <Icon
+          name="chevron-down"
+          size={16}
+          className={`shrink-0 ml-2 transition-transform duration-200 ${
+            open
+              ? "transform rotate-180 text-[var(--google-blue)]"
+              : "text-[var(--ink-secondary)]"
+          }`}
+        />
+      </button>
+
+      {open && (
+        <div
+          role="listbox"
+          className="absolute left-0 right-0 top-[calc(100%+6px)] z-50 rounded-xl border-2 p-1.5 space-y-1 overflow-hidden"
+          style={{
+            backgroundColor: "var(--surface)",
+            borderColor: "var(--border)",
+            boxShadow: "4px 4px 0 var(--shadow-color)",
+          }}
+        >
+          {normalizedOptions.map((opt) => {
+            const isSelected = String(opt.value) === String(value);
+            return (
+              <button
+                key={opt.value}
+                type="button"
+                role="option"
+                aria-selected={isSelected}
+                onClick={() => handleSelect(opt.value)}
+                className="w-full text-left px-3.5 py-2.5 rounded-lg text-sm font-semibold flex items-center justify-between transition-colors cursor-pointer"
+                style={{
+                  backgroundColor: isSelected
+                    ? "var(--google-blue-bg)"
+                    : "transparent",
+                  color: isSelected ? "var(--google-blue-text)" : "var(--ink)",
+                }}
+              >
+                <span>{opt.label}</span>
+                {isSelected && (
+                  <Icon
+                    name="check"
+                    size={16}
+                    style={{ color: "var(--google-blue)" }}
+                  />
+                )}
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
 
 // Wide 1360px max-width container with responsive padding
 export function Container({ children, className = "", style = {} }) {
@@ -19,15 +144,15 @@ export function Container({ children, className = "", style = {} }) {
   );
 }
 
-// Section wrapper with 100vh viewport height and sticky navbar clearance
+// Section wrapper with sticky navbar clearance and balanced padding
 export function Section({ id, children, className = "", style = {} }) {
   return (
     <section
       id={id}
-      className={`min-h-[calc(100dvh-var(--nav-h,64px))] flex flex-col justify-center py-8 sm:py-10 lg:py-12 border-b-2 ${className}`}
+      className={`py-10 sm:py-14 lg:py-16 border-b-2 ${className}`}
       style={{
         borderColor: "var(--border)",
-        scrollMarginTop: "var(--nav-h, 64px)",
+        scrollMarginTop: "calc(var(--nav-h) + 12px)",
         ...style,
       }}
     >
@@ -151,7 +276,7 @@ export function SectionHeading({
 }) {
   return (
     <div
-      className={`mb-6 sm:mb-8 lg:mb-10 ${center ? "text-center mx-auto" : ""}`}
+      className={`mb-10 sm:mb-14 ${center ? "text-center mx-auto" : ""}`}
       style={{ maxWidth: center ? "800px" : "100%" }}
     >
       {kicker && (
@@ -918,9 +1043,8 @@ export function ExpCard({
 
       {/* Card placement: Alternating left/right on desktop */}
       <div
-        className={`w-full md:w-[calc(50%-2.5rem)] ${
-          isLeft ? "md:mr-auto" : "md:ml-auto"
-        } pl-12 sm:pl-14 md:pl-0`}
+        className={`w-full md:w-[calc(50%-2.5rem)] ${isLeft ? "md:mr-auto" : "md:ml-auto"
+          } pl-12 sm:pl-14 md:pl-0`}
       >
         <div
           className="rounded-2xl border-2 overflow-hidden relative transition-all duration-200 hover:translate-x-[-1px] hover:translate-y-[-1px]"
@@ -1070,66 +1194,15 @@ export function Navbar({ info = {} }) {
   const location = useLocation();
   const { language, setLanguage, t } = useLanguage();
   const cvUrl = info?.cvUrl || PERSONAL_INFO.cvUrl;
-  const [activeSection, setActiveSection] = useState("home");
 
   const navLinks = [
-    { id: "home", label: t("nav_home"), href: "/#home" },
-    { id: "about", label: t("nav_about"), href: "/#about" },
-    { id: "skills", label: t("nav_skills"), href: "/#skills" },
-    { id: "projects", label: t("nav_projects"), href: "/#projects" },
-    { id: "experience", label: t("nav_experience"), href: "/#experience" },
-    { id: "contact", label: t("nav_contact"), href: "/#contact" },
+    { label: t("nav_home"), href: "/#home" },
+    { label: t("nav_about"), href: "/#about" },
+    { label: t("nav_skills"), href: "/#skills" },
+    { label: t("nav_projects"), href: "/projects" },
+    { label: t("nav_experience"), href: "/experience" },
+    { label: t("nav_contact"), href: "/#contact" },
   ];
-
-  // Track active section on scroll
-  useEffect(() => {
-    if (location.pathname !== "/") return;
-
-    const sectionIds = [
-      "home",
-      "about",
-      "skills",
-      "projects",
-      "experience",
-      "contact",
-    ];
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setActiveSection(entry.target.id);
-          }
-        });
-      },
-      {
-        rootMargin: "-20% 0px -40% 0px",
-        threshold: 0,
-      }
-    );
-
-    sectionIds.forEach((id) => {
-      const el = document.getElementById(id);
-      if (el) observer.observe(el);
-    });
-
-    return () => observer.disconnect();
-  }, [location.pathname]);
-
-  const handleNavClick = (e, item) => {
-    if (item.href.startsWith("/#")) {
-      const targetId = item.id;
-      if (location.pathname === "/") {
-        e.preventDefault();
-        const targetEl = document.getElementById(targetId);
-        if (targetEl) {
-          targetEl.scrollIntoView({ behavior: "smooth", block: "start" });
-          window.history.pushState(null, "", `#${targetId}`);
-          setActiveSection(targetId);
-        }
-      }
-    }
-    setOpen(false);
-  };
 
   return (
     <header
@@ -1143,7 +1216,6 @@ export function Navbar({ info = {} }) {
         {/* Clean brand wordmark */}
         <a
           href="/#home"
-          onClick={(e) => handleNavClick(e, { id: "home", href: "/#home" })}
           className="font-extrabold text-2xl tracking-tight no-underline flex items-center gap-1.5"
           style={{ fontFamily: "var(--font-display)", color: "var(--ink)" }}
         >
@@ -1157,17 +1229,17 @@ export function Navbar({ info = {} }) {
         {/* Desktop links */}
         <nav className="hidden md:flex items-center gap-6 lg:gap-8">
           {navLinks.map((item) => {
-            const isActive =
-              location.pathname === "/"
-                ? activeSection === item.id
-                : location.pathname === item.href;
+            const isInternal = item.href.startsWith("/#");
+            const isActive = isInternal
+              ? location.pathname === "/" &&
+              location.hash === item.href.replace("/", "")
+              : location.pathname === item.href;
 
             return (
               <a
                 key={item.href}
                 href={item.href}
-                onClick={(e) => handleNavClick(e, item)}
-                className="text-base font-bold no-underline transition-colors py-1 hover:text-[var(--google-blue)] cursor-pointer"
+                className="text-base font-bold no-underline transition-colors py-1 hover:text-[var(--google-blue)]"
                 style={{
                   color: isActive
                     ? "var(--google-blue)"
@@ -1252,14 +1324,9 @@ export function Navbar({ info = {} }) {
             <a
               key={item.href}
               href={item.href}
-              onClick={(e) => handleNavClick(e, item)}
-              className="block text-lg font-bold py-1 no-underline cursor-pointer"
-              style={{
-                color:
-                  location.pathname === "/" && activeSection === item.id
-                    ? "var(--google-blue)"
-                    : "var(--ink)",
-              }}
+              onClick={() => setOpen(false)}
+              className="block text-lg font-bold py-1 no-underline"
+              style={{ color: "var(--ink)" }}
             >
               {item.label}
             </a>

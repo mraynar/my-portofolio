@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Card, Chip, Icon } from "../components";
+import { Card, Chip, Icon, CustomSelect } from "../components";
 import ImageCropModal from "./ImageCropModal";
 import {
   upsertProject,
@@ -316,7 +316,7 @@ export default function AdminProjects({
                 <label className="block text-xs font-bold font-mono uppercase mb-1.5">
                   Kategori
                 </label>
-                <select
+                <CustomSelect
                   value={editingProject.label}
                   onChange={(e) =>
                     setEditingProject({
@@ -324,24 +324,20 @@ export default function AdminProjects({
                       label: e.target.value,
                     })
                   }
-                  className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm"
-                  style={{
-                    backgroundColor: "var(--surface-alt)",
-                    borderColor: "var(--border)",
-                  }}
-                >
-                  <option value="Web App">Web App</option>
-                  <option value="Mobile App">Mobile App</option>
-                  <option value="UI/UX Design">UI/UX Design</option>
-                  <option value="Data Analyst">Data Analyst</option>
-                </select>
+                  options={[
+                    { value: "Web App", label: "Web App" },
+                    { value: "Mobile App", label: "Mobile App" },
+                    { value: "UI/UX Design", label: "UI/UX Design" },
+                    { value: "Data Analyst", label: "Data Analyst" },
+                  ]}
+                />
               </div>
 
               <div>
                 <label className="block text-xs font-bold font-mono uppercase mb-1.5">
                   Status Publikasi
                 </label>
-                <select
+                <CustomSelect
                   value={editingProject.status || "published"}
                   onChange={(e) =>
                     setEditingProject({
@@ -349,15 +345,11 @@ export default function AdminProjects({
                       status: e.target.value,
                     })
                   }
-                  className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm"
-                  style={{
-                    backgroundColor: "var(--surface-alt)",
-                    borderColor: "var(--border)",
-                  }}
-                >
-                  <option value="published">Published</option>
-                  <option value="draft">Draft</option>
-                </select>
+                  options={[
+                    { value: "published", label: "Published" },
+                    { value: "draft", label: "Draft" },
+                  ]}
+                />
               </div>
 
               <div>
