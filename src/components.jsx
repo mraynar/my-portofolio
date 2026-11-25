@@ -1614,13 +1614,13 @@ export function ExpCard({
             }}
           />
 
-          {/* Compact landscape photo banner if present */}
+          {/* True 16:9 landscape photo banner if present */}
           {item.photo && (
             <div
-              className="group/exp w-full aspect-[16/9] max-h-40 sm:max-h-44 relative overflow-hidden border-b-2 cursor-zoom-in"
+              className="group/exp w-full aspect-[16/9] relative overflow-hidden border-b-2 cursor-zoom-in"
               style={{
                 borderColor: "var(--border)",
-                backgroundColor: "var(--canvas)",
+                backgroundColor: "var(--surface-alt)",
               }}
               onClick={() => setPhotoZoomOpen(true)}
               title="Klik untuk memperbesar foto dokumentasi"
@@ -1631,49 +1631,38 @@ export function ExpCard({
                 className="w-full h-full object-cover object-center transition-transform duration-300 group-hover/exp:scale-105"
                 loading="lazy"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
-              <div className="absolute top-2 right-2 p-1 rounded-md bg-black/60 text-white opacity-0 group-hover/exp:opacity-100 transition-opacity backdrop-blur-xs pointer-events-none">
+              <div className="absolute top-2 right-2 p-1.5 rounded-lg border-2 border-[var(--border)] bg-[var(--surface)] shadow-[2px_2px_0_var(--shadow-color)] opacity-85 group-hover/exp:opacity-100 transition-opacity">
                 <Icon name="zoom-in" size={13} />
-              </div>
-              <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between gap-1.5 pointer-events-none">
-                <span className="neo-badge text-[10px] sm:text-[11px] font-bold px-2 py-0.5 bg-white/95 dark:bg-black/85 text-[var(--ink)] border border-[var(--border)] backdrop-blur-sm">
-                  {item.type || item.category || t("exp_milestones")}
-                </span>
-                <span className="neo-badge text-[10px] sm:text-[11px] font-mono font-bold px-2 py-0.5 bg-white/95 dark:bg-black/85 text-[var(--ink)] border border-[var(--border)] backdrop-blur-sm">
-                  {item.period}
-                </span>
               </div>
             </div>
           )}
 
           <div className="p-4 sm:p-5">
-            {/* Header info if no photo */}
-            {!item.photo && (
-              <div className="flex items-center justify-between gap-2 mb-2 flex-wrap">
-                <span
-                  className="neo-badge text-[10px] sm:text-[11px] font-bold px-2 py-0.5"
-                  style={{
-                    backgroundColor: isMagang
-                      ? "var(--google-blue-bg)"
-                      : "var(--google-green-bg)",
-                    color: isMagang
-                      ? "var(--google-blue-text)"
-                      : "var(--google-green-text)",
-                    borderColor: isMagang
-                      ? "var(--google-blue)"
-                      : "var(--google-green)",
-                  }}
-                >
-                  {item.type || item.category || t("exp_milestones")}
-                </span>
-                <span
-                  className="text-xs font-mono font-bold"
-                  style={{ color: "var(--ink-muted)" }}
-                >
-                  {item.period}
-                </span>
-              </div>
-            )}
+            {/* Header info with category badge and period */}
+            <div className="flex items-center justify-between gap-2 mb-2.5 flex-wrap">
+              <span
+                className="neo-badge text-[10px] sm:text-[11px] font-bold px-2 py-0.5"
+                style={{
+                  backgroundColor: isMagang
+                    ? "var(--google-blue-bg)"
+                    : "var(--google-green-bg)",
+                  color: isMagang
+                    ? "var(--google-blue-text)"
+                    : "var(--google-green-text)",
+                  borderColor: isMagang
+                    ? "var(--google-blue)"
+                    : "var(--google-green)",
+                }}
+              >
+                {item.type || item.category || t("exp_milestones")}
+              </span>
+              <span
+                className="text-xs font-mono font-bold"
+                style={{ color: "var(--ink-muted)" }}
+              >
+                {item.period}
+              </span>
+            </div>
 
             <h3
               className="text-base sm:text-lg font-extrabold mb-1 leading-snug"
