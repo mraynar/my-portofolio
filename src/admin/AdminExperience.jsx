@@ -302,7 +302,7 @@ export default function AdminExperience({ experience = [], onRefresh }) {
                     setEditingItem({ ...editingItem, role: e.target.value })
                   }
                   placeholder="Peserta Novo Entrepreneurship"
-                  className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm"
+                  className="w-full h-[46px] px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm shadow-[2px_2px_0_var(--shadow-color)]"
                   style={{
                     backgroundColor: "var(--surface-alt)",
                     borderColor: "var(--border)",
@@ -322,7 +322,7 @@ export default function AdminExperience({ experience = [], onRefresh }) {
                     setEditingItem({ ...editingItem, org: e.target.value })
                   }
                   placeholder="Novo Club by ParagonCorp"
-                  className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm"
+                  className="w-full h-[46px] px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm shadow-[2px_2px_0_var(--shadow-color)]"
                   style={{
                     backgroundColor: "var(--surface-alt)",
                     borderColor: "var(--border)",
@@ -380,7 +380,7 @@ export default function AdminExperience({ experience = [], onRefresh }) {
                     })
                   }
                   placeholder="Magang Industri / Program Kepemimpinan"
-                  className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm"
+                  className="w-full h-[46px] px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm shadow-[2px_2px_0_var(--shadow-color)]"
                   style={{
                     backgroundColor: "var(--surface-alt)",
                     borderColor: "var(--border)",
@@ -402,7 +402,7 @@ export default function AdminExperience({ experience = [], onRefresh }) {
                     setEditingItem({ ...editingItem, period: e.target.value })
                   }
                   placeholder="Maret 2026 - Sekarang"
-                  className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm"
+                  className="w-full h-[46px] px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm shadow-[2px_2px_0_var(--shadow-color)]"
                   style={{
                     backgroundColor: "var(--surface-alt)",
                     borderColor: "var(--border)",
@@ -439,7 +439,7 @@ export default function AdminExperience({ experience = [], onRefresh }) {
                   setEditingItem({ ...editingItem, org_url: e.target.value })
                 }
                 placeholder="https://organisasi.id"
-                className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm"
+                className="w-full h-[46px] px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm shadow-[2px_2px_0_var(--shadow-color)]"
                 style={{
                   backgroundColor: "var(--surface-alt)",
                   borderColor: "var(--border)",
@@ -478,7 +478,7 @@ export default function AdminExperience({ experience = [], onRefresh }) {
                       })
                     }
                     placeholder="URL gambar (https://...)"
-                    className="w-full px-3.5 py-2 rounded-xl border-2 font-medium text-sm"
+                    className="w-full h-[46px] px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm shadow-[2px_2px_0_var(--shadow-color)]"
                     style={{
                       backgroundColor: "var(--surface-alt)",
                       borderColor: "var(--border)",
@@ -517,7 +517,7 @@ export default function AdminExperience({ experience = [], onRefresh }) {
                   setEditingItem({ ...editingItem, photoAlt: e.target.value })
                 }
                 placeholder="Dokumentasi Program Novo Entrepreneurship"
-                className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm"
+                className="w-full h-[46px] px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm shadow-[2px_2px_0_var(--shadow-color)]"
                 style={{
                   backgroundColor: "var(--surface-alt)",
                   borderColor: "var(--border)",
@@ -551,7 +551,7 @@ export default function AdminExperience({ experience = [], onRefresh }) {
                 value={tagsText}
                 onChange={(e) => setTagsText(e.target.value)}
                 placeholder="Kepemimpinan, Validasi Bisnis, Strategi Produk, Kolaborasi"
-                className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm"
+                className="w-full h-[46px] px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm shadow-[2px_2px_0_var(--shadow-color)]"
                 style={{
                   backgroundColor: "var(--surface-alt)",
                   borderColor: "var(--border)",

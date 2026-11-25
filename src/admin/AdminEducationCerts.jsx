@@ -383,7 +383,7 @@ export default function AdminEducationCerts({
                         })
                       }
                       placeholder="IBM Full Stack Software Developer"
-                      className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm"
+                      className="w-full h-[46px] px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm shadow-[2px_2px_0_var(--shadow-color)]"
                       style={{
                         backgroundColor: "var(--surface-alt)",
                         borderColor: "var(--border)",
@@ -406,7 +406,7 @@ export default function AdminEducationCerts({
                         })
                       }
                       placeholder="IBM / AWS / Dicoding"
-                      className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm"
+                      className="w-full h-[46px] px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm shadow-[2px_2px_0_var(--shadow-color)]"
                       style={{
                         backgroundColor: "var(--surface-alt)",
                         borderColor: "var(--border)",
@@ -453,7 +453,7 @@ export default function AdminEducationCerts({
                         })
                       }
                       placeholder="ID Kredensial"
-                      className="w-full px-3.5 py-2.5 rounded-xl border-2 font-mono text-sm"
+                      className="w-full h-[46px] px-3.5 py-2.5 rounded-xl border-2 font-mono text-sm shadow-[2px_2px_0_var(--shadow-color)]"
                       style={{
                         backgroundColor: "var(--surface-alt)",
                         borderColor: "var(--border)",

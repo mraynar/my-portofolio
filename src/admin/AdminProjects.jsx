@@ -280,7 +280,7 @@ export default function AdminProjects({
                       id: e.target.value.toLowerCase().replace(/\s+/g, "-"),
                     })
                   }
-                  className="w-full px-3.5 py-2.5 rounded-xl border-2 font-mono text-sm"
+                  className="w-full h-[46px] px-3.5 py-2.5 rounded-xl border-2 font-mono text-sm shadow-[2px_2px_0_var(--shadow-color)]"
                   style={{
                     backgroundColor: "var(--surface-alt)",
                     borderColor: "var(--border)",
@@ -302,7 +302,7 @@ export default function AdminProjects({
                       title: e.target.value,
                     })
                   }
-                  className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm"
+                  className="w-full h-[46px] px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm shadow-[2px_2px_0_var(--shadow-color)]"
                   style={{
                     backgroundColor: "var(--surface-alt)",
                     borderColor: "var(--border)",
@@ -365,7 +365,7 @@ export default function AdminProjects({
                       orderIndex: parseInt(e.target.value, 10) || 0,
                     })
                   }
-                  className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm"
+                  className="w-full h-[46px] px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm shadow-[2px_2px_0_var(--shadow-color)]"
                   style={{
                     backgroundColor: "var(--surface-alt)",
                     borderColor: "var(--border)",
@@ -538,7 +538,7 @@ export default function AdminProjects({
                   value={badgesInput}
                   onChange={(e) => setBadgesInput(e.target.value)}
                   placeholder="React, Tailwind CSS, Supabase, Midtrans"
-                  className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm"
+                  className="w-full h-[46px] px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm shadow-[2px_2px_0_var(--shadow-color)]"
                   style={{
                     backgroundColor: "var(--surface-alt)",
                     borderColor: "var(--border)",
@@ -560,7 +560,7 @@ export default function AdminProjects({
                     })
                   }
                   placeholder="https://app.domain.com"
-                  className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm"
+                  className="w-full h-[46px] px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm shadow-[2px_2px_0_var(--shadow-color)]"
                   style={{
                     backgroundColor: "var(--surface-alt)",
                     borderColor: "var(--border)",

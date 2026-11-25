@@ -57,35 +57,74 @@ export function CustomSelect({
     setOpen(false);
   };
 
+  // Parse labels with parenthesized notes
+  const parseLabel = (label) => {
+    const match = String(label).match(/^(.*?)\s*\((.*?)\)$/);
+    if (match) {
+      return { main: match[1], badge: match[2] };
+    }
+    return { main: label, badge: null };
+  };
+
+  const selectedParsed = selectedOpt ? parseLabel(selectedOpt.label) : null;
+
   return (
     <div ref={containerRef} className={`relative w-full ${className}`}>
       <button
         type="button"
         disabled={disabled}
         onClick={() => setOpen(!open)}
-        className="w-full h-[46px] px-4 rounded-xl border-2 flex items-center justify-between text-sm font-medium transition-all cursor-pointer text-left focus:outline-none"
+        className="w-full h-[46px] px-3.5 rounded-xl border-2 flex items-center justify-between text-sm font-semibold transition-all cursor-pointer text-left focus:outline-none hover:translate-x-[-1px] hover:translate-y-[-1px]"
         style={{
           backgroundColor: "var(--surface-alt)",
           borderColor: open ? "var(--google-blue)" : "var(--border)",
           color: "var(--ink)",
-          boxShadow: open ? "0 0 0 2px var(--google-blue)" : "none",
+          boxShadow: open
+            ? "3px 3px 0 var(--google-blue)"
+            : "2px 2px 0 var(--shadow-color)",
         }}
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-label={ariaLabel}
       >
-        <span className="truncate">
-          {selectedOpt ? selectedOpt.label : placeholder}
-        </span>
-        <Icon
-          name="chevron-down"
-          size={16}
-          className={`shrink-0 ml-2 transition-transform duration-200 ${
-            open
-              ? "transform rotate-180 text-[var(--google-blue)]"
-              : "text-[var(--ink-secondary)]"
-          }`}
-        />
+        <div className="truncate flex items-center gap-2 pr-2">
+          {selectedParsed ? (
+            <>
+              <span className="truncate">{selectedParsed.main}</span>
+              {selectedParsed.badge && (
+                <span
+                  className="hidden sm:inline-flex text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border shrink-0"
+                  style={{
+                    backgroundColor: "var(--surface)",
+                    borderColor: "var(--border)",
+                    color: "var(--ink-secondary)",
+                  }}
+                >
+                  {selectedParsed.badge}
+                </span>
+              )}
+            </>
+          ) : (
+            <span className="text-[var(--ink-muted)]">{placeholder}</span>
+          )}
+        </div>
+
+        <div
+          className="w-6 h-6 rounded-lg border flex items-center justify-center shrink-0 ml-2 transition-colors"
+          style={{
+            backgroundColor: open ? "var(--google-blue)" : "var(--surface)",
+            borderColor: open ? "var(--google-blue)" : "var(--border)",
+            color: open ? "#ffffff" : "var(--ink-secondary)",
+          }}
+        >
+          <Icon
+            name="chevron-down"
+            size={13}
+            className={`transition-transform duration-200 ${
+              open ? "transform rotate-180" : ""
+            }`}
+          />
+        </div>
       </button>
 
       {open && (
@@ -100,6 +139,7 @@ export function CustomSelect({
         >
           {normalizedOptions.map((opt) => {
             const isSelected = String(opt.value) === String(value);
+            const parsed = parseLabel(opt.label);
             return (
               <button
                 key={opt.value}
@@ -113,14 +153,36 @@ export function CustomSelect({
                     ? "var(--google-blue-bg)"
                     : "transparent",
                   color: isSelected ? "var(--google-blue-text)" : "var(--ink)",
+                  borderLeft: isSelected
+                    ? "3px solid var(--google-blue)"
+                    : "3px solid transparent",
                 }}
               >
-                <span>{opt.label}</span>
+                <div className="flex items-center gap-2 truncate pr-2">
+                  <span className="truncate">{parsed.main}</span>
+                  {parsed.badge && (
+                    <span
+                      className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border shrink-0"
+                      style={{
+                        backgroundColor: isSelected
+                          ? "var(--google-blue)"
+                          : "var(--surface-alt)",
+                        borderColor: isSelected
+                          ? "var(--google-blue)"
+                          : "var(--border)",
+                        color: isSelected ? "#ffffff" : "var(--ink-secondary)",
+                      }}
+                    >
+                      {parsed.badge}
+                    </span>
+                  )}
+                </div>
                 {isSelected && (
                   <Icon
                     name="check"
-                    size={16}
+                    size={15}
                     style={{ color: "var(--google-blue)" }}
+                    className="shrink-0"
                   />
                 )}
               </button>
