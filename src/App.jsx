@@ -203,7 +203,7 @@ function Hero({ info = PERSONAL_INFO }) {
             </div>
 
             {/* Social link pills */}
-            <div className="mt-8 lg:mt-0 lg:mb-4 flex flex-nowrap sm:flex-wrap items-center gap-1.5 sm:gap-2.5">
+            <div className="mt-6 sm:mt-8 lg:mt-0 lg:mb-8 xl:mb-10 flex flex-nowrap sm:flex-wrap items-center gap-1.5 sm:gap-2.5">
               <span
                 className="text-xs sm:text-sm font-extrabold uppercase tracking-wider font-mono shrink-0 mr-0.5 sm:mr-1"
                 style={{ color: "var(--ink-muted)" }}
