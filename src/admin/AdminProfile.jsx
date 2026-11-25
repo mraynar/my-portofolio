@@ -11,6 +11,7 @@ export default function AdminProfile({ initialInfo, onUpdateInfo }) {
   const [uploadingCv, setUploadingCv] = useState(false);
   const [feedback, setFeedback] = useState(null);
   const [cropAvatarFile, setCropAvatarFile] = useState(null);
+  const [activeTab, setActiveTab] = useState("hero");
 
   const handleChange = (field, val) => {
     setFormData((prev) => ({ ...prev, [field]: val }));
@@ -138,8 +139,39 @@ export default function AdminProfile({ initialInfo, onUpdateInfo }) {
         </div>
       )}
 
-      {/* Identity and narrative */}
-      <Card className="p-6 sm:p-8 space-y-6">
+      {/* 3 tabs for profile sections */}
+      <div
+        className="flex flex-wrap gap-2 pb-2 border-b-2"
+        style={{ borderColor: "var(--border)" }}
+      >
+        {[
+          { key: "hero", label: "Identitas & Hero", icon: "user" },
+          { key: "narrative", label: "Narasi & Prinsip", icon: "file" },
+          { key: "stats", label: "Kartu Statistik", icon: "sparkles" },
+        ].map((tab) => (
+          <button
+            key={tab.key}
+            type="button"
+            onClick={() => setActiveTab(tab.key)}
+            className="px-4 py-2 rounded-xl border-2 text-xs sm:text-sm font-bold transition-all cursor-pointer inline-flex items-center gap-2 shadow-[2px_2px_0_var(--shadow-color)]"
+            style={{
+              backgroundColor:
+                activeTab === tab.key ? "var(--ink)" : "var(--surface)",
+              color:
+                activeTab === tab.key ? "var(--canvas)" : "var(--ink)",
+              borderColor: "var(--border)",
+            }}
+          >
+            <Icon name={tab.icon} size={15} />
+            <span>{tab.label}</span>
+          </button>
+        ))}
+      </div>
+
+      {/* Tab 1: Hero Identity and Social links */}
+      {activeTab === "hero" && (
+        <div className="space-y-8">
+          <Card className="p-6 sm:p-8 space-y-6">
         <h3
           className="text-lg sm:text-xl font-extrabold pb-3 border-b-2"
           style={{ fontFamily: "var(--font-display)" }}
@@ -521,15 +553,18 @@ export default function AdminProfile({ initialInfo, onUpdateInfo }) {
           </div>
         </div>
       </Card>
+        </div>
+      )}
 
-      {/* About and engineering principles */}
-      <Card className="p-6 sm:p-8 space-y-6">
-        <h3
-          className="text-lg sm:text-xl font-extrabold pb-3 border-b-2"
-          style={{ fontFamily: "var(--font-display)" }}
-        >
-          Narasi Tentang Saya & Prinsip Rekayasa
-        </h3>
+      {/* Tab 2: Narrative and Engineering Principles */}
+      {activeTab === "narrative" && (
+        <Card className="p-6 sm:p-8 space-y-6">
+          <h3
+            className="text-lg sm:text-xl font-extrabold pb-3 border-b-2"
+            style={{ fontFamily: "var(--font-display)" }}
+          >
+            Narasi Tentang Saya & Prinsip Rekayasa
+          </h3>
 
         <div>
           <label className="block text-xs font-bold font-mono uppercase mb-1.5">
@@ -613,15 +648,17 @@ export default function AdminProfile({ initialInfo, onUpdateInfo }) {
           </div>
         </div>
       </Card>
+      )}
 
-      {/* Real impact metrics customization */}
-      <Card className="p-6 sm:p-8 space-y-6">
-        <h3
-          className="text-lg sm:text-xl font-extrabold pb-3 border-b-2"
-          style={{ fontFamily: "var(--font-display)" }}
-        >
-          Kustomisasi Kartu Statistik (By The Numbers)
-        </h3>
+      {/* Tab 3: Metrics & Numbers */}
+      {activeTab === "stats" && (
+        <Card className="p-6 sm:p-8 space-y-6">
+          <h3
+            className="text-lg sm:text-xl font-extrabold pb-3 border-b-2"
+            style={{ fontFamily: "var(--font-display)" }}
+          >
+            Kustomisasi Kartu Statistik (By The Numbers)
+          </h3>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div>
@@ -707,6 +744,7 @@ export default function AdminProfile({ initialInfo, onUpdateInfo }) {
           </div>
         </div>
       </Card>
+      )}
 
       <div className="flex justify-end">
         <button
