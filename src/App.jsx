@@ -1254,14 +1254,14 @@ function Contact({ info = PERSONAL_INFO }) {
                         {t("contact_message_label")}
                       </label>
                       <textarea
-                        rows={4}
+                        rows={5}
                         required
                         value={formData.message}
                         onChange={(e) =>
                           setFormData({ ...formData, message: e.target.value })
                         }
                         placeholder={t("contact_message_placeholder")}
-                        className="w-full px-3 py-2.5 rounded-xl border-2 font-medium text-sm transition-all resize-y min-h-[110px]"
+                        className="w-full px-3 py-2.5 rounded-xl border-2 font-medium text-sm transition-all resize-y min-h-[150px]"
                         style={{
                           backgroundColor: "var(--surface)",
                           borderColor: "var(--border)",
