@@ -676,7 +676,7 @@ export default function AdminExperience({ experience = [], onRefresh }) {
           style={{ color: "var(--ink-muted)" }}
         >
           <Icon name="info" size={14} />
-          <span>Tarik kartu atau klik panah untuk mengatur posisi urutan.</span>
+          <span>Tarik kartu untuk mengatur urutan posisi tampilan.</span>
         </div>
       </div>
 
@@ -724,7 +724,7 @@ export default function AdminExperience({ experience = [], onRefresh }) {
                   setDraggedIdx(null);
                   setDragOverIdx(null);
                 }}
-                className={`transition-all duration-200 ${
+                className={`transition-all duration-200 cursor-grab active:cursor-grabbing select-none ${
                   isDragging ? "opacity-40 scale-[0.98]" : "opacity-100"
                 }`}
               >
@@ -736,15 +736,9 @@ export default function AdminExperience({ experience = [], onRefresh }) {
                   }`}
                 >
                   <div>
-                    {/* Top toolbar: reorder controls and actions */}
+                    {/* Top toolbar: position indicator and actions */}
                     <div className="flex flex-wrap items-center justify-between gap-2 mb-3 pb-3 border-b-2">
                       <div className="flex items-center gap-2">
-                        <div
-                          className="cursor-grab active:cursor-grabbing p-1.5 rounded-lg border-2 border-[var(--border)] bg-[var(--surface-alt)] hover:bg-[var(--google-blue-bg)] hover:text-[var(--google-blue)] transition-colors shadow-[1px_1px_0_var(--shadow-color)]"
-                          title="Tarik kartu untuk mengatur urutan posisi"
-                        >
-                          <Icon name="grip" size={15} />
-                        </div>
                         <span
                           className="neo-badge text-xs font-mono font-extrabold px-2.5 py-1"
                           style={{
@@ -754,33 +748,12 @@ export default function AdminExperience({ experience = [], onRefresh }) {
                         >
                           Posisi #{idx + 1}
                         </span>
-                        <div className="flex items-center gap-1">
-                          <button
-                            type="button"
-                            disabled={idx === 0 || isReordering}
-                            onClick={() => handleMove(idx, idx - 1)}
-                            className="p-1 rounded-lg border-2 border-[var(--border)] bg-[var(--surface)] hover:bg-[var(--surface-alt)] disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer shadow-[1px_1px_0_var(--shadow-color)]"
-                            title="Geser posisi ke atas"
-                            aria-label="Geser posisi ke atas"
-                          >
-                            <Icon name="arrow-up" size={13} />
-                          </button>
-                          <button
-                            type="button"
-                            disabled={
-                              idx === displayedList.length - 1 || isReordering
-                            }
-                            onClick={() => handleMove(idx, idx + 1)}
-                            className="p-1 rounded-lg border-2 border-[var(--border)] bg-[var(--surface)] hover:bg-[var(--surface-alt)] disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer shadow-[1px_1px_0_var(--shadow-color)]"
-                            title="Geser posisi ke bawah"
-                            aria-label="Geser posisi ke bawah"
-                          >
-                            <Icon name="arrow-down" size={13} />
-                          </button>
-                        </div>
                       </div>
 
-                      <div className="flex items-center gap-2">
+                      <div
+                        className="flex items-center gap-2"
+                        onMouseDown={(e) => e.stopPropagation()}
+                      >
                         <button
                           type="button"
                           onClick={() => handleEdit(item)}

@@ -341,6 +341,59 @@ export async function deleteProject(id) {
   notifyDataChanged();
 }
 
+// Reorder projects array and persist new order_index
+export async function reorderProjects(orderedList = []) {
+  const updated = orderedList.map((item, idx) => ({
+    ...item,
+    orderIndex: idx + 1,
+  }));
+
+  try {
+    localStorage.setItem(CACHE_KEYS.PROJECTS, JSON.stringify(updated));
+  } catch {
+    // Ignore
+  }
+
+  if (supabase) {
+    try {
+      const updates = updated.map((item) => ({
+        id: item.id,
+        title: item.title,
+        label: item.label,
+        featured: Boolean(item.featured),
+        image: item.image || "",
+        problem: item.problem || "",
+        solution: item.solution || "",
+        impact: item.impact || "",
+        badges: item.badges || [],
+        demo_url: item.demoUrl || null,
+        repo_notice: item.repoNotice,
+        repo_reason: item.repoReason,
+        case_study_role: item.caseStudy?.role || "Full-Stack Developer",
+        case_study_client: item.caseStudy?.client || null,
+        case_study_duration: item.caseStudy?.duration || "2024",
+        case_study_background: item.caseStudy?.background || null,
+        case_study_solution: item.caseStudy?.solution || null,
+        case_study_architecture: item.caseStudy?.architecture || null,
+        case_study_impact: item.caseStudy?.impact || null,
+        status: item.status || "published",
+        order_index: item.orderIndex,
+      }));
+
+      await Promise.all(
+        updates.map((dbPayload) =>
+          supabase.from("projects").upsert(dbPayload)
+        )
+      );
+    } catch {
+      // Retain local state
+    }
+  }
+
+  notifyDataChanged();
+  return updated;
+}
+
 // Fetch experience entries with dynamic persistence
 export async function getExperience() {
   if (supabase) {

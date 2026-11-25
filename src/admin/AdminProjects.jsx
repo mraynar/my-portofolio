@@ -6,6 +6,7 @@ import {
   deleteProject,
   uploadStorageFile,
   saveSiteSettings,
+  reorderProjects,
 } from "../lib/supabase";
 
 const EMPTY_PROJECT = {
@@ -52,6 +53,42 @@ export default function AdminProjects({
   );
   const [isSavingCount, setIsSavingCount] = useState(false);
   const [countFeedback, setCountFeedback] = useState(null);
+  const [draggedIdx, setDraggedIdx] = useState(null);
+  const [dragOverIdx, setDragOverIdx] = useState(null);
+  const [isReordering, setIsReordering] = useState(false);
+
+  // Reorder project item to a new position via drag and drop
+  const handleMove = async (fromIdx, toIdx) => {
+    if (fromIdx === toIdx || isReordering) return;
+    const sorted = [...projects].sort(
+      (a, b) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0)
+    );
+    const movedItem = sorted[fromIdx];
+    if (!movedItem) return;
+
+    const newOrder = [...sorted];
+    const [moved] = newOrder.splice(fromIdx, 1);
+    newOrder.splice(toIdx, 0, moved);
+
+    setIsReordering(true);
+    try {
+      await reorderProjects(newOrder);
+      setFeedback({
+        type: "success",
+        text: `Urutan disimpan: "${moved.title}" kini di posisi #${toIdx + 1}.`,
+      });
+      await onRefresh();
+    } catch (err) {
+      setFeedback({
+        type: "error",
+        text: err.message || "Gagal memperbarui urutan proyek.",
+      });
+    } finally {
+      setIsReordering(false);
+      setDraggedIdx(null);
+      setDragOverIdx(null);
+    }
+  };
 
   const handleSaveCustomCount = async (e) => {
     e.preventDefault();
@@ -837,86 +874,158 @@ export default function AdminProjects({
         </div>
       )}
 
-      {/* Projects list */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {projects.map((p) => (
-          <Card key={p.id} className="p-5 flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between mb-3 pb-2 border-b-2">
-                <div className="flex items-center gap-2">
-                  <Chip
-                    variant={
-                      p.label === "Web App"
-                        ? "blue"
-                        : p.label === "Mobile App"
-                        ? "yellow"
-                        : p.label === "UI/UX Design"
-                        ? "red"
-                        : "green"
-                    }
-                  >
-                    {p.label}
-                  </Chip>
-                  {p.featured && <Chip variant="blue">Unggulan</Chip>}
-                </div>
-                <span
-                  className="text-xs font-mono font-bold"
-                  style={{
-                    color:
-                      p.status === "draft"
-                        ? "var(--google-red)"
-                        : "var(--google-green)",
-                  }}
+      {/* Reorder hint and projects list */}
+      <div className="flex items-center justify-between gap-3 pb-1">
+        <div
+          className="text-xs font-mono font-medium flex items-center gap-1.5"
+          style={{ color: "var(--ink-muted)" }}
+        >
+          <Icon name="info" size={14} />
+          <span>Tarik kartu untuk mengatur urutan posisi tampilan proyek.</span>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
+        {(() => {
+          const sortedProjects = [...projects].sort(
+            (a, b) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0)
+          );
+
+          return sortedProjects.map((p, idx) => {
+            const isDragging = draggedIdx === idx;
+            const isOver = dragOverIdx === idx;
+
+            return (
+              <div
+                key={p.id}
+                draggable={!isReordering}
+                onDragStart={(e) => {
+                  setDraggedIdx(idx);
+                  e.dataTransfer.effectAllowed = "move";
+                  e.dataTransfer.setData("text/plain", String(idx));
+                }}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  e.dataTransfer.dropEffect = "move";
+                  if (dragOverIdx !== idx) setDragOverIdx(idx);
+                }}
+                onDragLeave={() => {
+                  if (dragOverIdx === idx) setDragOverIdx(null);
+                }}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  if (draggedIdx !== null && draggedIdx !== idx) {
+                    handleMove(draggedIdx, idx);
+                  }
+                }}
+                onDragEnd={() => {
+                  setDraggedIdx(null);
+                  setDragOverIdx(null);
+                }}
+                className={`transition-all duration-200 cursor-grab active:cursor-grabbing select-none ${
+                  isDragging ? "opacity-40 scale-[0.98]" : "opacity-100"
+                }`}
+              >
+                <Card
+                  className={`p-5 h-full flex flex-col justify-between transition-all relative ${
+                    isOver
+                      ? "ring-4 ring-[var(--google-blue)] border-[var(--google-blue)] shadow-[0_0_15px_rgba(26,115,232,0.25)]"
+                      : ""
+                  }`}
                 >
-                  {p.status || "published"}
-                </span>
+                  <div>
+                    <div className="flex items-center justify-between mb-3 pb-2 border-b-2">
+                      <div className="flex items-center gap-2">
+                        <span
+                          className="neo-badge text-[11px] font-mono font-extrabold px-2 py-0.5"
+                          style={{
+                            backgroundColor: "var(--surface)",
+                            borderColor: "var(--border)",
+                          }}
+                        >
+                          #{idx + 1}
+                        </span>
+                        <Chip
+                          variant={
+                            p.label === "Web App"
+                              ? "blue"
+                              : p.label === "Mobile App"
+                              ? "yellow"
+                              : p.label === "UI/UX Design"
+                              ? "red"
+                              : "green"
+                          }
+                        >
+                          {p.label}
+                        </Chip>
+                        {p.featured && <Chip variant="blue">Unggulan</Chip>}
+                      </div>
+                      <span
+                        className="text-xs font-mono font-bold"
+                        style={{
+                          color:
+                            p.status === "draft"
+                              ? "var(--google-red)"
+                              : "var(--google-green)",
+                        }}
+                      >
+                        {p.status || "published"}
+                      </span>
+                    </div>
+
+                    <h4
+                      className="font-extrabold text-base sm:text-lg mb-2"
+                      style={{ fontFamily: "var(--font-display)" }}
+                    >
+                      {p.title}
+                    </h4>
+
+                    <p
+                      className="text-xs sm:text-sm line-clamp-2 mb-4"
+                      style={{ color: "var(--ink-secondary)" }}
+                    >
+                      {p.solution}
+                    </p>
+                  </div>
+
+                  <div className="pt-3 border-t-2 flex items-center justify-between">
+                    <span
+                      className="text-xs font-mono font-bold"
+                      style={{ color: "var(--ink-muted)" }}
+                    >
+                      ID: {p.id}
+                    </span>
+                    <div
+                      className="flex items-center gap-2"
+                      onMouseDown={(e) => e.stopPropagation()}
+                    >
+                      <button
+                        type="button"
+                        onClick={() => handleEdit(p)}
+                        className="neo-btn-secondary text-xs font-bold py-1.5 px-2.5 cursor-pointer"
+                      >
+                        <Icon name="edit" size={13} />
+                        Edit
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDelete(p.id)}
+                        className="neo-badge text-xs font-bold py-1.5 px-2.5 cursor-pointer"
+                        style={{
+                          backgroundColor: "var(--google-red-bg)",
+                          color: "var(--google-red-text)",
+                          borderColor: "var(--google-red)",
+                        }}
+                      >
+                        <Icon name="trash" size={13} />
+                      </button>
+                    </div>
+                  </div>
+                </Card>
               </div>
-
-              <h4
-                className="font-extrabold text-base sm:text-lg mb-2"
-                style={{ fontFamily: "var(--font-display)" }}
-              >
-                {p.title}
-              </h4>
-
-              <p
-                className="text-xs sm:text-sm line-clamp-2 mb-4"
-                style={{ color: "var(--ink-secondary)" }}
-              >
-                {p.solution}
-              </p>
-            </div>
-
-            <div className="pt-3 border-t-2 flex items-center justify-between">
-              <span
-                className="text-xs font-mono font-bold"
-                style={{ color: "var(--ink-muted)" }}
-              >
-                ID: {p.id}
-              </span>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => handleEdit(p)}
-                  className="neo-btn-secondary text-xs font-bold py-1.5 px-2.5"
-                >
-                  <Icon name="edit" size={13} />
-                  Edit
-                </button>
-                <button
-                  onClick={() => handleDelete(p.id)}
-                  className="neo-badge text-xs font-bold py-1.5 px-2.5"
-                  style={{
-                    backgroundColor: "var(--google-red-bg)",
-                    color: "var(--google-red-text)",
-                    borderColor: "var(--google-red)",
-                  }}
-                >
-                  <Icon name="trash" size={13} />
-                </button>
-              </div>
-            </div>
-          </Card>
-        ))}
+            );
+          });
+        })()}
       </div>
 
       {cropFile && (
