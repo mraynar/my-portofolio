@@ -300,7 +300,11 @@ function Hero({ info = PERSONAL_INFO }) {
                       type="button"
                       onClick={() => setHeroZoomOpen(true)}
                       className="group relative w-full h-full block cursor-zoom-in text-left"
-                      title="Klik untuk memperbesar foto profil"
+                      title={
+                        language === "en"
+                          ? "Click to enlarge profile photo"
+                          : "Klik untuk memperbesar foto profil"
+                      }
                     >
                       <img
                         src={avatar}
@@ -310,7 +314,7 @@ function Hero({ info = PERSONAL_INFO }) {
                       />
                       <div className="absolute bottom-3 right-3 px-2 py-1 rounded-md bg-black/60 text-white text-[11px] font-mono font-bold opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 backdrop-blur-xs">
                         <Icon name="zoom-in" size={12} />
-                        <span>Perbesar</span>
+                        <span>{language === "en" ? "Zoom" : "Perbesar"}</span>
                       </div>
                     </button>
                   ) : (
@@ -332,13 +336,13 @@ function Hero({ info = PERSONAL_INFO }) {
                         className="text-xs font-bold font-mono uppercase tracking-wider"
                         style={{ color: "var(--ink)" }}
                       >
-                        FOTO PROFIL
+                        {language === "en" ? "PROFILE PHOTO" : "FOTO PROFIL"}
                       </span>
                       <span
                         className="text-[11px] font-mono mt-1"
                         style={{ color: "var(--ink-muted)" }}
                       >
-                        Input via Admin CMS
+                        {t("projects_input_cms")}
                       </span>
                     </div>
                   )}
@@ -353,7 +357,11 @@ function Hero({ info = PERSONAL_INFO }) {
         isOpen={heroZoomOpen}
         imageUrl={avatar}
         title={info.name || "Muhammad Raynar Hammam"}
-        subtitle="Foto Profil Hero • Rekayasa Perangkat Lunak & Sistem Informasi"
+        subtitle={
+          language === "en"
+            ? "Hero Profile Photo • Software Engineering & Information Systems"
+            : "Foto Profil Hero • Rekayasa Perangkat Lunak & Sistem Informasi"
+        }
         alt={`Foto Profil ${info.name || "Muhammad Raynar Hammam"}`}
         onClose={() => setHeroZoomOpen(false)}
       />
@@ -1256,9 +1264,15 @@ function Contact({ info = PERSONAL_INFO }) {
 
   const email = info.email || PERSONAL_INFO.email;
   const linkedin = info.linkedin || PERSONAL_INFO.linkedin;
-  const location = info.location || PERSONAL_INFO.location;
+  const location =
+    language === "en"
+      ? translateText(info.location || PERSONAL_INFO.location, "en")
+      : info.location || PERSONAL_INFO.location;
   const timezone = info.timezone || PERSONAL_INFO.timezone;
-  const status = info.status || PERSONAL_INFO.status;
+  const status =
+    language === "en"
+      ? translateText(info.status || PERSONAL_INFO.status, "en")
+      : info.status || PERSONAL_INFO.status;
 
   return (
     <Section id="contact" style={{ backgroundColor: "transparent" }}>

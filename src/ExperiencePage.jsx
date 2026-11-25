@@ -17,11 +17,16 @@ import {
   sortExperiencesLatestFirst,
 } from "./data";
 import { useLanguage } from "./context/LanguageContext";
-import { translateExperience, translateEducation } from "./lib/translations";
+import {
+  translateExperience,
+  translateEducation,
+  translateText,
+} from "./lib/translations";
 
 export default function ExperiencePage({
   experience = EXPERIENCE,
   education = EDUCATION,
+  info = {},
 }) {
   const { t, language } = useLanguage();
   const localizedExperience = useMemo(
@@ -75,9 +80,13 @@ export default function ExperiencePage({
               color: "var(--ink)",
             }}
           >
-            {t("exp_page_title_1")}{" "}
+            {info.expTitle
+              ? translateText(info.expTitle, language)
+              : t("exp_page_title_1")}{" "}
             <span style={{ color: "var(--google-blue)" }}>
-              {t("exp_page_title_2")}
+              {info.expTitleAccent
+                ? translateText(info.expTitleAccent, language)
+                : t("exp_page_title_2")}
             </span>
           </h1>
 
@@ -85,7 +94,9 @@ export default function ExperiencePage({
             className="text-base sm:text-lg lg:text-xl max-w-3xl leading-relaxed"
             style={{ color: "var(--ink-secondary)" }}
           >
-            {t("exp_page_desc")}
+            {info.expSubtitle
+              ? translateText(info.expSubtitle, language)
+              : t("exp_page_desc")}
           </p>
         </Container>
       </section>

@@ -3,11 +3,12 @@ import { Link } from "react-router-dom";
 import { Container, ProjectCard, Cluster, Icon, Pagination } from "./components";
 import { PROJECTS } from "./data";
 import { useLanguage } from "./context/LanguageContext";
-import { translateProject } from "./lib/translations";
+import { translateProject, translateText } from "./lib/translations";
 
 export default function ProjectPage({
   onOpenCaseStudy,
   projects = PROJECTS,
+  info = {},
 }) {
   const { t, language } = useLanguage();
   const [activeFilter, setActiveFilter] = useState("ALL");
@@ -102,9 +103,13 @@ export default function ProjectPage({
               color: "var(--ink)",
             }}
           >
-            {t("project_page_title_1")}{" "}
+            {info.projectsTitle
+              ? translateText(info.projectsTitle, language)
+              : t("project_page_title_1")}{" "}
             <span style={{ color: "var(--google-blue)" }}>
-              {t("project_page_title_2")}
+              {info.projectsTitleAccent
+                ? translateText(info.projectsTitleAccent, language)
+                : t("project_page_title_2")}
             </span>
           </h1>
 
@@ -112,7 +117,9 @@ export default function ProjectPage({
             className="text-base sm:text-lg lg:text-xl max-w-3xl leading-relaxed mb-8"
             style={{ color: "var(--ink-secondary)" }}
           >
-            {t("project_page_desc")}
+            {info.projectsSubtitle
+              ? translateText(info.projectsSubtitle, language)
+              : t("project_page_desc")}
           </p>
 
           {/* Filter pills with Google category palette */}

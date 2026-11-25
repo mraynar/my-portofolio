@@ -1,6 +1,6 @@
 // Bilingual dictionary and translation engine for Indonesian to English
 export const EXACT_TRANSLATIONS = {
-  // Navigation & General
+  // Navigation & General UI
   "Beranda": "Home",
   "Tentang": "About",
   "Saya": "Me",
@@ -24,6 +24,16 @@ export const EXACT_TRANSLATIONS = {
   "Sekarang": "Present",
   "Magang": "Internship",
   "Organisasi": "Organization",
+  "Semua": "All",
+  "Tutup": "Close",
+  "Perbesar": "Zoom in",
+  "Perkecil": "Zoom out",
+  "FOTO PROFIL": "PROFILE PHOTO",
+  "Input via Admin CMS": "Input via Admin CMS",
+  "Surabaya, Jawa Timur, Indonesia": "Surabaya, East Java, Indonesia",
+  "WIB (UTC+7)": "WIB (UTC+7)",
+  "Terbuka untuk Magang & Peluang Kolaborasi Proyek": "Open for Internship & Project Collaboration Opportunities",
+  "Terbuka untuk Magang & Peluang Kolaborasi": "Open for Internship & Collaboration Opportunities",
 
   // Hero section
   "SISTEM INFORMASI & SOFTWARE ENGINEER": "INFORMATION SYSTEMS & SOFTWARE ENGINEER",
@@ -60,6 +70,8 @@ export const EXACT_TRANSLATIONS = {
   "Rekam jejak kontribusi profesional industri serta kepemimpinan organisasi kampus.": "Track record of professional industry contributions and campus organization leadership.",
   "KREDENSIAL PROFESIONAL": "PROFESSIONAL CREDENTIALS",
   "PENDIDIKAN & KREDENSIAL": "EDUCATION & CREDENTIALS",
+  "Sertifikasi": "Certifications",
+  "Sertifikasi &": "Certifications &",
   "Lisensi": "Licenses",
   "Sertifikasi & Lisensi": "Certifications & Licenses",
   "Pendidikan Formal & Sertifikasi": "Formal Education & Certifications",
@@ -134,6 +146,13 @@ export const EXACT_TRANSLATIONS = {
   "Magang Industri": "Industry Internship",
   "Program Kepemimpinan": "Leadership Program",
 
+  // Experience Organizations
+  "PT Solusi Rekayasa Digital": "PT Solusi Rekayasa Digital",
+  "Novo Club by ParagonCorp": "Novo Club by ParagonCorp",
+  "HIMASIFO UPN Veteran Jawa Timur": "HIMASIFO UPN Veteran East Java",
+  "UKM Penalaran dan Penelitian": "Student Research & Reasoning Club",
+  "CV Indra Protection": "CV Indra Protection",
+
   // Experience Roles & Details
   "Full-Stack Web Developer Intern": "Full-Stack Web Developer Intern",
   "Peserta Novo Entrepreneurship": "Novo Entrepreneurship Fellow",
@@ -141,10 +160,48 @@ export const EXACT_TRANSLATIONS = {
   "Staf Ahli Website & IT": "Web & IT Specialist Staff",
   "Front-End Developer Intern": "Front-End Developer Intern",
   "Februari 2026 – Sekarang": "February 2026 – Present",
+  "Februari 2026 - Sekarang": "February 2026 – Present",
   "Maret 2026 – Sekarang": "March 2026 – Present",
+  "Maret 2026 - Sekarang": "March 2026 – Present",
   "Januari 2025 – Desember 2025": "January 2025 – December 2025",
+  "Januari 2025 - Desember 2025": "January 2025 – December 2025",
   "Januari 2024 – Desember 2024": "January 2024 – December 2024",
+  "Januari 2024 - Desember 2024": "January 2024 – December 2024",
   "Juli 2022 – Desember 2022": "July 2022 – December 2022",
+  "Juli 2022 - Desember 2022": "July 2022 – December 2022",
+
+  // Experience Bullets (All 15 items)
+  "Mengembangkan modul RESTful API dan integrasi basis data PostgreSQL untuk sistem pengelolaan transaksi internal perusahaan.": "Developed RESTful API modules and PostgreSQL database integrations for internal company transaction management systems.",
+  "Membangun antarmuka dashboard monitoring operasional berbasis React dan Tailwind CSS yang responsif serta teruji di berbagai viewport.": "Engineered operational monitoring dashboard interfaces using React and Tailwind CSS, responsive and thoroughly tested across viewports.",
+  "Menerapkan mekanisme validasi data terpusat dan penanganan galat asinkron guna menjaga integritas data operasional.": "Implemented centralized data validation mechanisms and asynchronous error handling to preserve operational data integrity.",
+  "Mengikuti program intensif kepemimpinan dan kewirausahaan yang diselenggarakan oleh ekosistem ParagonCorp.": "Participated in an intensive leadership and entrepreneurship incubation program hosted by the ParagonCorp ecosystem.",
+  "Menganalisis strategi model bisnis dan alur validasi produk retail kecantikan berbasis kebutuhan pasar nyata.": "Analyzed business model strategies and product validation workflows for beauty retail based on real market demand.",
+  "Menjalin jejaring profesional dan kolaborasi lintas disiplin bersama para mentor industri dan inovator muda.": "Built professional networks and cross-disciplinary collaborations with industry mentors and young innovators.",
+  "Menginisiasi dan mengoordinasikan jalinan kemitraan eksternal bersama 5+ himpunan mahasiswa universitas mitra dan praktisi industri.": "Initiated and coordinated external partnerships with 5+ university student associations and industry practitioners.",
+  "Mengelola saluran komunikasi publik resmi himpunan untuk menyebarkan informasi akademik yang menjangkau 400+ mahasiswa aktif Sistem Informasi.": "Managed official student association public communication channels to disseminate academic updates reaching 400+ active Information Systems students.",
+  "Berperan sebagai penghubung dalam penyelenggaraan seminar teknologi dan forum studi banding antar-kampus.": "Served as liaison in organizing technology seminars and inter-university comparative study forums.",
+  "Mengembangkan dan merawat portal web resmi organisasi untuk publikasi artikel karya tulis ilmiah dan pengumuman lomba.": "Developed and maintained the official organization web portal for publishing scientific research articles and competition announcements.",
+  "Membantu digitalisasi repositori pengumpulan proposal penelitian yang mengefisienkan waktu seleksi berkas panitia sebesar 50%.": "Assisted the digitization of research proposal submission repositories, improving committee document review efficiency by 50%.",
+  "Mendukung penyelenggaraan lokakarya penulisan ilmiah dan pembinaan delegasi kompetisi mahasiswa.": "Supported the delivery of scientific writing workshops and mentoring for student competition delegations.",
+  "Menerjemahkan desain purwarupa antarmuka ke dalam kode HTML, CSS, dan JavaScript yang modular dan responsif di berbagai perangkat.": "Translated UI mockups into modular, responsive HTML, CSS, and JavaScript code across diverse devices.",
+  "Melakukan pengujian lintas peramban (*cross-browser testing*) untuk memastikan konsistensi tampilan pada Chrome, Firefox, dan Safari.": "Conducted cross-browser testing to ensure visual consistency across Chrome, Firefox, and Safari.",
+  "Mengoptimalkan kompresi aset gambar dan struktur skrip antarmuka guna meningkatkan kecepatan muat halaman web profil perusahaan.": "Optimized image asset compression and client script structures to enhance page loading speed for company web profiles.",
+
+  // Experience Tags
+  "Kepemimpinan": "Leadership",
+  "Validasi Bisnis": "Business Validation",
+  "Strategi Produk": "Product Strategy",
+  "Kolaborasi": "Collaboration",
+  "Komunikasi Publik": "Public Relations",
+  "Kemitraan": "Partnerships",
+  "Manajemen Acara": "Event Management",
+  "Pengembangan Web": "Web Development",
+  "Administrasi IT": "IT Administration",
+  "Riset Mahasiswa": "Student Research",
+  "Front-End Web": "Front-End Web",
+  "Responsive Design": "Responsive Design",
+  "Cross-Browser Testing": "Cross-Browser Testing",
+  "Full-Stack Web": "Full-Stack Web",
 
   // Projects
   "Sistem Manajemen Rumah Kos Griya Asri": "Griya Asri Boarding House Management System",
@@ -182,6 +239,43 @@ export const EXACT_TRANSLATIONS = {
   "Merancang model data relasional di Microsoft Power BI dengan ukuran DAX khusus untuk mendeteksi anomali penjualan dan target pencapaian toko.": "Engineered relational data models in Power BI with custom DAX measures to detect sales anomalies and store quotas.",
   "Menyediakan laporan analitik terpadu untuk mengevaluasi kinerja tim sales per area distribusi.": "Provided unified analytical reporting to evaluate sales force performance across distribution regions.",
 
+  // Case Study Architecture Lines & Details
+  "Arsitektur Monolitik MVC dengan Laravel 10 dan Tailwind CSS untuk responsivitas tinggi.": "Monolithic MVC architecture with Laravel 10 and Tailwind CSS for high responsiveness.",
+  "Integrasi Webhook Payment Gateway Midtrans (Snap API) untuk sinkronisasi status transaksi real-time.": "Midtrans Payment Gateway (Snap API) webhook integration for real-time transaction synchronization.",
+  "Relasi basis data MySQL terstruktur untuk manajemen kamar, riwayat penghuni, dan invoice berkala.": "Structured MySQL database schema for room management, tenant history, and recurring invoicing.",
+  "Menangani status transaksi pembayaran yang tertunda (*pending*) agar kamar tidak terkunci sebelum ada konfirmasi pembayaran berhasil dari payment gateway.": "Handling pending transaction statuses to avoid prematurely locking rooms prior to payment gateway confirmation.",
+  "Sistem aktif melayani pencatatan lebih dari 20 unit kamar dan mengeliminasi proses verifikasi transfer manual melalui bukti mutasi WhatsApp.": "System actively serves 20+ rental units and eliminated manual transfer verification via WhatsApp receipts.",
+  "CMS WordPress yang dikustomisasi dengan tema dinamis berbasis PHP dan CSS terstruktur.": "Customized WordPress CMS with dynamic PHP themes and structured CSS.",
+  "Sistem kategorisasi taksonomi bertingkat untuk pembagian bidang penelitian sains dan sosial humaniora.": "Multi-level taxonomic categorization for science and social humanities research divisions.",
+  "Optimalisasi caching dan kompresi aset gambar guna menjaga stabilitas waktu muat di jaringan kampus.": "Caching optimization and image asset compression to maintain stable load times on campus networks.",
+  "Menyusun skema hak akses multi-author agar staf divisi riset dapat mengunggah draf karya ilmiah tanpa risiko mengubah konfigurasi sistem utama.": "Designing multi-author permission schemas so research staff can submit drafts without modifying core system configurations.",
+  "Portal berhasil dijadikan pusat referensi karya ilmiah tahunan dengan rata-rata 500+ kunjungan mahasiswa aktif per semester.": "Portal serves as the annual scientific repository benchmark with 500+ student visits per semester.",
+  "Aplikasi Flutter (Dart) dengan arsitektur Provider / BLoC untuk pemisahan logika bisnis dan antarmuka.": "Flutter (Dart) application with Provider / BLoC architecture for separating business logic from UI.",
+  "Firebase Authentication terintegrasi Google Sign-In untuk otentikasi aman tanpa kata sandi rumit.": "Firebase Authentication integrated with Google Sign-In for passwordless onboarding.",
+  "Cloud Firestore untuk penyimpanan data real-time status keikutsertaan relawan dan daftar kegiatan.": "Cloud Firestore for real-time data synchronization of volunteer sign-ups and activity feeds.",
+  "Menjamin tampilan UI responsif pada berbagai resolusi layar Android dengan rasio aspek berbeda tanpa layout breaking.": "Ensuring responsive UI across varied Android screen dimensions and aspect ratios without layout breakage.",
+  "Prototipe aplikasi berhasil diuji coba kepada 30+ pengguna uji dan mendapatkan apresiasi dalam kompetisi ide solusi digital.": "Application prototype was tested with 30+ pilot users and earned recognition in digital solution ideation competitions.",
+  "Backend Laravel REST API melayani frontend React SPA.": "Laravel REST API backend serving a React SPA frontend.",
+  "Integrasi RajaOngkir API untuk penentuan tarif kurir JNE, TIKI, dan POS secara dinamis.": "RajaOngkir API integration for dynamic shipping calculations across JNE, TIKI, and POS couriers.",
+  "Menangani latensi request API kurir eksternal saat checkout.": "Handling external courier API latency during checkout flows.",
+  "Sistem verifikasi transaksi otomatis dengan integrasi simulasi pembayaran.": "Automated transaction verification system integrated with payment simulations.",
+  "Laravel 9 dengan validasi query bentrok tanggal sewa.": "Laravel 9 with booking date collision query validation.",
+  "Dashboard analitik pendapatan armada bulanan.": "Monthly fleet rental revenue analytics dashboard.",
+  "Pengecekan logika ketersediaan armada saat durasi sewa bertumpuk.": "Fleet availability query validation under overlapping rental schedules.",
+  "Meningkatkan akurasi penjadwalan unit kendaraan hingga 100%.": "Increased vehicle unit scheduling accuracy to 100%",
+  "Design system konsisten dengan komponen atomik, palet warna aksesibel, dan tipografi hierarkis.": "Consistent design system featuring atomic components, accessible color palette, and hierarchical typography.",
+  "Alur pelacakan status penanganan aduan berbasis timeline interaktif.": "Interactive timeline tracking flow for citizen complaint resolution statuses.",
+  "Menjaga keterbacaan kontras visual untuk pengguna lanjut usia di layar smartphone entry-level.": "Maintaining visual contrast readability for elderly users on entry-level smartphone displays.",
+  "Desain purwarupa rampung dalam 18 artboard dengan navigasi prototipe penuh di Figma.": "High-fidelity prototype completed across 18 artboards with full Figma interactive flows.",
+  "Pembersihan dan validasi data transaksi menggunakan formula spreadsheet & query SQL.": "Data cleaning and validation using spreadsheet formulas and SQL queries.",
+  "Visualisasi KPI pendapatan, rata-rata nilai pesanan (AOV), dan peta sebaran wilayah pembeli.": "Visualized revenue KPIs, average order value (AOV), and customer demographic distribution maps.",
+  "Menormalkan data ribuan baris dengan format tanggal dan kategori ganda.": "Normalizing thousands of transaction rows with mixed date formats and multiple categories.",
+  "Dashboard interaktif siap pakai yang menyajikan *insight* tren penjualan musiman.": "Production-ready interactive dashboard delivering actionable seasonal sales trend insights.",
+  "Data modeling skema bintang (Fact & Dimension tables).": "Star schema data modeling (Fact & Dimension tables).",
+  "Kalkulasi DAX untuk metrik *Year-over-Year (YoY) Growth* dan pencapaian target penjualan.": "DAX calculations for Year-over-Year (YoY) Growth metrics and store sales quotas.",
+  "Memastikan performa kalkulasi DAX tetap cepat pada dataset volume besar.": "Ensuring high-speed DAX calculation performance across large volume datasets.",
+  "Laporan visual komprehensif dengan filter dinamis berdasarkan kuartal, kategori, dan cabang.": "Comprehensive visual reporting with dynamic filtering across quarters, categories, and branches.",
+
   // Case Study Notices & Meta
   "Repositori Privat (Proyek Komersial Klien)": "Private Repository (Commercial Client Project)",
   "Repositori Institusi Kampus": "Campus Institutional Repository",
@@ -197,6 +291,7 @@ export const EXACT_TRANSLATIONS = {
   "Studi Kasus Distribusi": "Distribution Case Study",
   "Inisiatif Kolaborasi Mahasiswa": "Student Collaboration Initiative",
   "UKM Penalaran dan Penelitian Kampus": "Campus Research & Reasoning Organization",
+  "Griya Asri Kos Surabaya": "Griya Asri Boarding House Surabaya",
   "3 Bulan (2025)": "3 Months (2025)",
   "4 Bulan (2024)": "4 Months (2024)",
   "2 Bulan (2024)": "2 Months (2024)",
@@ -206,9 +301,14 @@ export const EXACT_TRANSLATIONS = {
   // Certifications
   "Pengembangan Aplikasi Web dengan React": "Web Application Development with React",
   "Sertifikasi Kompetensi": "Skill Certifications",
+  "Penerbit:": "Issuer:",
+  "Terverifikasi Internal": "Internal Verification",
+  "April 2026": "April 2026",
+  "Mei 2026": "May 2026",
+  "Maret 2026": "March 2026",
 };
 
-// Regex replacement patterns for months, periods, and common terms
+// Regex replacement patterns for months and temporal references
 const MONTH_REPLACEMENTS = [
   [/\bjanuari\b/gi, "January"],
   [/\bfebruari\b/gi, "February"],
@@ -225,46 +325,246 @@ const MONTH_REPLACEMENTS = [
   [/\bsekarang\b/gi, "Present"],
 ];
 
-const TERM_REPLACEMENTS = [
-  [/\bmahasiswa sistem informasi\b/gi, "Information Systems Student"],
-  [/\brekayasa perangkat lunak\b/gi, "Software Engineering"],
-  [/\bkecerdasan buatan terapan\b/gi, "Applied Artificial Intelligence"],
-  [/\bkecerdasan buatan\b/gi, "Artificial Intelligence"],
-  [/\banalitik data\b/gi, "Data Analytics"],
-  [/\bmagang industri\b/gi, "Industry Internship"],
-  [/\borganisasi kampus\b/gi, "Campus Organization"],
-  [/\bprogram kepemimpinan\b/gi, "Leadership Program"],
-  [/\bkomunikasi publik\b/gi, "Public Relations"],
-  [/\bmanajemen acara\b/gi, "Event Management"],
-  [/\bpengembangan web\b/gi, "Web Development"],
-  [/\badministrasi it\b/gi, "IT Administration"],
-  [/\briset mahasiswa\b/gi, "Student Research"],
-  [/\bvalidasi bisnis\b/gi, "Business Validation"],
-  [/\bstrategi produk\b/gi, "Product Strategy"],
-  [/\bkepemimpinan\b/gi, "Leadership"],
-  [/\bkolaborasi\b/gi, "Collaboration"],
-  [/\bkemitraan\b/gi, "Partnerships"],
-  [/\bmengembangkan\b/gi, "Developing"],
-  [/\bmembangun\b/gi, "Building"],
-  [/\bmerancang\b/gi, "Designing"],
-  [/\bmenerapkan\b/gi, "Implementing"],
-  [/\bmengoptimalkan\b/gi, "Optimizing"],
-  [/\bmenganalisis\b/gi, "Analyzing"],
-  [/\bmemfasilitasi\b/gi, "Facilitating"],
-  [/\bmenghubungkan\b/gi, "Connecting"],
-  [/\bmengelola\b/gi, "Managing"],
-  [/\bmendukung\b/gi, "Supporting"],
-  [/\bmenyediakan\b/gi, "Providing"],
-  [/\bmenghasilkan\b/gi, "Delivering"],
-  [/\bmeningkatkan\b/gi, "Increasing"],
-  [/\bmenginisiasi\b/gi, "Initiating"],
-  [/\bmenerjemahkan\b/gi, "Translating"],
-  [/\bmelakukan\b/gi, "Conducting"],
-  [/\bmembantu\b/gi, "Assisting"],
-  [/\bmengikuti\b/gi, "Participating in"],
+// Ordered compound phrases (longest first) for heuristic fallback
+const PHRASE_REPLACEMENTS = [
+  [/\bmahasiswa sistem informasi\b/gi, "Information Systems student"],
+  [/\brekayasa perangkat lunak\b/gi, "software engineering"],
+  [/\bkecerdasan buatan terapan\b/gi, "applied artificial intelligence"],
+  [/\bkecerdasan buatan\b/gi, "artificial intelligence"],
+  [/\banalisis proses bisnis\b/gi, "business process analysis"],
+  [/\banalisis kebutuhan bisnis\b/gi, "business requirements analysis"],
+  [/\bsistem informasi\b/gi, "information systems"],
+  [/\bproses bisnis\b/gi, "business processes"],
+  [/\bdesain arsitektur\b/gi, "architecture design"],
+  [/\baritektur basis data\b/gi, "database architecture"],
+  [/\bbasis data relasional\b/gi, "relational databases"],
+  [/\bmodel machine learning\b/gi, "machine learning models"],
+  [/\bmachine learning\b/gi, "machine learning"],
+  [/\banalitik data\b/gi, "data analytics"],
+  [/\bdata mentah\b/gi, "raw data"],
+  [/\binsight terukur\b/gi, "measurable insights"],
+  [/\bposisi strategis\b/gi, "strategic positions"],
+  [/\bmengembangkan aplikasi web dan mobile\b/gi, "developing web and mobile applications"],
+  [/\bmengembangkan aplikasi\b/gi, "developing applications"],
+  [/\bmembangun sistem informasi\b/gi, "building information systems"],
+  [/\bmembangun fondasi\b/gi, "building foundation"],
+  [/\bmengintegrasikan model\b/gi, "integrating models"],
+  [/\bmerancang aplikasi\b/gi, "engineering applications"],
+  [/\bmerancang antarmuka\b/gi, "designing interfaces"],
+  [/\bmagang industri\b/gi, "industry internship"],
+  [/\borganisasi kampus\b/gi, "campus organization"],
+  [/\bprogram kepemimpinan\b/gi, "leadership program"],
+  [/\bkomunikasi publik\b/gi, "public relations"],
+  [/\bmanajemen acara\b/gi, "event management"],
+  [/\bpengembangan web\b/gi, "web development"],
+  [/\badministrasi it\b/gi, "IT administration"],
+  [/\briset mahasiswa\b/gi, "student research"],
+  [/\bvalidasi bisnis\b/gi, "business validation"],
+  [/\bstrategi produk\b/gi, "product strategy"],
+  [/\blintas disiplin\b/gi, "cross-disciplinary"],
+  [/\bjaringan kampus\b/gi, "campus network"],
+  [/\bsektor industri\b/gi, "industry sector"],
+  [/\blatar belakang\b/gi, "background"],
+  [/\bpendekatan praktis\b/gi, "practical approach"],
+  [/\bsistem digital\b/gi, "digital systems"],
+  [/\bpengelolaan transaksi\b/gi, "transaction management"],
+  [/\bmonitoring operasional\b/gi, "operational monitoring"],
+  [/\bvalidasi data\b/gi, "data validation"],
+  [/\bpenanganan galat\b/gi, "error handling"],
+  [/\bjejaring profesional\b/gi, "professional network"],
+  [/\bkemitraan eksternal\b/gi, "external partnerships"],
+  [/\bsaluran komunikasi\b/gi, "communication channels"],
+  [/\bforum studi banding\b/gi, "comparative study forums"],
+  [/\bkarya ilmiah\b/gi, "scientific research"],
+  [/\bkarya tulis ilmiah\b/gi, "scientific articles"],
+  [/\bkompetisi mahasiswa\b/gi, "student competitions"],
+  [/\blintas peramban\b/gi, "cross-browser"],
+  [/\bkecepatan muat\b/gi, "loading speed"],
+  [/\bhalaman web\b/gi, "web page"],
+  [/\bprofil perusahaan\b/gi, "company profile"],
 ];
 
-// Translate arbitrary Indonesian text to English
+// Single word vocabulary replacements for arbitrary text
+const WORD_REPLACEMENTS = [
+  // Verbs
+  [/\bmengembangkan\b/gi, "developing"],
+  [/\bmembangun\b/gi, "building"],
+  [/\bmerancang\b/gi, "designing"],
+  [/\bmenerapkan\b/gi, "implementing"],
+  [/\bmengoptimalkan\b/gi, "optimizing"],
+  [/\bmenganalisis\b/gi, "analyzing"],
+  [/\bmemfasilitasi\b/gi, "facilitating"],
+  [/\bmenghubungkan\b/gi, "connecting"],
+  [/\bmengelola\b/gi, "managing"],
+  [/\bmendukung\b/gi, "supporting"],
+  [/\bmenyediakan\b/gi, "providing"],
+  [/\bmenghasilkan\b/gi, "delivering"],
+  [/\bmeningkatkan\b/gi, "increasing"],
+  [/\bmenginisiasi\b/gi, "initiating"],
+  [/\bmenerjemahkan\b/gi, "translating"],
+  [/\bmelakukan\b/gi, "conducting"],
+  [/\bmembantu\b/gi, "assisting"],
+  [/\bmengikuti\b/gi, "participating in"],
+  [/\bmemangkas\b/gi, "reducing"],
+  [/\bmendigitalisasi\b/gi, "digitizing"],
+  [/\bmempercepat\b/gi, "accelerating"],
+  [/\bmenormalkan\b/gi, "normalizing"],
+  [/\bmemastikan\b/gi, "ensuring"],
+  [/\bmenjaga\b/gi, "maintaining"],
+  [/\bmenghindari\b/gi, "preventing"],
+  [/\bmemberikan\b/gi, "providing"],
+  [/\bmemudahkan\b/gi, "facilitating"],
+  [/\bmenemukan\b/gi, "identifying"],
+  [/\bmemadukan\b/gi, "combining"],
+  [/\bmemimpin\b/gi, "leading"],
+  [/\bmerawat\b/gi, "maintaining"],
+  [/\bmempelajari\b/gi, "studying"],
+  [/\bmenjangkau\b/gi, "reaching"],
+  [/\bmenjalin\b/gi, "building"],
+  [/\bberperan\b/gi, "serving"],
+  [/\bberakar\b/gi, "rooted"],
+  [/\bmengutamakan\b/gi, "prioritizing"],
+  [/\bmemetakan\b/gi, "mapping"],
+  [/\bmengubah\b/gi, "transforming"],
+
+  // Connectors, Prepositions & Pronouns
+  [/\bdan\b/gi, "and"],
+  [/\batau\b/gi, "or"],
+  [/\bdengan\b/gi, "with"],
+  [/\buntuk\b/gi, "for"],
+  [/\bpada\b/gi, "on"],
+  [/\bdi\b/gi, "at"],
+  [/\bdalam\b/gi, "in"],
+  [/\bdari\b/gi, "from"],
+  [/\bke\b/gi, "to"],
+  [/\boleh\b/gi, "by"],
+  [/\bguna\b/gi, "in order to"],
+  [/\bagar\b/gi, "so that"],
+  [/\bserta\b/gi, "as well as"],
+  [/\btentang\b/gi, "about"],
+  [/\bhingga\b/gi, "up to"],
+  [/\bsebesar\b/gi, "by"],
+  [/\bsecara\b/gi, "in a"],
+  [/\bmelalui\b/gi, "through"],
+  [/\bantara\b/gi, "between"],
+  [/\bantar\b/gi, "inter-"],
+  [/\bbersama\b/gi, "with"],
+  [/\bsebagai\b/gi, "as"],
+  [/\byang\b/gi, "that"],
+  [/\bsaya\b/gi, "I"],
+  [/\bkami\b/gi, "we"],
+  [/\banda\b/gi, "you"],
+  [/\bini\b/gi, "this"],
+  [/\bitu\b/gi, "that"],
+  [/\bsetiap\b/gi, "every"],
+  [/\bsemua\b/gi, "all"],
+
+  // Common Nouns
+  [/\baplikasi\b/gi, "application"],
+  [/\bantarmuka\b/gi, "interface"],
+  [/\bbasis data\b/gi, "database"],
+  [/\bperangkat lunak\b/gi, "software"],
+  [/\bperangkat\b/gi, "devices"],
+  [/\bkeahlian\b/gi, "skills"],
+  [/\bproyek\b/gi, "projects"],
+  [/\bpengalaman\b/gi, "experience"],
+  [/\bpendidikan\b/gi, "education"],
+  [/\bsertifikasi\b/gi, "certifications"],
+  [/\blisensi\b/gi, "licenses"],
+  [/\bkredensial\b/gi, "credentials"],
+  [/\bpengguna\b/gi, "users"],
+  [/\bmahasiswa\b/gi, "students"],
+  [/\bkampus\b/gi, "campus"],
+  [/\bkegiatan\b/gi, "activities"],
+  [/\bkompetisi\b/gi, "competitions"],
+  [/\blomba\b/gi, "competitions"],
+  [/\blaporan\b/gi, "reports"],
+  [/\btransaksi\b/gi, "transactions"],
+  [/\bperusahaan\b/gi, "company"],
+  [/\binformasi\b/gi, "information"],
+  [/\bsistem\b/gi, "system"],
+  [/\bpencatatan\b/gi, "records"],
+  [/\bpembayaran\b/gi, "payment"],
+  [/\bpengelolaan\b/gi, "management"],
+  [/\bpeminjaman\b/gi, "rental"],
+  [/\bpenyewaan\b/gi, "rental"],
+  [/\barmada\b/gi, "fleet"],
+  [/\bkendaraan\b/gi, "vehicles"],
+  [/\bmasyarakat\b/gi, "public"],
+  [/\bwarga\b/gi, "citizens"],
+  [/\bkolaborasi\b/gi, "collaboration"],
+  [/\bkemitraan\b/gi, "partnerships"],
+  [/\bkepemimpinan\b/gi, "leadership"],
+  [/\brelawan\b/gi, "volunteers"],
+  [/\bkomunitas\b/gi, "community"],
+  [/\bpanitia\b/gi, "committee"],
+  [/\banggota\b/gi, "members"],
+  [/\bdokumentasi\b/gi, "documentation"],
+  [/\bpurwarupa\b/gi, "prototype"],
+  [/\bkualitas\b/gi, "quality"],
+  [/\bkecepatan\b/gi, "speed"],
+  [/\bkinerja\b/gi, "performance"],
+  [/\bdampak\b/gi, "impact"],
+  [/\bsolusi\b/gi, "solutions"],
+  [/\bmasalah\b/gi, "challenges"],
+  [/\btarget\b/gi, "targets"],
+  [/\bcapaian\b/gi, "milestones"],
+  [/\bhasil\b/gi, "results"],
+  [/\bpengujian\b/gi, "testing"],
+  [/\boptimasi\b/gi, "optimization"],
+  [/\boptimalisasi\b/gi, "optimization"],
+  [/\bpenelitian\b/gi, "research"],
+  [/\bpenalaran\b/gi, "reasoning"],
+  [/\balgoritma\b/gi, "algorithms"],
+  [/\bfondasi\b/gi, "foundations"],
+  [/\baritektur\b/gi, "architecture"],
+  [/\bkompetensi\b/gi, "competencies"],
+  [/\bpraktik\b/gi, "practice"],
+  [/\bindustri\b/gi, "industry"],
+  [/\bperjalanan\b/gi, "journey"],
+  [/\bprinsip\b/gi, "principles"],
+
+  // Adjectives & Modifiers
+  [/\bakurat\b/gi, "accurate"],
+  [/\bterukur\b/gi, "measurable"],
+  [/\bskalabel\b/gi, "scalable"],
+  [/\btangguh\b/gi, "robust"],
+  [/\bcerdas\b/gi, "intelligent"],
+  [/\bmodern\b/gi, "modern"],
+  [/\bbersih\b/gi, "clean"],
+  [/\baktif\b/gi, "active"],
+  [/\bkomprehensif\b/gi, "comprehensive"],
+  [/\bfungsional\b/gi, "functional"],
+  [/\boperasional\b/gi, "operational"],
+  [/\befisien\b/gi, "efficient"],
+  [/\bterpadu\b/gi, "integrated"],
+  [/\botomatis\b/gi, "automated"],
+  [/\bterpusat\b/gi, "centralized"],
+  [/\bmandiri\b/gi, "autonomous"],
+  [/\bnyata\b/gi, "real-world"],
+  [/\briil\b/gi, "real-world"],
+  [/\bterbuka\b/gi, "open"],
+  [/\bbaru\b/gi, "new"],
+  [/\blama\b/gi, "previous"],
+  [/\blengkap\b/gi, "complete"],
+  [/\bresmi\b/gi, "official"],
+  [/\bterstruktur\b/gi, "structured"],
+  [/\bresponsif\b/gi, "responsive"],
+  [/\bteruji\b/gi, "tested"],
+];
+
+// Helper to preserve casing of first letter
+function preserveCase(original, replacement) {
+  if (!original || !replacement) return replacement;
+  const isCapital = original[0] === original[0].toUpperCase() &&
+    original[0] !== original[0].toLowerCase();
+  if (isCapital) {
+    return replacement.charAt(0).toUpperCase() + replacement.slice(1);
+  }
+  return replacement.charAt(0).toLowerCase() + replacement.slice(1);
+}
+
+// Translate arbitrary Indonesian sentence or paragraph to English
 export function translateText(text, lang = "en") {
   if (!text || typeof text !== "string" || lang !== "en") return text;
   const trimmed = text.trim();
@@ -275,7 +575,7 @@ export function translateText(text, lang = "en") {
     return EXACT_TRANSLATIONS[trimmed];
   }
 
-  // Strip leading and trailing quotes (single, double, curly)
+  // Strip leading and trailing quotation marks
   const unquoted = trimmed.replace(/^["“'”]+|["“'”]+$/g, "").trim();
   if (unquoted && EXACT_TRANSLATIONS[unquoted]) {
     return EXACT_TRANSLATIONS[unquoted];
@@ -297,13 +597,44 @@ export function translateText(text, lang = "en") {
     }
   }
 
-  // Pattern-based substitution fallback
+  // Prefix splitting for colons
+  if (trimmed.includes(": ")) {
+    const parts = trimmed.split(": ");
+    if (parts.length === 2) {
+      const translatedPrefix = translateText(parts[0], lang);
+      const translatedSuffix = translateText(parts[1], lang);
+      return `${translatedPrefix}: ${translatedSuffix}`;
+    }
+  }
+
+  // Multi-sentence splitting
+  const sentenceRegex = /([.!?]\s+)/;
+  const tokens = trimmed.split(sentenceRegex);
+  if (tokens.length > 1) {
+    const translatedTokens = tokens.map((tok, idx) => {
+      // Delimiters are at odd indices
+      if (idx % 2 === 1) return tok;
+      return translateText(tok, lang);
+    });
+    return translatedTokens.join("");
+  }
+
+  // Pattern-based substitution fallback for phrases and words
   let result = trimmed;
   for (const [regex, replacement] of MONTH_REPLACEMENTS) {
-    result = result.replace(regex, replacement);
+    result = result.replace(regex, (match) =>
+      preserveCase(match, replacement)
+    );
   }
-  for (const [regex, replacement] of TERM_REPLACEMENTS) {
-    result = result.replace(regex, replacement);
+  for (const [regex, replacement] of PHRASE_REPLACEMENTS) {
+    result = result.replace(regex, (match) =>
+      preserveCase(match, replacement)
+    );
+  }
+  for (const [regex, replacement] of WORD_REPLACEMENTS) {
+    result = result.replace(regex, (match) =>
+      preserveCase(match, replacement)
+    );
   }
 
   return result;
@@ -319,6 +650,7 @@ export function translateInfo(info, lang = "en") {
     role: translateText(info.role, lang),
     status: translateText(info.status, lang),
     valueProp: translateText(info.valueProp, lang),
+    codeCardTitle: info.codeCardTitle,
     aboutKicker: translateText(info.aboutKicker, lang),
     aboutTitle: translateText(info.aboutTitle, lang),
     aboutTitleAccent: translateText(info.aboutTitleAccent, lang),
@@ -404,10 +736,12 @@ export function translateExperience(exp, lang = "en") {
   return {
     ...exp,
     role: translateText(exp.role, lang),
+    org: translateText(exp.org, lang),
     period: translateText(exp.period, lang),
     category: translateText(exp.category, lang),
     type: translateText(exp.type, lang),
     statusText: translateText(exp.statusText, lang),
+    photoAlt: translateText(exp.photoAlt, lang),
     bullets: Array.isArray(exp.bullets)
       ? exp.bullets.map((b) => translateText(b, lang))
       : exp.bullets,

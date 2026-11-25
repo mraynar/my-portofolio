@@ -3,7 +3,11 @@ import { useLocation } from "react-router-dom";
 import { PERSONAL_INFO } from "./data";
 import { Icon } from "./components/icons/Icon";
 import { useLanguage } from "./context/LanguageContext";
-import { translateProject, translateExperience } from "./lib/translations";
+import {
+  translateProject,
+  translateExperience,
+  translateText,
+} from "./lib/translations";
 
 export { Icon } from "./components/icons/Icon";
 export { ICON_REGISTRY, ICON_KEYS } from "./components/icons/registry.js";
@@ -561,7 +565,12 @@ export function ImageLightboxModal({
   onEdit,
   onUpload,
 }) {
+  const { language } = useLanguage();
   const [zoomLevel, setZoomLevel] = useState(1);
+
+  const displayTitle = language === "en" ? translateText(title, "en") : title;
+  const displaySubtitle =
+    language === "en" && subtitle ? translateText(subtitle, "en") : subtitle;
 
   const handleClose = () => {
     setZoomLevel(1);
@@ -590,11 +599,20 @@ export function ImageLightboxModal({
     setZoomLevel((prev) => (prev > 1 ? 1 : 1.75));
   };
 
+  const zoomTooltip =
+    zoomLevel > 1
+      ? language === "en"
+        ? "Zoom out (100%)"
+        : "Perkecil (100%)"
+      : language === "en"
+        ? "Zoom in (175%)"
+        : "Perbesar (175%)";
+
   return (
     <div
       role="dialog"
       aria-modal="true"
-      aria-label={title}
+      aria-label={displayTitle}
       className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-5"
       style={{
         background: "rgba(0, 0, 0, 0.8)",
@@ -624,11 +642,11 @@ export function ImageLightboxModal({
               className="text-base sm:text-lg font-extrabold truncate"
               style={{ fontFamily: "var(--font-display)" }}
             >
-              {title}
+              {displayTitle}
             </h3>
-            {subtitle && (
+            {displaySubtitle && (
               <p className="text-xs font-mono font-medium text-[var(--ink-secondary)]">
-                {subtitle}
+                {displaySubtitle}
               </p>
             )}
           </div>
@@ -637,7 +655,7 @@ export function ImageLightboxModal({
             <button
               type="button"
               onClick={toggleZoom}
-              title={zoomLevel > 1 ? "Perkecil (100%)" : "Perbesar (175%)"}
+              title={zoomTooltip}
               className="p-1.5 rounded-lg border-2 hover:bg-[var(--surface-alt)] cursor-pointer text-[var(--ink)]"
               style={{ borderColor: "var(--border)" }}
             >
@@ -646,7 +664,11 @@ export function ImageLightboxModal({
             <button
               type="button"
               onClick={handleClose}
-              aria-label="Tutup jendela pratinjau"
+              aria-label={
+                language === "en"
+                  ? "Close preview window"
+                  : "Tutup jendela pratinjau"
+              }
               className="p-1.5 rounded-lg border-2 hover:bg-[var(--surface-alt)] cursor-pointer text-[var(--ink)]"
               style={{ borderColor: "var(--border)" }}
             >
@@ -684,8 +706,12 @@ export function ImageLightboxModal({
         >
           <div className="text-[11px] font-mono text-[var(--ink-secondary)] hidden sm:block">
             {onEdit
-              ? "Klik 'Sesuaikan Foto' untuk memotong atau mengatur framing."
-              : "Klik foto untuk memperbesar tampilan."}
+              ? language === "en"
+                ? "Click 'Adjust Photo' to crop or reframe."
+                : "Klik 'Sesuaikan Foto' untuk memotong atau mengatur framing."
+              : language === "en"
+                ? "Click image to zoom in."
+                : "Klik foto untuk memperbesar tampilan."}
           </div>
 
           <div className="flex items-center gap-2 ml-auto">
@@ -696,7 +722,7 @@ export function ImageLightboxModal({
                 className="neo-btn-secondary text-xs sm:text-sm font-bold py-1.5 px-3 flex items-center gap-1.5"
               >
                 <Icon name="upload" size={14} />
-                <span>Unggah Baru</span>
+                <span>{language === "en" ? "Upload New" : "Unggah Baru"}</span>
               </button>
             )}
 
@@ -707,7 +733,11 @@ export function ImageLightboxModal({
                 className="neo-btn-primary text-xs sm:text-sm font-bold py-1.5 px-3 flex items-center gap-1.5"
               >
                 <Icon name="crop" size={14} />
-                <span>Sesuaikan / Edit Foto</span>
+                <span>
+                  {language === "en"
+                    ? "Adjust / Edit Photo"
+                    : "Sesuaikan / Edit Foto"}
+                </span>
               </button>
             )}
 
@@ -716,7 +746,7 @@ export function ImageLightboxModal({
               onClick={handleClose}
               className="neo-btn-secondary text-xs sm:text-sm font-bold py-1.5 px-3"
             >
-              Tutup
+              {language === "en" ? "Close" : "Tutup"}
             </button>
           </div>
         </div>
@@ -898,12 +928,31 @@ export function CaseStudyModal({ project, onClose }) {
             >
               {t("modal_arch_tech")}
             </h4>
-            <p
-              className="text-base leading-relaxed mb-3"
-              style={{ color: "var(--ink-secondary)" }}
-            >
-              {cs?.architecture || t("modal_arch_default")}
-            </p>
+            {Array.isArray(cs?.architecture) ? (
+              <ul
+                className="space-y-1.5 mb-3 text-xs sm:text-sm leading-relaxed"
+                style={{ color: "var(--ink-secondary)" }}
+              >
+                {cs.architecture.map((item, idx) => (
+                  <li key={idx} className="flex items-start gap-2">
+                    <span
+                      className="mt-0.5 shrink-0"
+                      style={{ color: "var(--google-yellow)" }}
+                    >
+                      <Icon name="chevron-right" size={14} />
+                    </span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p
+                className="text-base leading-relaxed mb-3"
+                style={{ color: "var(--ink-secondary)" }}
+              >
+                {cs?.architecture || t("modal_arch_default")}
+              </p>
+            )}
             <Cluster gap={8}>
               {targetProject.badges.map((b) => (
                 <Chip key={b} variant="default">
@@ -973,9 +1022,15 @@ export function CaseStudyModal({ project, onClose }) {
 }
 
 // Featured hero project card with balanced two-column layout
-export function FeaturedHeroCard({ project, onOpenCaseStudy }) {
-  const { t } = useLanguage();
+export function FeaturedHeroCard({ project: rawProject, onOpenCaseStudy }) {
+  const { t, language } = useLanguage();
   const [lightboxOpen, setLightboxOpen] = useState(false);
+  const project = useMemo(
+    () => (rawProject ? translateProject(rawProject, language) : null),
+    [rawProject, language]
+  );
+  if (!project) return null;
+
   return (
     <div
       className="neo-card-flat grid grid-cols-1 lg:grid-cols-12 mb-12 p-0 overflow-hidden"
@@ -1025,7 +1080,11 @@ export function FeaturedHeroCard({ project, onOpenCaseStudy }) {
               <button
                 type="button"
                 onClick={() => setLightboxOpen(true)}
-                title="Perbesar gambar proyek"
+                title={
+                  language === "en"
+                    ? "Enlarge project preview"
+                    : "Perbesar gambar proyek"
+                }
                 className="absolute bottom-3 right-3 p-1.5 rounded-lg bg-black/60 text-white opacity-0 group-hover/hero:opacity-100 transition-opacity hover:bg-black/80 backdrop-blur-xs cursor-pointer"
               >
                 <Icon name="zoom-in" size={16} />
@@ -1111,7 +1170,11 @@ export function FeaturedHeroCard({ project, onOpenCaseStudy }) {
         isOpen={lightboxOpen}
         imageUrl={project.image}
         title={project.title}
-        subtitle={`${project.label} • Rasio 16:10 • Proyek Unggulan`}
+        subtitle={
+          language === "en"
+            ? `${project.label} • 16:10 Aspect Ratio • Featured Project`
+            : `${project.label} • Rasio 16:10 • Proyek Unggulan`
+        }
         alt={project.title}
         onClose={() => setLightboxOpen(false)}
       />
@@ -1203,7 +1266,11 @@ export function ProjectCard({ project, onOpenCaseStudy }) {
             <button
               type="button"
               onClick={() => setLightboxOpen(true)}
-              title="Perbesar gambar proyek"
+              title={
+                language === "en"
+                  ? "Enlarge project preview"
+                  : "Perbesar gambar proyek"
+              }
               className="absolute bottom-2 right-2 p-1.5 rounded-lg bg-black/60 text-white opacity-0 group-hover/cardimg:opacity-100 transition-opacity hover:bg-black/80 backdrop-blur-xs cursor-pointer"
             >
               <Icon name="zoom-in" size={14} />
@@ -1315,9 +1382,13 @@ export function ProjectCard({ project, onOpenCaseStudy }) {
       <ImageLightboxModal
         isOpen={lightboxOpen}
         imageUrl={project.image}
-        title={project.title}
-        subtitle={`${project.label} • Rasio 16:10`}
-        alt={project.title}
+        title={targetProject.title}
+        subtitle={
+          language === "en"
+            ? `${targetProject.label} • 16:10 Aspect Ratio`
+            : `${targetProject.label} • Rasio 16:10`
+        }
+        alt={targetProject.title}
         onClose={() => setLightboxOpen(false)}
       />
     </div>
