@@ -300,7 +300,10 @@ export default function AdminLayout({
             ${
               isMobileOpen
                 ? "fixed top-[61px] left-0 bottom-0 w-64 shadow-2xl"
-                : !isMobileOpen && isCollapsed
+                : "sticky top-[61px] self-start"
+            }
+            ${
+              !isMobileOpen && isCollapsed
                 ? "w-16 md:w-20"
                 : "w-64"
             }
@@ -308,11 +311,12 @@ export default function AdminLayout({
           style={{
             backgroundColor: "var(--surface)",
             borderColor: "var(--border)",
+            height: isMobileOpen ? undefined : "calc(100vh - 61px)",
             willChange: "width",
           }}
         >
           {/* Top rail controls and navigation list */}
-          <div className="p-2 sm:p-2.5 space-y-2">
+          <div className="p-2 sm:p-2.5 space-y-2 overflow-y-auto min-h-0 flex-1">
             {/* Sidebar header row */}
             <div
               className="flex items-center justify-between h-9 px-2 pb-2 mb-1 border-b-2 overflow-hidden"
@@ -451,7 +455,7 @@ export default function AdminLayout({
 
           {/* Sidebar bottom summary */}
           <div
-            className="p-2 sm:p-2.5 border-t-2 overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.2,0,0,1)]"
+            className="p-2 sm:p-2.5 border-t-2 overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.2,0,0,1)] shrink-0"
             style={{ borderColor: "var(--border)" }}
           >
             <div
