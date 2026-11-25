@@ -152,6 +152,7 @@ create table if not exists public.certifications (
   credential_url text default '#',
   date text not null,
   order_index int not null default 0,
+  image_url text,
   created_at timestamptz default now()
 );
 

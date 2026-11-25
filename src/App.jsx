@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { BrowserRouter, Routes, Route, Link, useLocation } from "react-router-dom";
 import { LanguageProvider, useLanguage } from "./context/LanguageContext";
 import {
@@ -1082,12 +1082,18 @@ function ExperiencePreview({
   );
 }
 
-// Certifications section
+// Certifications section (1-line scrollable slider)
 function CertificationsSection({
   certifications = CERTIFICATIONS,
   info = PERSONAL_INFO,
 }) {
   const { t, language } = useLanguage();
+  const trackRef = useRef(null);
+  const [zoomCert, setZoomCert] = useState(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
+
   const providerColors = {
     Coursera: "var(--google-blue)",
     Dicoding: "var(--google-green)",
@@ -1095,115 +1101,251 @@ function CertificationsSection({
     Karirnex: "var(--google-red)",
   };
 
+  const scrollTrack = (direction) => {
+    if (!trackRef.current) return;
+    trackRef.current.scrollBy({
+      left: direction * 360,
+      behavior: "smooth",
+    });
+  };
+
+  const handleMouseDown = (e) => {
+    const el = trackRef.current;
+    if (!el) return;
+    setIsDragging(true);
+    setStartX(e.pageX - el.offsetLeft);
+    setScrollLeft(el.scrollLeft);
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDragging || !trackRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - trackRef.current.offsetLeft;
+    const walk = (x - startX) * 1.5;
+    trackRef.current.scrollLeft = scrollLeft - walk;
+  };
+
+  const handleMouseUp = () => setIsDragging(false);
+
   return (
     <Section id="certifications" style={{ backgroundColor: "transparent" }}>
       <Container>
-        <SectionHeading
-          kicker={
-            language === "en"
-              ? translateText(info.certsKicker, "en") || "PROFESSIONAL CREDENTIALS"
-              : info.certsKicker || "KREDENSIAL PROFESIONAL"
-          }
-          title={
-            language === "en"
-              ? translateText(info.certsTitle, "en") || "Certifications &"
-              : info.certsTitle || "Sertifikasi &"
-          }
-          accent={
-            language === "en"
-              ? translateText(info.certsTitleAccent, "en") || "Licenses"
-              : info.certsTitleAccent || "Lisensi"
-          }
-          subtitle={
-            language === "en"
-              ? translateText(info.certsSubtitle, "en") || "Official technical competency certifications from global learning and industry platforms."
-              : info.certsSubtitle
-          }
-        />
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+          <div>
+            <div className="mb-2">
+              <Chip variant="blue">
+                {language === "en"
+                  ? translateText(info.certsKicker, "en") || "PROFESSIONAL CREDENTIALS"
+                  : info.certsKicker || "KREDENSIAL PROFESIONAL"}
+              </Chip>
+            </div>
+            <h2
+              className="font-extrabold text-3xl sm:text-4xl tracking-tight"
+              style={{ fontFamily: "var(--font-display)", color: "var(--ink)" }}
+            >
+              {language === "en"
+                ? translateText(info.certsTitle, "en") || "Certifications &"
+                : info.certsTitle || "Sertifikasi &"}{" "}
+              <span style={{ color: "var(--google-blue)" }}>
+                {language === "en"
+                  ? translateText(info.certsTitleAccent, "en") || "Licenses"
+                  : info.certsTitleAccent || "Lisensi"}
+              </span>
+            </h2>
+            <p
+              className="mt-2 text-sm sm:text-base max-w-2xl font-normal"
+              style={{ color: "var(--ink-secondary)" }}
+            >
+              {language === "en"
+                ? translateText(info.certsSubtitle, "en") ||
+                  "Official technical competency certifications from global learning and industry platforms."
+                : info.certsSubtitle ||
+                  "Sertifikasi resmi kompetensi teknis dari platform pembelajaran dan industri global."}
+            </p>
+          </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {certifications.slice(0, 6).map((rawCert) => {
-            const cert =
-              language === "en" ? translateCertification(rawCert, "en") : rawCert;
-            const pColor =
-              providerColors[cert.provider] || "var(--google-blue)";
+          {/* Horizontal navigation controls */}
+          <div className="flex items-center gap-2 self-end md:self-auto shrink-0">
+            <button
+              type="button"
+              onClick={() => scrollTrack(-1)}
+              aria-label="Geser ke kiri / Scroll left"
+              className="w-10 h-10 rounded-full border-2 border-[var(--border)] bg-[var(--surface)] shadow-[2px_2px_0_var(--shadow-color)] hover:translate-x-[-1px] hover:translate-y-[-1px] active:translate-x-0 active:translate-y-0 transition-all cursor-pointer flex items-center justify-center shrink-0"
+            >
+              <Icon name="arrow-left" size={18} />
+            </button>
+            <button
+              type="button"
+              onClick={() => scrollTrack(1)}
+              aria-label="Geser ke kanan / Scroll right"
+              className="w-10 h-10 rounded-full border-2 border-[var(--border)] bg-[var(--surface)] shadow-[2px_2px_0_var(--shadow-color)] hover:translate-x-[-1px] hover:translate-y-[-1px] active:translate-x-0 active:translate-y-0 transition-all cursor-pointer flex items-center justify-center shrink-0"
+            >
+              <Icon name="arrow-right" size={18} />
+            </button>
+          </div>
+        </div>
 
-            return (
-              <Card
-                key={cert.credentialId || cert.id}
-                className="flex flex-col justify-between"
-              >
-                <div>
-                  <div
-                    className="flex items-center justify-between mb-3.5 pb-2.5 border-b-2"
-                    style={{ borderColor: "var(--border)" }}
-                  >
-                    <span
-                      className="neo-badge text-xs sm:text-sm font-bold"
+        {/* 1-line horizontal scrollable track */}
+        <div className="relative">
+          <div
+            ref={trackRef}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseUp}
+            className={`flex flex-nowrap overflow-x-auto gap-5 sm:gap-6 pb-6 pt-2 scroll-smooth snap-x snap-mandatory select-none ${
+              isDragging ? "cursor-grabbing" : "cursor-grab"
+            }`}
+            style={{
+              scrollbarWidth: "none",
+              msOverflowStyle: "none",
+            }}
+          >
+            {certifications.map((rawCert, idx) => {
+              const cert =
+                language === "en" ? translateCertification(rawCert, "en") : rawCert;
+              const pColor =
+                providerColors[cert.provider] || "var(--google-blue)";
+
+              return (
+                <Card
+                  key={cert.credentialId || cert.id || idx}
+                  className="w-[280px] sm:w-[320px] md:w-[350px] shrink-0 snap-start flex flex-col justify-between p-4 sm:p-5"
+                >
+                  <div>
+                    {/* Uncropped certificate frame */}
+                    <div
+                      className="relative w-full aspect-[4/3] rounded-xl border-2 border-[var(--border)] overflow-hidden mb-3.5 flex items-center justify-center group"
+                      style={{ backgroundColor: "var(--surface-alt)" }}
+                    >
+                      {cert.image ? (
+                        <>
+                          <img
+                            src={cert.image}
+                            alt={cert.title}
+                            className="w-full h-full object-contain p-2 cursor-pointer transition-transform duration-300 group-hover:scale-[1.03]"
+                            onClick={() => setZoomCert(cert)}
+                            loading="lazy"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setZoomCert(cert)}
+                            className="absolute top-2 right-2 p-1.5 rounded-lg border-2 border-[var(--border)] bg-[var(--surface)] shadow-[2px_2px_0_var(--shadow-color)] opacity-85 group-hover:opacity-100 transition-opacity cursor-pointer"
+                            title={language === "en" ? "Zoom Certificate" : "Perbesar Sertifikat"}
+                            aria-label="Zoom certificate"
+                          >
+                            <Icon name="zoom-in" size={13} />
+                          </button>
+                        </>
+                      ) : (
+                        <div className="flex flex-col items-center justify-center p-4 text-center">
+                          <div
+                            className="w-11 h-11 rounded-xl border-2 flex items-center justify-center mb-2 shadow-[2px_2px_0_var(--shadow-color)]"
+                            style={{
+                              backgroundColor: "var(--surface)",
+                              borderColor: pColor,
+                              color: pColor,
+                            }}
+                          >
+                            <Icon name="award" size={22} />
+                          </div>
+                          <span
+                            className="text-xs font-mono font-bold tracking-wider uppercase"
+                            style={{ color: pColor }}
+                          >
+                            {cert.provider}
+                          </span>
+                          <span
+                            className="text-[11px] font-mono mt-1"
+                            style={{ color: "var(--ink-muted)" }}
+                          >
+                            {cert.credentialId ? `ID: ${cert.credentialId}` : cert.issuer}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    <div
+                      className="flex items-center justify-between mb-3 pb-2.5 border-b-2"
+                      style={{ borderColor: "var(--border)" }}
+                    >
+                      <span
+                        className="neo-badge text-xs font-bold"
+                        style={{
+                          backgroundColor: "var(--surface-alt)",
+                          color: pColor,
+                          borderColor: pColor,
+                        }}
+                      >
+                        {cert.provider}
+                      </span>
+                      <span
+                        className="text-xs font-mono font-bold"
+                        style={{ color: "var(--ink-muted)" }}
+                      >
+                        {cert.date}
+                      </span>
+                    </div>
+
+                    <h3
+                      className="font-extrabold text-base sm:text-lg mb-1 leading-snug line-clamp-2"
                       style={{
-                        backgroundColor: "var(--surface-alt)",
-                        color: pColor,
-                        borderColor: pColor,
+                        fontFamily: "var(--font-display)",
+                        color: "var(--ink)",
                       }}
                     >
-                      {cert.provider}
-                    </span>
-                    <span
-                      className="text-xs sm:text-sm font-mono font-bold"
+                      {cert.title}
+                    </h3>
+                    <p
+                      className="text-xs sm:text-sm font-semibold mb-3"
+                      style={{ color: "var(--ink-secondary)" }}
+                    >
+                      {language === "en" ? "Issuer:" : "Penerbit:"} {cert.issuer}
+                    </p>
+                  </div>
+
+                  <div
+                    className="pt-3 border-t-2 mt-auto"
+                    style={{ borderColor: "var(--border)" }}
+                  >
+                    <div
+                      className="text-xs font-mono mb-2.5 truncate"
                       style={{ color: "var(--ink-muted)" }}
                     >
-                      {cert.date}
-                    </span>
+                      ID: {cert.credentialId}
+                    </div>
+                    {cert.credentialUrl && cert.credentialUrl !== "#" ? (
+                      <a
+                        href={cert.credentialUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="neo-btn-primary text-xs sm:text-sm w-full font-bold justify-center py-2.5"
+                      >
+                        {t("edu_view_credential")}
+                        <Icon name="external-link" size={14} />
+                      </a>
+                    ) : (
+                      <span className="text-xs sm:text-sm font-semibold text-gray-500 block text-center py-1">
+                        {language === "en" ? "Internal Verification" : "Terverifikasi Internal"}
+                      </span>
+                    )}
                   </div>
-
-                  <h3
-                    className="font-extrabold text-lg sm:text-xl mb-1.5 leading-snug line-clamp-2"
-                    style={{
-                      fontFamily: "var(--font-display)",
-                      color: "var(--ink)",
-                    }}
-                  >
-                    {cert.title}
-                  </h3>
-                  <p
-                    className="text-sm sm:text-base font-semibold mb-4"
-                    style={{ color: "var(--ink-secondary)" }}
-                  >
-                    {language === "en" ? "Issuer:" : "Penerbit:"} {cert.issuer}
-                  </p>
-                </div>
-
-                <div
-                  className="pt-3.5 border-t-2 mt-auto"
-                  style={{ borderColor: "var(--border)" }}
-                >
-                  <div
-                    className="text-xs font-mono mb-3 truncate"
-                    style={{ color: "var(--ink-muted)" }}
-                  >
-                    ID: {cert.credentialId}
-                  </div>
-                  {cert.credentialUrl && cert.credentialUrl !== "#" ? (
-                    <a
-                      href={cert.credentialUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="neo-btn-primary text-sm w-full font-bold"
-                    >
-                      {t("edu_view_credential")}
-                      <Icon name="external-link" size={14} />
-                    </a>
-                  ) : (
-                    <span className="text-xs sm:text-sm font-semibold text-gray-500 block text-center py-1">
-                      {language === "en" ? "Internal Verification" : "Terverifikasi Internal"}
-                    </span>
-                  )}
-                </div>
-              </Card>
-            );
-          })}
+                </Card>
+              );
+            })}
+          </div>
         </div>
       </Container>
+
+      {/* Lightbox modal for zooming certificate full-size */}
+      <ImageLightboxModal
+        isOpen={Boolean(zoomCert)}
+        imageUrl={zoomCert?.image}
+        title={zoomCert?.title || "Sertifikat"}
+        subtitle={`${zoomCert?.provider || ""} • ${zoomCert?.issuer || ""} (${zoomCert?.date || ""})`}
+        alt={zoomCert?.title || "Sertifikat"}
+        onClose={() => setZoomCert(null)}
+      />
     </Section>
   );
 }

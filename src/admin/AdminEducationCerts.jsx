@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import {
   Card,
   Chip,
@@ -6,6 +6,7 @@ import {
   CustomSelect,
   Pagination,
   FloatingAlert,
+  ImageLightboxModal,
 } from "../components";
 import AdminSectionHeaderEditor from "./AdminSectionHeaderEditor";
 import {
@@ -13,6 +14,7 @@ import {
   deleteEducation,
   upsertCertification,
   deleteCertification,
+  uploadStorageFile,
 } from "../lib/supabase";
 
 // Education and certifications management tab
@@ -28,6 +30,9 @@ export default function AdminEducationCerts({
   const [editingCert, setEditingCert] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedback, setFeedback] = useState(null);
+  const [uploadingCertImg, setUploadingCertImg] = useState(false);
+  const [previewCertImg, setPreviewCertImg] = useState(null);
+  const certFileInputRef = useRef(null);
   const [eduPage, setEduPage] = useState(1);
   const [certPage, setCertPage] = useState(1);
   const eduPageSize = 4;
@@ -94,6 +99,36 @@ export default function AdminEducationCerts({
       await onRefresh();
     } catch (err) {
       alert(err.message || "Gagal menghapus sertifikasi.");
+    }
+  };
+
+  const handleCertImageSelect = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingCertImg(true);
+    setFeedback(null);
+    try {
+      const cleanName = (file.name || "cert.jpg").replace(
+        /[^a-zA-Z0-9._-]/g,
+        ""
+      );
+      const path = `certificates/${Date.now()}-${cleanName}`;
+      const url = await uploadStorageFile("media", path, file);
+      if (url) {
+        setEditingCert((prev) => ({ ...prev, image: url }));
+        setFeedback({
+          type: "success",
+          text: "Gambar sertifikat berhasil diunggah.",
+        });
+      }
+    } catch (err) {
+      setFeedback({
+        type: "error",
+        text: err.message || "Gagal mengunggah gambar sertifikat.",
+      });
+    } finally {
+      setUploadingCertImg(false);
+      if (certFileInputRef.current) certFileInputRef.current.value = "";
     }
   };
 
@@ -448,6 +483,100 @@ export default function AdminEducationCerts({
                   </div>
                 </div>
 
+                {/* Certificate image upload & uncropped preview */}
+                <div className="space-y-3">
+                  <label className="block text-xs font-bold font-mono uppercase">
+                    Gambar Sertifikat (Tidak Ke-Crop / Rasio Asli)
+                  </label>
+                  {editingCert.image ? (
+                    <div className="space-y-2">
+                      <div
+                        className="relative max-w-sm aspect-[4/3] rounded-xl border-2 border-[var(--border)] overflow-hidden flex items-center justify-center"
+                        style={{ backgroundColor: "var(--surface-alt)" }}
+                      >
+                        <img
+                          src={editingCert.image}
+                          alt="Pratinjau Sertifikat"
+                          className="w-full h-full object-contain p-2"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setPreviewCertImg(editingCert.image)}
+                          className="absolute top-2 right-2 p-1.5 rounded-lg border-2 border-[var(--border)] bg-[var(--surface)] shadow-[2px_2px_0_var(--shadow-color)] cursor-pointer"
+                          title="Lihat Pratinjau Penuh"
+                        >
+                          <Icon name="zoom-in" size={14} />
+                        </button>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <label className="neo-btn-secondary text-xs font-bold cursor-pointer py-1.5 px-3 inline-flex items-center gap-1.5">
+                          <Icon name="upload" size={14} />
+                          {uploadingCertImg ? "Mengunggah..." : "Ganti Gambar"}
+                          <input
+                            ref={certFileInputRef}
+                            type="file"
+                            accept="image/*"
+                            onChange={handleCertImageSelect}
+                            disabled={uploadingCertImg}
+                            className="hidden"
+                          />
+                        </label>
+                        <button
+                          type="button"
+                          onClick={() => setEditingCert((prev) => ({ ...prev, image: "" }))}
+                          className="neo-badge text-xs font-bold py-1.5 px-3 cursor-pointer inline-flex items-center gap-1.5"
+                          style={{
+                            backgroundColor: "var(--google-red-bg)",
+                            color: "var(--google-red-text)",
+                            borderColor: "var(--google-red)",
+                          }}
+                        >
+                          <Icon name="trash" size={14} />
+                          Hapus Gambar
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <label className="neo-btn-secondary text-xs font-bold cursor-pointer py-2 px-4 inline-flex items-center gap-1.5">
+                          <Icon name="upload" size={14} />
+                          {uploadingCertImg ? "Mengunggah..." : "Unggah Gambar Sertifikat"}
+                          <input
+                            ref={certFileInputRef}
+                            type="file"
+                            accept="image/*"
+                            onChange={handleCertImageSelect}
+                            disabled={uploadingCertImg}
+                            className="hidden"
+                          />
+                        </label>
+                      </div>
+                      <p className="text-xs" style={{ color: "var(--ink-secondary)" }}>
+                        Format JPG, PNG, atau WEBP. Gambar ditampilkan utuh tanpa terpotong.
+                      </p>
+                    </div>
+                  )}
+                  <div>
+                    <label className="block text-[11px] font-bold font-mono uppercase mb-1">
+                      Atau Masukkan URL Gambar Langsung
+                    </label>
+                    <input
+                      type="url"
+                      value={editingCert.image || ""}
+                      onChange={(e) =>
+                        setEditingCert({ ...editingCert, image: e.target.value })
+                      }
+                      placeholder="https://example.com/certificate.jpg"
+                      className="w-full px-3.5 py-2 rounded-xl border-2 font-medium text-xs"
+                      style={{
+                        backgroundColor: "var(--surface-alt)",
+                        borderColor: "var(--border)",
+                      }}
+                    />
+                  </div>
+                </div>
+
                 <div>
                   <label className="block text-xs font-bold font-mono uppercase mb-1.5">
                     URL Verifikasi Kredensial
@@ -686,6 +815,7 @@ export default function AdminEducationCerts({
                   credentialUrl: "",
                   date: "2024",
                   orderIndex: certifications.length,
+                  image: "",
                 });
               }}
               className="neo-btn-primary font-bold text-xs sm:text-sm"
@@ -707,6 +837,25 @@ export default function AdminEducationCerts({
               return paginatedCerts.map((c, idx) => (
                 <Card key={c.id || c.credentialId || idx} className="p-4 flex flex-col justify-between">
                   <div>
+                    {c.image && (
+                      <div
+                        className="relative w-full aspect-[16/10] rounded-lg border-2 overflow-hidden mb-2.5 flex items-center justify-center cursor-pointer group"
+                        style={{
+                          backgroundColor: "var(--surface-alt)",
+                          borderColor: "var(--border)",
+                        }}
+                        onClick={() => setPreviewCertImg(c.image)}
+                      >
+                        <img
+                          src={c.image}
+                          alt={c.title}
+                          className="w-full h-full object-contain p-1"
+                        />
+                        <span className="absolute top-1.5 right-1.5 p-1 rounded bg-[var(--surface)]/90 border shadow-xs opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Icon name="zoom-in" size={12} />
+                        </span>
+                      </div>
+                    )}
                     <div className="flex items-center justify-between mb-2 pb-2 border-b-2">
                       <Chip variant="blue">{c.provider}</Chip>
                       <span className="text-xs font-mono font-bold">
@@ -778,6 +927,15 @@ export default function AdminEducationCerts({
           />
         </div>
       )}
+
+      {/* Lightbox preview for certificate images */}
+      <ImageLightboxModal
+        isOpen={Boolean(previewCertImg)}
+        imageUrl={previewCertImg}
+        title="Pratinjau Sertifikat"
+        alt="Sertifikat"
+        onClose={() => setPreviewCertImg(null)}
+      />
     </div>
   );
 }

@@ -908,6 +908,7 @@ export async function getCertifications() {
           date: c.date,
           id: c.id,
           orderIndex: c.order_index ?? 0,
+          image: c.image_url || c.image || "",
         }));
         try {
           localStorage.setItem(CACHE_KEYS.CERTS, JSON.stringify(mapped));
@@ -961,8 +962,14 @@ export async function upsertCertification(cert) {
         credential_url: payload.credentialUrl,
         date: payload.date,
         order_index: payload.orderIndex ?? 0,
+        image_url: payload.image || payload.imageUrl || null,
       };
-      await supabase.from("certifications").upsert(dbPayload);
+      const { error } = await supabase.from("certifications").upsert(dbPayload);
+      if (error && error.message && error.message.includes("image_url")) {
+        const fallbackPayload = { ...dbPayload };
+        delete fallbackPayload.image_url;
+        await supabase.from("certifications").upsert(fallbackPayload);
+      }
     } catch {
       // Retain local state
     }
