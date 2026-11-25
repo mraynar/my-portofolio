@@ -67,10 +67,14 @@ export default function AdminExperience({ experience = [], onRefresh }) {
     setCropFile(null);
     setIsSubmitting(true);
     try {
-      const cleanName = croppedFile.name.replace(/[^a-zA-Z0-9._-]/g, "");
+      const cleanName = (croppedFile?.name || "experience.jpg").replace(
+        /[^a-zA-Z0-9._-]/g,
+        ""
+      );
       const path = `experience/${Date.now()}-${cleanName}`;
       const url = await uploadStorageFile("media", path, croppedFile);
-      setEditingItem((prev) => ({ ...prev, photo: url }));
+      const effectiveUrl = url || previewUrl;
+      setEditingItem((prev) => ({ ...prev, photo: effectiveUrl }));
       setFeedback({
         type: "success",
         text: "Foto dokumentasi berhasil disesuaikan dan diunggah.",

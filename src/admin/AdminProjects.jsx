@@ -156,9 +156,10 @@ export default function AdminProjects({
     setUploadingImage(true);
     setFeedback(null);
     try {
-      const fileName = `project-${Date.now()}-${croppedFile.name.replace(/\s+/g, "-")}`;
+      const fileName = `project-${Date.now()}-${(croppedFile?.name || "project.jpg").replace(/\s+/g, "-")}`;
       const url = await uploadStorageFile("media", fileName, croppedFile);
-      setEditingProject((prev) => ({ ...prev, image: url }));
+      const effectiveUrl = url || previewUrl;
+      setEditingProject((prev) => ({ ...prev, image: effectiveUrl }));
       setFeedback({
         type: "success",
         text: "Gambar proyek berhasil disesuaikan dan diunggah.",

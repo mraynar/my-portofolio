@@ -28,10 +28,10 @@ export default function AdminProfile({ initialInfo, onUpdateInfo }) {
     setUploadingAvatar(true);
     setFeedback(null);
     try {
-      const fileName = `avatar-${Date.now()}-${croppedFile.name.replace(/\s+/g, "-")}`;
+      const fileName = `avatar-${Date.now()}-${(croppedFile?.name || "avatar.jpg").replace(/\s+/g, "-")}`;
       const url = await uploadStorageFile("media", fileName, croppedFile);
       const effectiveUrl = url || previewUrl;
-      handleChange("avatar", effectiveUrl);
+      setFormData((prev) => ({ ...prev, avatar: effectiveUrl }));
 
       // Auto-save site settings so the new avatar is immediately persisted
       try {
@@ -53,7 +53,7 @@ export default function AdminProfile({ initialInfo, onUpdateInfo }) {
         });
       }
     } catch {
-      handleChange("avatar", previewUrl);
+      setFormData((prev) => ({ ...prev, avatar: previewUrl }));
       setFeedback({
         type: "success",
         text: "Foto profil berhasil disesuaikan dan dipratinjau.",

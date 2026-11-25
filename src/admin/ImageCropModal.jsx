@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { Icon } from "../components";
 
 // Aspect ratio preset choices
@@ -20,6 +20,7 @@ export default function ImageCropModal({
   onCancel,
 }) {
   const containerRef = useRef(null);
+  const imgWrapperRef = useRef(null);
   const imgRef = useRef(null);
   const [naturalSize, setNaturalSize] = useState({ width: 1, height: 1 });
   const [zoom, setZoom] = useState(1);
@@ -29,11 +30,10 @@ export default function ImageCropModal({
   const [isDragging, setIsDragging] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [imageSrc, setImageSrc] = useState(null);
   const dragStartRef = useRef({ x: 0, y: 0, panX: 0, panY: 0 });
   const pendingPanRef = useRef({ x: 0, y: 0 });
   const pendingZoomRef = useRef(1);
-  const rafRef = useRef(null);
-  const wheelRafRef = useRef(null);
   const [containerSize, setContainerSize] = useState({ width: 500, height: 350 });
 
   // Keep pendingZoomRef synced
@@ -41,25 +41,22 @@ export default function ImageCropModal({
     pendingZoomRef.current = zoom;
   }, [zoom]);
 
-  // Cleanup pending animation frames on unmount
+  // Read file as persistent Data URL to prevent blob revocation issues
   useEffect(() => {
-    return () => {
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-      if (wheelRafRef.current) cancelAnimationFrame(wheelRafRef.current);
-    };
-  }, []);
+    let isSubscribed = true;
+    if (!file) return;
 
-  // Create object URL from selected file
-  const imageSrc = useMemo(() => {
-    return file ? URL.createObjectURL(file) : null;
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (isSubscribed && typeof reader.result === "string") {
+        setImageSrc(reader.result);
+      }
+    };
+    reader.readAsDataURL(file);
+    return () => {
+      isSubscribed = false;
+    };
   }, [file]);
-
-  // Safely revoke object URL on unmount or file change
-  useEffect(() => {
-    return () => {
-      if (imageSrc) URL.revokeObjectURL(imageSrc);
-    };
-  }, [imageSrc]);
 
   // Track container dimensions on resize
   useEffect(() => {
@@ -126,25 +123,17 @@ export default function ImageCropModal({
     if (!isDragging) return;
     const dx = e.clientX - dragStartRef.current.x;
     const dy = e.clientY - dragStartRef.current.y;
-    pendingPanRef.current = {
-      x: dragStartRef.current.panX + dx,
-      y: dragStartRef.current.panY + dy,
-    };
+    const nextPanX = dragStartRef.current.panX + dx;
+    const nextPanY = dragStartRef.current.panY + dy;
+    pendingPanRef.current = { x: nextPanX, y: nextPanY };
 
-    if (!rafRef.current) {
-      rafRef.current = requestAnimationFrame(() => {
-        setPan(pendingPanRef.current);
-        rafRef.current = null;
-      });
+    if (imgWrapperRef.current) {
+      imgWrapperRef.current.style.transform = `translate3d(${nextPanX}px, ${nextPanY}px, 0px) scale(${pendingZoomRef.current}) rotate(${rotation}deg)`;
     }
   };
 
   const handlePointerUp = (e) => {
     if (isDragging) {
-      if (rafRef.current) {
-        cancelAnimationFrame(rafRef.current);
-        rafRef.current = null;
-      }
       setPan(pendingPanRef.current);
       setIsDragging(false);
       try {
@@ -164,13 +153,12 @@ export default function ImageCropModal({
       Math.max(pendingZoomRef.current * zoomFactor, 1),
       3
     );
-    pendingZoomRef.current = targetZoom;
+    const roundedZoom = Number(targetZoom.toFixed(3));
+    pendingZoomRef.current = roundedZoom;
+    setZoom(roundedZoom);
 
-    if (!wheelRafRef.current) {
-      wheelRafRef.current = requestAnimationFrame(() => {
-        setZoom(Number(pendingZoomRef.current.toFixed(3)));
-        wheelRafRef.current = null;
-      });
+    if (imgWrapperRef.current) {
+      imgWrapperRef.current.style.transform = `translate3d(${pendingPanRef.current.x}px, ${pendingPanRef.current.y}px, 0px) scale(${roundedZoom}) rotate(${rotation}deg)`;
     }
   };
 
@@ -186,100 +174,77 @@ export default function ImageCropModal({
     setIsTransitioning(true);
     setZoom(1);
     setPan({ x: 0, y: 0 });
+    pendingPanRef.current = { x: 0, y: 0 };
+    pendingZoomRef.current = 1;
     setRotation(0);
     setTimeout(() => setIsTransitioning(false), 220);
   };
 
-  // Export cropped canvas to File using already loaded DOM image
-  const handleApply = () => {
-    if (isProcessing) return;
+  // Export cropped canvas to File and persistent Data URL
+  const handleApply = async () => {
+    if (isProcessing || !imageSrc) return;
     setIsProcessing(true);
 
     try {
-      const sourceImg = imgRef.current;
-      const nw = sourceImg?.naturalWidth || naturalSize.width;
-      const nh = sourceImg?.naturalHeight || naturalSize.height;
+      // Decode image cleanly before drawing onto canvas
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      await new Promise((resolve, reject) => {
+        img.onload = () => resolve();
+        img.onerror = () => reject(new Error("Gagal membaca data gambar."));
+        img.src = imageSrc;
+      });
 
-      if (!sourceImg || nw <= 0 || nh <= 0) {
-        throw new Error("Gambar belum siap.");
+      const nw = img.naturalWidth || naturalSize.width;
+      const nh = img.naturalHeight || naturalSize.height;
+      if (nw <= 0 || nh <= 0) {
+        throw new Error("Dimensi gambar belum siap.");
       }
 
-      // Determine output dimensions with crisp high-DPI resolution
-      const targetW = Math.min(Math.round(cropBox.width * 2), 1600);
+      // High-DPI crop output capped for optimal performance & storage
+      const targetW = Math.min(
+        Math.max(Math.round(cropBox.width * 2), 600),
+        1200
+      );
       const targetH = Math.round(targetW * (cropBox.height / cropBox.width));
 
       const canvas = document.createElement("canvas");
       canvas.width = targetW;
       canvas.height = targetH;
       const ctx = canvas.getContext("2d", { alpha: false });
+      if (!ctx) throw new Error("Gagal menginisialisasi canvas.");
 
-      if (!ctx) {
-        throw new Error("Gagal menginisialisasi canvas.");
-      }
-
-      // Background fill
       ctx.fillStyle = "#ffffff";
       ctx.fillRect(0, 0, targetW, targetH);
       ctx.imageSmoothingEnabled = true;
       ctx.imageSmoothingQuality = "high";
 
-      // Scale factor from screen crop box to export canvas
       const S = targetW / cropBox.width;
-
       ctx.save();
-      // Translate to canvas center + pan offset
       ctx.translate(targetW / 2 + pan.x * S, targetH / 2 + pan.y * S);
       ctx.rotate((rotation * Math.PI) / 180);
 
       const drawW = baseW * S * zoom;
       const drawH = baseH * S * zoom;
-
-      ctx.drawImage(sourceImg, -drawW / 2, -drawH / 2, drawW, drawH);
+      ctx.drawImage(img, -drawW / 2, -drawH / 2, drawW, drawH);
       ctx.restore();
 
-      const finishCrop = (blob) => {
-        const fileName = file.name
-          ? file.name.replace(/\.[^/.]+$/, "") + "-cropped.jpg"
-          : "cropped-photo.jpg";
-        const croppedFile = new File([blob], fileName, {
-          type: "image/jpeg",
-        });
-        const previewUrl = URL.createObjectURL(blob);
-        onConfirm(croppedFile, previewUrl);
-      };
+      const dataUrl = canvas.toDataURL("image/jpeg", 0.88);
+      const fileName = file.name
+        ? file.name.replace(/\.[^/.]+$/, "") + "-cropped.jpg"
+        : "cropped-photo.jpg";
 
-      if (canvas.toBlob) {
-        canvas.toBlob(
-          (blob) => {
-            if (blob) {
-              finishCrop(blob);
-            } else {
-              const dataUrl = canvas.toDataURL("image/jpeg", 0.92);
-              fetch(dataUrl)
-                .then((res) => res.blob())
-                .then(finishCrop)
-                .catch(() => {
-                  onConfirm(file, dataUrl);
-                });
-            }
-          },
-          "image/jpeg",
-          0.92
-        );
-      } else {
-        const dataUrl = canvas.toDataURL("image/jpeg", 0.92);
-        fetch(dataUrl)
-          .then((res) => res.blob())
-          .then(finishCrop)
-          .catch(() => {
-            onConfirm(file, dataUrl);
-          });
-      }
+      // Convert data URL to Blob and File for cloud upload
+      const res = await fetch(dataUrl);
+      const blob = await res.blob();
+      const croppedFile = new File([blob], fileName, { type: "image/jpeg" });
+
+      onConfirm(croppedFile, dataUrl);
     } catch (err) {
       console.error("Gagal memotong gambar:", err);
+      onConfirm(file, imageSrc);
+    } finally {
       setIsProcessing(false);
-      const fallbackUrl = imageSrc || URL.createObjectURL(file);
-      onConfirm(file, fallbackUrl);
     }
   };
 
@@ -395,6 +360,7 @@ export default function ImageCropModal({
           {/* Base image being transformed */}
           {imageSrc && (
             <div
+              ref={imgWrapperRef}
               className={`absolute pointer-events-none ${
                 isTransitioning ? "transition-transform duration-200 ease-out" : ""
               }`}
