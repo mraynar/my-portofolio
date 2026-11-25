@@ -139,8 +139,8 @@ function Hero({ info = PERSONAL_INFO }) {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-8 xl:gap-10 items-stretch">
           {/* Left column: narrative and actions */}
           <div className="lg:col-span-7 xl:col-span-6 flex flex-col justify-between">
-            <div>
-              <div className="mb-3">
+            <div className="pt-4 sm:pt-6 lg:pt-9">
+              <div className="mb-3.5 sm:mb-4">
                 <Chip variant="blue">{kicker}</Chip>
               </div>
 
