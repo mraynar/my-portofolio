@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Card, Icon } from "../components";
+import { Card, Icon, FloatingAlert } from "../components";
 import ImageCropModal from "./ImageCropModal";
 import { saveSiteSettings, uploadStorageFile } from "../lib/supabase";
 
@@ -113,31 +113,7 @@ export default function AdminProfile({ initialInfo, onUpdateInfo }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8 w-full">
-      {feedback && (
-        <div
-          className="p-4 rounded-xl border-2 text-sm font-bold flex items-center gap-2"
-          style={{
-            backgroundColor:
-              feedback.type === "success"
-                ? "var(--google-green-bg)"
-                : "var(--google-red-bg)",
-            borderColor:
-              feedback.type === "success"
-                ? "var(--google-green)"
-                : "var(--google-red)",
-            color:
-              feedback.type === "success"
-                ? "var(--google-green-text)"
-                : "var(--google-red-text)",
-          }}
-        >
-          <Icon
-            name={feedback.type === "success" ? "check" : "alert"}
-            size={18}
-          />
-          <span>{feedback.text}</span>
-        </div>
-      )}
+      <FloatingAlert feedback={feedback} onClose={() => setFeedback(null)} />
 
       {/* 3 tabs for profile sections */}
       <div

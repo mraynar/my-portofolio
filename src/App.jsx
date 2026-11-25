@@ -17,6 +17,7 @@ import {
   Footer,
   ScrollTopFab,
   Icon,
+  FloatingAlert,
 } from "./components";
 import { useDarkMode } from "./useDarkMode";
 import {
@@ -1282,31 +1283,10 @@ function Contact({ info = PERSONAL_INFO }) {
                   </div>
 
                   <div className="pt-2">
-                    {feedback && (
-                      <div
-                        className="p-3 mb-3 rounded-xl border-2 text-xs font-bold flex items-center gap-2"
-                        style={{
-                          backgroundColor:
-                            feedback.type === "success"
-                              ? "var(--google-green-bg)"
-                              : "var(--google-red-bg)",
-                          borderColor:
-                            feedback.type === "success"
-                              ? "var(--google-green)"
-                              : "var(--google-red)",
-                          color:
-                            feedback.type === "success"
-                              ? "var(--google-green-text)"
-                              : "var(--google-red-text)",
-                        }}
-                      >
-                        <Icon
-                          name={feedback.type === "success" ? "check" : "alert"}
-                          size={16}
-                        />
-                        <span>{feedback.text}</span>
-                      </div>
-                    )}
+                    <FloatingAlert
+                      feedback={feedback}
+                      onClose={() => setFeedback(null)}
+                    />
 
                     <button
                       type="submit"

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Card, Chip, Icon } from "../components";
+import { Card, Chip, Icon, FloatingAlert } from "../components";
 import {
   upsertSkillCategory,
   deleteSkillCategory,
@@ -188,31 +188,7 @@ export default function AdminSkills({ skills = [], onRefresh }) {
           </button>
         </div>
 
-        {feedback && (
-          <div
-            className="p-4 rounded-xl border-2 text-sm font-bold flex items-center gap-2"
-            style={{
-              backgroundColor:
-                feedback.type === "success"
-                  ? "var(--google-green-bg)"
-                  : "var(--google-red-bg)",
-              borderColor:
-                feedback.type === "success"
-                  ? "var(--google-green)"
-                  : "var(--google-red)",
-              color:
-                feedback.type === "success"
-                  ? "var(--google-green-text)"
-                  : "var(--google-red-text)",
-            }}
-          >
-            <Icon
-              name={feedback.type === "success" ? "check" : "alert"}
-              size={18}
-            />
-            <span>{feedback.text}</span>
-          </div>
-        )}
+        <FloatingAlert feedback={feedback} onClose={() => setFeedback(null)} />
 
         <Card className="p-6 sm:p-8 space-y-6">
           <div className="flex items-center justify-between pb-4 border-b-2">
@@ -379,31 +355,7 @@ export default function AdminSkills({ skills = [], onRefresh }) {
           </button>
       </div>
 
-      {feedback && (
-        <div
-          className="p-4 rounded-xl border-2 text-sm font-bold flex items-center gap-2"
-          style={{
-            backgroundColor:
-              feedback.type === "success"
-                ? "var(--google-green-bg)"
-                : "var(--google-red-bg)",
-            borderColor:
-              feedback.type === "success"
-                ? "var(--google-green)"
-                : "var(--google-red)",
-            color:
-              feedback.type === "success"
-                ? "var(--google-green-text)"
-                : "var(--google-red-text)",
-          }}
-        >
-          <Icon
-            name={feedback.type === "success" ? "check" : "alert"}
-            size={18}
-          />
-          <span>{feedback.text}</span>
-        </div>
-      )}
+      <FloatingAlert feedback={feedback} onClose={() => setFeedback(null)} />
 
       {/* Categories grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-6 items-stretch">

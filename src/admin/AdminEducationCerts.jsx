@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { Card, Chip, Icon, CustomSelect, Pagination } from "../components";
+import {
+  Card,
+  Chip,
+  Icon,
+  CustomSelect,
+  Pagination,
+  FloatingAlert,
+} from "../components";
 import {
   upsertEducation,
   deleteEducation,
@@ -137,31 +144,7 @@ export default function AdminEducationCerts({
           </button>
         </div>
 
-        {feedback && (
-          <div
-            className="p-4 rounded-xl border-2 text-sm font-bold flex items-center gap-2"
-            style={{
-              backgroundColor:
-                feedback.type === "success"
-                  ? "var(--google-green-bg)"
-                  : "var(--google-red-bg)",
-              borderColor:
-                feedback.type === "success"
-                  ? "var(--google-green)"
-                  : "var(--google-red)",
-              color:
-                feedback.type === "success"
-                  ? "var(--google-green-text)"
-                  : "var(--google-red-text)",
-            }}
-          >
-            <Icon
-              name={feedback.type === "success" ? "check" : "alert"}
-              size={18}
-            />
-            <span>{feedback.text}</span>
-          </div>
-        )}
+        <FloatingAlert feedback={feedback} onClose={() => setFeedback(null)} />
 
         <Card className="p-6 space-y-4">
               <h4 className="font-extrabold text-base pb-3 border-b-2">
@@ -340,31 +323,7 @@ export default function AdminEducationCerts({
           </button>
         </div>
 
-        {feedback && (
-          <div
-            className="p-4 rounded-xl border-2 text-sm font-bold flex items-center gap-2"
-            style={{
-              backgroundColor:
-                feedback.type === "success"
-                  ? "var(--google-green-bg)"
-                  : "var(--google-red-bg)",
-              borderColor:
-                feedback.type === "success"
-                  ? "var(--google-green)"
-                  : "var(--google-red)",
-              color:
-                feedback.type === "success"
-                  ? "var(--google-green-text)"
-                  : "var(--google-red-text)",
-            }}
-          >
-            <Icon
-              name={feedback.type === "success" ? "check" : "alert"}
-              size={18}
-            />
-            <span>{feedback.text}</span>
-          </div>
-        )}
+        <FloatingAlert feedback={feedback} onClose={() => setFeedback(null)} />
 
         <Card className="p-6 space-y-4">
               <h4 className="font-extrabold text-base pb-3 border-b-2">
@@ -571,31 +530,7 @@ export default function AdminEducationCerts({
         </button>
       </div>
 
-      {feedback && (
-        <div
-          className="p-4 rounded-xl border-2 text-sm font-bold flex items-center gap-2"
-          style={{
-            backgroundColor:
-              feedback.type === "success"
-                ? "var(--google-green-bg)"
-                : "var(--google-red-bg)",
-            borderColor:
-              feedback.type === "success"
-                ? "var(--google-green)"
-                : "var(--google-red)",
-            color:
-              feedback.type === "success"
-                ? "var(--google-green-text)"
-                : "var(--google-red-text)",
-          }}
-        >
-          <Icon
-            name={feedback.type === "success" ? "check" : "alert"}
-            size={18}
-          />
-          <span>{feedback.text}</span>
-        </div>
-      )}
+      <FloatingAlert feedback={feedback} onClose={() => setFeedback(null)} />
 
       {/* Education tab view */}
       {activeSubTab === "education" && (

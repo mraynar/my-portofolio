@@ -458,6 +458,97 @@ export function Pagination({
   );
 }
 
+// Floating toast notification descending from top with auto-dismiss
+export function FloatingAlert({ feedback, onClose, duration = 3500 }) {
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    if (!feedback) return;
+
+    const animId = requestAnimationFrame(() => {
+      setVisible(true);
+    });
+
+    const timer = setTimeout(() => {
+      setVisible(false);
+      setTimeout(() => {
+        onClose?.();
+      }, 300);
+    }, duration);
+
+    return () => {
+      cancelAnimationFrame(animId);
+      clearTimeout(timer);
+    };
+  }, [feedback, duration, onClose]);
+
+  if (!feedback) return null;
+
+  const isSuccess = feedback.type === "success";
+  const isError = feedback.type === "error";
+
+  const accentColor = isSuccess
+    ? "var(--google-green)"
+    : isError
+    ? "var(--google-red)"
+    : "var(--google-blue)";
+
+  const accentBg = isSuccess
+    ? "var(--google-green-bg)"
+    : isError
+    ? "var(--google-red-bg)"
+    : "var(--google-blue-bg)";
+
+  return (
+    <div
+      role="alert"
+      aria-live="assertive"
+      className={`fixed top-20 sm:top-24 left-1/2 -translate-x-1/2 z-[9999] max-w-lg w-[calc(100%-2rem)] sm:w-auto px-4 py-3 rounded-xl border-2 flex items-center gap-3 shadow-[4px_4px_0_var(--shadow-color)] transition-all duration-300 ease-out pointer-events-auto ${
+        visible
+          ? "opacity-100 translate-y-0 scale-100"
+          : "opacity-0 -translate-y-6 scale-95 pointer-events-none"
+      }`}
+      style={{
+        backgroundColor: "var(--surface)",
+        borderColor: accentColor,
+        color: "var(--ink)",
+      }}
+    >
+      <div
+        className="w-7 h-7 rounded-lg border flex items-center justify-center shrink-0"
+        style={{
+          backgroundColor: accentBg,
+          borderColor: accentColor,
+          color: accentColor,
+        }}
+      >
+        <Icon
+          name={isSuccess ? "check" : isError ? "alert" : "info"}
+          size={16}
+        />
+      </div>
+
+      <span className="text-xs sm:text-sm font-bold pr-2 leading-tight">
+        {feedback.text}
+      </span>
+
+      {onClose && (
+        <button
+          type="button"
+          onClick={() => {
+            setVisible(false);
+            setTimeout(() => onClose(), 200);
+          }}
+          aria-label="Tutup notifikasi"
+          className="p-1 rounded-md text-[var(--ink-secondary)] hover:text-[var(--ink)] hover:bg-[var(--surface-alt)] transition-colors ml-auto shrink-0 cursor-pointer"
+        >
+          <Icon name="x" size={14} />
+        </button>
+      )}
+    </div>
+  );
+}
+
 // Section title with uppercase blue eyebrow kicker
 export function SectionHeading({
   kicker,

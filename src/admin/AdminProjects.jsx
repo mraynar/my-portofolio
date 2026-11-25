@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { Card, Chip, Icon, CustomSelect, Pagination } from "../components";
+import {
+  Card,
+  Chip,
+  Icon,
+  CustomSelect,
+  Pagination,
+  FloatingAlert,
+} from "../components";
 import ImageCropModal from "./ImageCropModal";
 import {
   upsertProject,
@@ -259,31 +266,7 @@ export default function AdminProjects({
           </button>
         </div>
 
-        {feedback && (
-          <div
-            className="p-4 rounded-xl border-2 text-sm font-bold flex items-center gap-2"
-            style={{
-              backgroundColor:
-                feedback.type === "success"
-                  ? "var(--google-green-bg)"
-                  : "var(--google-red-bg)",
-              borderColor:
-                feedback.type === "success"
-                  ? "var(--google-green)"
-                  : "var(--google-red)",
-              color:
-                feedback.type === "success"
-                  ? "var(--google-green-text)"
-                  : "var(--google-red-text)",
-            }}
-          >
-            <Icon
-              name={feedback.type === "success" ? "check" : "alert"}
-              size={18}
-            />
-            <span>{feedback.text}</span>
-          </div>
-        )}
+        <FloatingAlert feedback={feedback} onClose={() => setFeedback(null)} />
 
         <Card className="p-6 sm:p-8 space-y-6">
           <div className="flex items-center justify-between pb-4 border-b-2">
@@ -851,31 +834,7 @@ export default function AdminProjects({
         </Card>
       )}
 
-      {feedback && (
-        <div
-          className="p-4 rounded-xl border-2 text-sm font-bold flex items-center gap-2"
-          style={{
-            backgroundColor:
-              feedback.type === "success"
-                ? "var(--google-green-bg)"
-                : "var(--google-red-bg)",
-            borderColor:
-              feedback.type === "success"
-                ? "var(--google-green)"
-                : "var(--google-red)",
-            color:
-              feedback.type === "success"
-                ? "var(--google-green-text)"
-                : "var(--google-red-text)",
-          }}
-        >
-          <Icon
-            name={feedback.type === "success" ? "check" : "alert"}
-            size={18}
-          />
-          <span>{feedback.text}</span>
-        </div>
-      )}
+      <FloatingAlert feedback={feedback} onClose={() => setFeedback(null)} />
 
       {/* Reorder hint and projects list */}
       <div className="flex items-center justify-between gap-3 pb-1">
