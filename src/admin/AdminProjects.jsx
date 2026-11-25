@@ -65,6 +65,57 @@ export default function AdminProjects({
   );
   const [isSavingCount, setIsSavingCount] = useState(false);
   const [countFeedback, setCountFeedback] = useState(null);
+
+  const hasCustomCount = Boolean(
+    info?.customProjectCount && String(info.customProjectCount).trim() !== ""
+  );
+  const effectiveProjectCount = hasCustomCount
+    ? String(info.customProjectCount).trim()
+    : projects.length;
+
+  // Toggle between database real count and custom count
+  const handleSelectCountMode = async (mode) => {
+    setIsSavingCount(true);
+    setCountFeedback(null);
+    try {
+      if (mode === "real") {
+        const updated = await saveSiteSettings(
+          info?.rawId || "default-site-settings",
+          {
+            customProjectCount: "",
+          }
+        );
+        if (onUpdateInfo) onUpdateInfo(updated);
+        setCustomCountInput("");
+        setCountFeedback({
+          type: "success",
+          text: `Mode diubah: kini menggunakan jumlah data riil (${projects.length} proyek).`,
+        });
+      } else {
+        const targetValue =
+          customCountInput.trim() || `${projects.length + 10}`;
+        const updated = await saveSiteSettings(
+          info?.rawId || "default-site-settings",
+          {
+            customProjectCount: targetValue,
+          }
+        );
+        if (onUpdateInfo) onUpdateInfo(updated);
+        setCustomCountInput(targetValue);
+        setCountFeedback({
+          type: "success",
+          text: `Mode diubah: kini menggunakan angka kustom (${targetValue} proyek).`,
+        });
+      }
+    } catch (err) {
+      setCountFeedback({
+        type: "error",
+        text: err.message || "Gagal mengubah mode jumlah proyek.",
+      });
+    } finally {
+      setIsSavingCount(false);
+    }
+  };
   const [draggedIdx, setDraggedIdx] = useState(null);
   const [dragOverIdx, setDragOverIdx] = useState(null);
   const [isReordering, setIsReordering] = useState(false);
@@ -798,10 +849,18 @@ export default function AdminProjects({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2
-            className="text-xl sm:text-2xl font-extrabold"
+            className="text-xl sm:text-2xl font-extrabold flex flex-wrap items-center gap-2.5"
             style={{ fontFamily: "var(--font-display)" }}
           >
-            Portofolio Proyek ({projects.length})
+            <span>Portofolio Proyek ({effectiveProjectCount})</span>
+            {hasCustomCount && (
+              <span
+                className="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full border border-[var(--google-blue)] text-[var(--google-blue)]"
+                style={{ backgroundColor: "var(--google-blue-bg)" }}
+              >
+                Kustom ({projects.length} Riil)
+              </span>
+            )}
           </h2>
           <p
             className="text-xs sm:text-sm"
@@ -821,11 +880,8 @@ export default function AdminProjects({
       </div>
 
       {!editingProject && (
-        <Card className="p-4 sm:p-5">
-          <form
-            onSubmit={handleSaveCustomCount}
-            className="flex flex-col sm:flex-row sm:items-center justify-between gap-4"
-          >
+        <Card className="p-4 sm:p-5 space-y-4">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-3 border-b border-[var(--border)]">
             <div className="flex items-center gap-3">
               <div
                 className="w-10 h-10 rounded-xl border-2 border-[var(--border)] flex items-center justify-center shrink-0"
@@ -838,40 +894,89 @@ export default function AdminProjects({
               </div>
               <div>
                 <h3 className="font-extrabold text-sm sm:text-base">
-                  Kustomisasi Total Proyek Digital (By The Numbers)
+                  Mode & Angka Total Proyek (Sinkronisasi Admin & Web)
                 </h3>
                 <p className="text-xs text-[var(--ink-secondary)]">
-                  Atur angka total proyek pada kartu statistik web (misal &ldquo;15+&rdquo;) jika pernah mengerjakan lebih banyak dari daftar.
+                  Pilih apakah total proyek mengikuti data riil database atau dikustomisasi manual.
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-2 shrink-0">
-              <input
-                type="text"
-                value={customCountInput}
-                onChange={(e) => setCustomCountInput(e.target.value)}
-                placeholder={`${projects.length}+`}
-                className="w-24 px-3 py-1.5 rounded-xl border-2 font-mono font-bold text-sm text-center"
-                style={{
-                  backgroundColor: "var(--surface-alt)",
-                  borderColor: "var(--border)",
-                }}
-              />
+            {/* Mode selection toggle */}
+            <div className="flex items-center gap-2 self-start md:self-auto shrink-0">
               <button
-                type="submit"
+                type="button"
+                onClick={() => handleSelectCountMode("real")}
                 disabled={isSavingCount}
-                className="neo-btn-primary text-xs font-bold py-2 px-3.5 cursor-pointer"
+                className={`text-xs font-bold font-mono px-3 py-1.5 rounded-xl border-2 transition-colors cursor-pointer flex items-center gap-1.5 ${
+                  !hasCustomCount
+                    ? "bg-[var(--google-blue)] text-white border-[var(--border)] shadow-[2px_2px_0_0_#000]"
+                    : "bg-[var(--surface-alt)] text-[var(--ink-secondary)] border-[var(--border)] hover:bg-[var(--surface)]"
+                }`}
               >
-                <Icon name="check" size={14} />
-                {isSavingCount ? "Menyimpan..." : "Simpan Angka"}
+                <Icon name={!hasCustomCount ? "check" : "database"} size={13} />
+                Sesuai Data Riil ({projects.length})
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleSelectCountMode("custom")}
+                disabled={isSavingCount}
+                className={`text-xs font-bold font-mono px-3 py-1.5 rounded-xl border-2 transition-colors cursor-pointer flex items-center gap-1.5 ${
+                  hasCustomCount
+                    ? "bg-[var(--google-blue)] text-white border-[var(--border)] shadow-[2px_2px_0_0_#000]"
+                    : "bg-[var(--surface-alt)] text-[var(--ink-secondary)] border-[var(--border)] hover:bg-[var(--surface)]"
+                }`}
+              >
+                <Icon name={hasCustomCount ? "check" : "edit"} size={13} />
+                Kustomisasi ({hasCustomCount ? effectiveProjectCount : "Atur"})
               </button>
             </div>
-          </form>
+          </div>
+
+          {/* Form input when in custom mode */}
+          {hasCustomCount && (
+            <form
+              onSubmit={handleSaveCustomCount}
+              className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1"
+            >
+              <div className="text-xs text-[var(--ink-secondary)] flex items-center gap-1.5">
+                <Icon name="info" size={14} className="shrink-0 text-[var(--google-blue)]" />
+                <span>
+                  Angka ini akan disinkronkan ke Ringkasan Admin ({effectiveProjectCount}), sidebar, header, dan web publik.
+                </span>
+              </div>
+
+              <div className="flex items-center gap-2 shrink-0">
+                <label className="text-xs font-mono font-bold uppercase text-[var(--ink-muted)]">
+                  Nilai:
+                </label>
+                <input
+                  type="text"
+                  value={customCountInput}
+                  onChange={(e) => setCustomCountInput(e.target.value)}
+                  placeholder={`${projects.length}+`}
+                  className="w-24 px-3 py-1.5 rounded-xl border-2 font-mono font-bold text-sm text-center"
+                  style={{
+                    backgroundColor: "var(--surface-alt)",
+                    borderColor: "var(--border)",
+                  }}
+                />
+                <button
+                  type="submit"
+                  disabled={isSavingCount}
+                  className="neo-btn-primary text-xs font-bold py-2 px-3.5 cursor-pointer"
+                >
+                  <Icon name="check" size={14} />
+                  {isSavingCount ? "Menyimpan..." : "Simpan Angka"}
+                </button>
+              </div>
+            </form>
+          )}
 
           {countFeedback && (
             <div
-              className="mt-3 p-2.5 rounded-xl border-2 text-xs font-bold flex items-center gap-2"
+              className="mt-2 p-2.5 rounded-xl border-2 text-xs font-bold flex items-center gap-2"
               style={{
                 backgroundColor:
                   countFeedback.type === "success"

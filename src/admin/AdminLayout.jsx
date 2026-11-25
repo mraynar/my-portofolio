@@ -158,13 +158,20 @@ export default function AdminLayout({
     );
   }
 
+  const hasCustomProjectCount = Boolean(
+    info?.customProjectCount && String(info.customProjectCount).trim() !== ""
+  );
+  const effectiveProjectCount = hasCustomProjectCount
+    ? String(info.customProjectCount).trim()
+    : projects.length;
+
   const tabs = [
     { id: "overview", label: "Ringkasan", icon: "layout" },
     { id: "profile", label: "Profil & Bio", icon: "user" },
     {
       id: "projects",
       label: "Portofolio Proyek",
-      count: projects.length,
+      count: effectiveProjectCount,
       icon: "folder",
     },
     {
@@ -552,7 +559,9 @@ export default function AdminLayout({
             <div className="pb-16">
               {activeTab === "overview" && (
                 <AdminOverview
-                  projectsCount={projects.length}
+                  projectsCount={effectiveProjectCount}
+                  realProjectsCount={projects.length}
+                  isCustomProjectsCount={hasCustomProjectCount}
                   experienceCount={experience.length}
                   skillsCount={skills.length}
                   messages={messages}

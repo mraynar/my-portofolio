@@ -3,6 +3,8 @@ import { Card, Icon } from "../components";
 // Overview metrics and quick actions tab
 export default function AdminOverview({
   projectsCount = 0,
+  realProjectsCount = 0,
+  isCustomProjectsCount = false,
   experienceCount = 0,
   skillsCount = 0,
   messages = [],
@@ -20,9 +22,21 @@ export default function AdminOverview({
             >
               [{projectsCount}]
             </div>
-            <div className="text-xs sm:text-sm font-extrabold uppercase tracking-wider mb-2">
+            <div className="text-xs sm:text-sm font-extrabold uppercase tracking-wider mb-1">
               TOTAL PROYEK
             </div>
+            {isCustomProjectsCount && (
+              <span
+                className="text-[11px] font-mono font-bold px-2 py-0.5 rounded-md border inline-block"
+                style={{
+                  backgroundColor: "var(--surface-alt)",
+                  borderColor: "var(--border)",
+                  color: "var(--ink-secondary)",
+                }}
+              >
+                Kustom • {realProjectsCount} Riil
+              </span>
+            )}
           </div>
           <button
             onClick={() => onNavigateTab("projects")}
