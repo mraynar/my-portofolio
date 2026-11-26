@@ -553,8 +553,11 @@ export default function AdminLayout({
                 <span className="text-xs font-mono text-[var(--ink-secondary)]">
                   Mode:
                 </span>
-                <Chip variant="green" className="text-[11px]">
-                  Aktif & Terhubung
+                <Chip
+                  variant={supabase ? "green" : "yellow"}
+                  className="text-[11px]"
+                >
+                  {supabase ? "Cloud Supabase" : "Lokal (IndexedDB)"}
                 </Chip>
               </div>
             </div>
@@ -568,8 +571,11 @@ export default function AdminLayout({
                   isCustomProjectsCount={hasCustomProjectCount}
                   experienceCount={experience.length}
                   skillsCount={skills.length}
+                  educationCount={education.length}
+                  certificationsCount={certifications.length}
                   messages={messages}
                   onNavigateTab={selectTab}
+                  onRefresh={loadCmsData}
                 />
               )}
 

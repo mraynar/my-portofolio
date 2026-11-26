@@ -8,7 +8,12 @@ import {
   CERTIFICATIONS,
   sortExperiencesLatestFirst,
 } from "../data";
-import { getLocalItem, setLocalItem, broadcastDataSync } from "./localDb";
+import {
+  getLocalItem,
+  setLocalItem,
+  removeLocalItem,
+  broadcastDataSync,
+} from "./localDb";
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -18,6 +23,57 @@ export const supabase =
   supabaseUrl && supabaseAnonKey && supabaseAnonKey.trim().length > 0
     ? createClient(supabaseUrl, supabaseAnonKey)
     : null;
+
+export const isSupabaseConfigured = Boolean(supabase);
+
+const PRE_CLOUD_BACKUP_KEY = "portfolio_pre_cloud_backup";
+let preCloudPromise = null;
+
+// Preserve unsynced local data once before first Supabase cloud read
+function preserveLocalBeforeCloudSync() {
+  if (!supabase) return Promise.resolve();
+  if (preCloudPromise) return preCloudPromise;
+
+  preCloudPromise = (async () => {
+    try {
+      const existingBackup = await getLocalItem(PRE_CLOUD_BACKUP_KEY);
+      if (existingBackup) return;
+
+      const [settings, projects, experience, skills, education, certifications] =
+        await Promise.all([
+          getLocalItem(CACHE_KEYS.SETTINGS),
+          getLocalItem(CACHE_KEYS.PROJECTS),
+          getLocalItem(CACHE_KEYS.EXPERIENCE),
+          getLocalItem(CACHE_KEYS.SKILLS),
+          getLocalItem(CACHE_KEYS.EDUCATION),
+          getLocalItem(CACHE_KEYS.CERTS),
+        ]);
+
+      const hasLocal =
+        Boolean(settings) ||
+        (Array.isArray(projects) && projects.length > 0) ||
+        (Array.isArray(experience) && experience.length > 0) ||
+        (Array.isArray(certifications) && certifications.length > 0);
+
+      if (hasLocal) {
+        await setLocalItem(PRE_CLOUD_BACKUP_KEY, {
+          version: 1,
+          savedAt: new Date().toISOString(),
+          settings: settings || PERSONAL_INFO,
+          projects: projects || PROJECTS,
+          experience: experience || EXPERIENCE,
+          skills: skills || SKILL_CATEGORIES,
+          education: education || EDUCATION,
+          certifications: certifications || CERTIFICATIONS,
+        });
+      }
+    } catch {
+      // Ignore non-critical snapshot errors
+    }
+  })();
+
+  return preCloudPromise;
+}
 
 // Storage keys shared across IndexedDB and legacy localStorage migration
 const CACHE_KEYS = {
@@ -176,6 +232,7 @@ export async function signOutAdmin() {
 
 // Fetch site configuration with dynamic persistence
 export async function getSiteSettings() {
+  await preserveLocalBeforeCloudSync();
   const cachedSettings = (await getLocalItem(CACHE_KEYS.SETTINGS)) || {};
 
   if (supabase) {
@@ -549,9 +606,9 @@ export async function saveSiteSettings(id, fields) {
       ].forEach((col) => delete fallback[col]);
       const retry = targetId
         ? await supabase
-            .from("site_settings")
-            .update(fallback)
-            .eq("id", targetId)
+          .from("site_settings")
+          .update(fallback)
+          .eq("id", targetId)
         : await supabase.from("site_settings").upsert(fallback);
       if (retry.error) {
         throw new Error(retry.error.message || "Gagal menyimpan ke Supabase.");
@@ -567,6 +624,7 @@ export async function saveSiteSettings(id, fields) {
 
 // Fetch published projects with dynamic persistence
 export async function getProjects() {
+  await preserveLocalBeforeCloudSync();
   if (supabase) {
     try {
       const { data, error } = await supabase
@@ -726,6 +784,7 @@ export async function reorderProjects(orderedList = []) {
 
 // Fetch experience entries with dynamic persistence
 export async function getExperience() {
+  await preserveLocalBeforeCloudSync();
   if (supabase) {
     try {
       const { data, error } = await supabase
@@ -766,12 +825,12 @@ export async function upsertExperience(item) {
     hasIdMatch
       ? e.id === id
       : Boolean(
-          !item.id &&
-            item.role &&
-            item.org &&
-            e.role === item.role &&
-            e.org === item.org
-        );
+        !item.id &&
+        item.role &&
+        item.org &&
+        e.role === item.role &&
+        e.org === item.org
+      );
 
   const exists = current.some(matchEntry);
   const updated = exists
@@ -786,8 +845,10 @@ export async function upsertExperience(item) {
       ...(isValidUuid(id) ? { id } : {}),
       role: payload.role,
       org: payload.org,
+      org_url: payload.org_url || null,
       period: payload.period,
       type: payload.type,
+      category: payload.category || null,
       current: Boolean(payload.active),
       bullets: payload.bullets,
       tags: payload.tags,
@@ -795,22 +856,38 @@ export async function upsertExperience(item) {
       photo_alt: payload.photoAlt || "",
       order_index: payload.order_index,
     };
-    const { data, error } = await supabase
+    let res = await supabase
       .from("experience")
       .upsert(dbPayload)
       .select()
       .maybeSingle();
 
-    if (error) {
-      throw new Error(error.message || "Gagal menyimpan pengalaman ke server.");
+    if (
+      res.error &&
+      (res.error.code === "42703" || res.error.message?.includes("column"))
+    ) {
+      const fallback = { ...dbPayload };
+      delete fallback.category;
+      delete fallback.org_url;
+      res = await supabase
+        .from("experience")
+        .upsert(fallback)
+        .select()
+        .maybeSingle();
     }
-    if (data && data.id && data.id !== id) {
+
+    if (res.error) {
+      throw new Error(
+        res.error.message || "Gagal menyimpan pengalaman ke server."
+      );
+    }
+    if (res.data && res.data.id && res.data.id !== id) {
       const synced = sorted.map((e) =>
-        e.id === id ? { ...payload, id: data.id } : e
+        e.id === id ? { ...payload, id: res.data.id } : e
       );
       await setLocalItem(CACHE_KEYS.EXPERIENCE, synced);
       notifyDataChanged();
-      return { ...payload, id: data.id };
+      return { ...payload, id: res.data.id };
     }
   }
 
@@ -860,8 +937,10 @@ export async function reorderExperience(orderedList = []) {
         ...(isValidUuid(item.id) ? { id: item.id } : {}),
         role: item.role,
         org: item.org,
+        org_url: item.org_url || null,
         period: item.period,
         type: item.type,
+        category: item.category || null,
         current: Boolean(item.active),
         bullets: item.bullets,
         tags: item.tags,
@@ -869,19 +948,33 @@ export async function reorderExperience(orderedList = []) {
         photo_alt: item.photoAlt || "",
         order_index: item.order_index,
       };
-      const { data, error } = await supabase
+      let res = await supabase
         .from("experience")
         .upsert(dbPayload)
         .select("id")
         .maybeSingle();
 
-      if (error) {
+      if (
+        res.error &&
+        (res.error.code === "42703" || res.error.message?.includes("column"))
+      ) {
+        const fallback = { ...dbPayload };
+        delete fallback.category;
+        delete fallback.org_url;
+        res = await supabase
+          .from("experience")
+          .upsert(fallback)
+          .select("id")
+          .maybeSingle();
+      }
+
+      if (res.error) {
         throw new Error(
-          error.message || "Gagal menyimpan urutan pengalaman ke server."
+          res.error.message || "Gagal menyimpan urutan pengalaman ke server."
         );
       }
-      if (data && data.id && data.id !== item.id) {
-        syncedList[i] = { ...item, id: data.id };
+      if (res.data && res.data.id && res.data.id !== item.id) {
+        syncedList[i] = { ...item, id: res.data.id };
       }
     }
     await setLocalItem(CACHE_KEYS.EXPERIENCE, syncedList);
@@ -1142,11 +1235,11 @@ export async function upsertCertification(cert) {
   );
   const updated = exists
     ? current.map((c) =>
-        c.id === id ||
+      c.id === id ||
         (cert.credentialId && c.credentialId === cert.credentialId)
-          ? payload
-          : c
-      )
+        ? payload
+        : c
+    )
     : [...current, payload];
 
   await setLocalItem(CACHE_KEYS.CERTS, updated);
@@ -1288,4 +1381,337 @@ export async function uploadStorageFile(bucket, filePath, file) {
     reader.onerror = (err) => reject(err);
     reader.readAsDataURL(file);
   });
+}
+
+// Convert base64 Data URL into a File object for Supabase Storage upload
+async function dataUrlToFile(dataUrl, baseName) {
+  const res = await fetch(dataUrl);
+  const blob = await res.blob();
+  const mime = blob.type || "image/jpeg";
+  const ext = mime.includes("png")
+    ? "png"
+    : mime.includes("webp")
+      ? "webp"
+      : "jpg";
+  return new File([blob], `${baseName}.${ext}`, { type: mime });
+}
+
+// Upload inline base64 photo to Supabase Storage bucket, returning CDN URL
+async function uploadInlineImageIfNeeded(value, folder, slug) {
+  if (!supabase || typeof value !== "string" || !value.startsWith("data:image/")) {
+    return { url: value || "", uploaded: false };
+  }
+  try {
+    const safeSlug = String(slug || "asset")
+      .toLowerCase()
+      .replace(/[^a-z0-9_-]/g, "-")
+      .slice(0, 40);
+    const file = await dataUrlToFile(value, safeSlug);
+    const filePath = `${folder}/${Date.now()}-${safeSlug}.${file.name.split(".").pop()}`;
+    const { error } = await supabase.storage
+      .from("media")
+      .upload(filePath, file, { cacheControl: "3600", upsert: true });
+
+    if (!error) {
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("media").getPublicUrl(filePath);
+      if (publicUrl) return { url: publicUrl, uploaded: true };
+    }
+  } catch {
+    // Keep original Data URL if bucket upload is unavailable
+  }
+  return { url: value, uploaded: false };
+}
+
+// Inspect whether an unsynced pre-cloud local snapshot exists in IndexedDB
+export async function getPreCloudBackupInfo() {
+  const backup = await getLocalItem(PRE_CLOUD_BACKUP_KEY);
+  if (!backup) return null;
+  return {
+    savedAt: backup.savedAt || null,
+    counts: {
+      projects: Array.isArray(backup.projects) ? backup.projects.length : 0,
+      experience: Array.isArray(backup.experience)
+        ? backup.experience.length
+        : 0,
+      skills: Array.isArray(backup.skills) ? backup.skills.length : 0,
+      education: Array.isArray(backup.education) ? backup.education.length : 0,
+      certifications: Array.isArray(backup.certifications)
+        ? backup.certifications.length
+        : 0,
+    },
+  };
+}
+
+// Export full CMS snapshot from local IndexedDB or active state as JSON
+export async function exportCmsSnapshot() {
+  const [settings, projects, experience, skills, education, certifications] =
+    await Promise.all([
+      getSiteSettings(),
+      getProjects(),
+      getExperience(),
+      getSkillCategories(),
+      getEducation(),
+      getCertifications(),
+    ]);
+
+  return {
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    settings,
+    projects,
+    experience,
+    skills,
+    education,
+    certifications,
+  };
+}
+
+// Push complete local CMS dataset and inline images into Supabase Cloud
+export async function syncLocalDataToSupabase(
+  onProgress = () => {},
+  customSnapshot = null
+) {
+  if (!supabase) {
+    throw new Error(
+      "Kredensial Supabase belum aktif. Isi VITE_SUPABASE_URL dan VITE_SUPABASE_ANON_KEY di .env dan Vercel."
+    );
+  }
+
+  const isAdmin = await checkIsAdmin();
+  if (!isAdmin) {
+    throw new Error(
+      "Sesi admin Supabase belum aktif. Silakan masuk ulang di /admin/login menggunakan akun admin Supabase."
+    );
+  }
+
+  const preBackup = await getLocalItem(PRE_CLOUD_BACKUP_KEY);
+  const snapshot = customSnapshot || preBackup || (await exportCmsSnapshot());
+
+  let uploadedImages = 0;
+
+  // 1. Sync profile and site settings
+  onProgress("Mengunggah foto profil dan pengaturan situs...");
+  const settingsData = { ...(snapshot.settings || PERSONAL_INFO) };
+  if (settingsData.avatar) {
+    const res = await uploadInlineImageIfNeeded(
+      settingsData.avatar,
+      "profile",
+      "avatar"
+    );
+    settingsData.avatar = res.url;
+    if (res.uploaded) uploadedImages += 1;
+  }
+
+  const { data: existingSettings } = await supabase
+    .from("site_settings")
+    .select("id")
+    .limit(1)
+    .maybeSingle();
+
+  await saveSiteSettings(existingSettings?.id || null, settingsData);
+
+  // 2. Sync projects
+  const rawProjects = Array.isArray(snapshot.projects) ? snapshot.projects : [];
+  onProgress(`Menyinkronkan ${rawProjects.length} proyek ke Supabase...`);
+  const preparedProjects = [];
+  for (let i = 0; i < rawProjects.length; i += 1) {
+    const p = rawProjects[i];
+    const imgRes = await uploadInlineImageIfNeeded(
+      p.image,
+      "projects",
+      p.id || `project-${i + 1}`
+    );
+    if (imgRes.uploaded) uploadedImages += 1;
+    preparedProjects.push({
+      ...p,
+      id: p.id || `project-${Date.now()}-${i}`,
+      image: imgRes.url,
+      orderIndex: i + 1,
+    });
+  }
+
+  const { data: existingProjRows } = await supabase
+    .from("projects")
+    .select("id");
+  const keepProjIds = new Set(preparedProjects.map((p) => p.id));
+  const staleProjIds = (existingProjRows || [])
+    .map((r) => r.id)
+    .filter((id) => !keepProjIds.has(id));
+  if (staleProjIds.length > 0) {
+    await supabase.from("projects").delete().in("id", staleProjIds);
+  }
+  await reorderProjects(preparedProjects);
+
+  // 3. Sync experience timeline
+  const rawExp = Array.isArray(snapshot.experience) ? snapshot.experience : [];
+  onProgress(`Menyinkronkan ${rawExp.length} pengalaman ke Supabase...`);
+  const preparedExp = [];
+  for (let i = 0; i < rawExp.length; i += 1) {
+    const item = normalizeExperienceItem(rawExp[i]);
+    const photoRes = await uploadInlineImageIfNeeded(
+      item.photo,
+      "experience",
+      item.role || `exp-${i + 1}`
+    );
+    if (photoRes.uploaded) uploadedImages += 1;
+    preparedExp.push({
+      ...item,
+      id: isValidUuid(item.id) ? item.id : generateRecordId(),
+      photo: photoRes.url,
+      order_index: i + 1,
+    });
+  }
+
+  const { data: existingExpRows } = await supabase
+    .from("experience")
+    .select("id");
+  const keepExpIds = new Set(preparedExp.map((e) => e.id));
+  const staleExpIds = (existingExpRows || [])
+    .map((r) => r.id)
+    .filter((id) => !keepExpIds.has(id));
+  if (staleExpIds.length > 0) {
+    await supabase.from("experience").delete().in("id", staleExpIds);
+  }
+  await reorderExperience(preparedExp);
+
+  // 4. Sync skill categories
+  const rawSkills = Array.isArray(snapshot.skills) ? snapshot.skills : [];
+  onProgress(`Menyinkronkan ${rawSkills.length} kategori keahlian...`);
+  const preparedSkills = rawSkills.map((s, idx) => ({
+    ...s,
+    id: isValidUuid(s.id) ? s.id : generateRecordId(),
+    order_index: idx + 1,
+  }));
+  const { data: existingSkillRows } = await supabase
+    .from("skill_categories")
+    .select("id");
+  const keepSkillIds = new Set(preparedSkills.map((s) => s.id));
+  const staleSkillIds = (existingSkillRows || [])
+    .map((r) => r.id)
+    .filter((id) => !keepSkillIds.has(id));
+  if (staleSkillIds.length > 0) {
+    await supabase.from("skill_categories").delete().in("id", staleSkillIds);
+  }
+  await reorderSkillCategories(preparedSkills);
+
+  // 5. Sync education records
+  const rawEdu = Array.isArray(snapshot.education) ? snapshot.education : [];
+  onProgress(`Menyinkronkan ${rawEdu.length} riwayat pendidikan...`);
+  const preparedEdu = rawEdu.map((ed, idx) => ({
+    ...ed,
+    id: isValidUuid(ed.id) ? ed.id : generateRecordId(),
+    order_index: idx + 1,
+  }));
+  const { data: existingEduRows } = await supabase
+    .from("education")
+    .select("id");
+  const keepEduIds = new Set(preparedEdu.map((e) => e.id));
+  const staleEduIds = (existingEduRows || [])
+    .map((r) => r.id)
+    .filter((id) => !keepEduIds.has(id));
+  if (staleEduIds.length > 0) {
+    await supabase.from("education").delete().in("id", staleEduIds);
+  }
+  for (let i = 0; i < preparedEdu.length; i += 1) {
+    await upsertEducation(preparedEdu[i]);
+  }
+
+  // 6. Sync certifications
+  const rawCerts = Array.isArray(snapshot.certifications)
+    ? snapshot.certifications
+    : [];
+  onProgress(`Menyinkronkan ${rawCerts.length} sertifikasi...`);
+  const preparedCerts = [];
+  for (let i = 0; i < rawCerts.length; i += 1) {
+    const c = rawCerts[i];
+    const certImg = await uploadInlineImageIfNeeded(
+      c.image || c.imageUrl,
+      "certificates",
+      c.credentialId || `cert-${i + 1}`
+    );
+    if (certImg.uploaded) uploadedImages += 1;
+    preparedCerts.push({
+      ...c,
+      id: isValidUuid(c.id) ? c.id : generateRecordId(),
+      image: certImg.url,
+      orderIndex: i + 1,
+    });
+  }
+  const { data: existingCertRows } = await supabase
+    .from("certifications")
+    .select("id");
+  const keepCertIds = new Set(preparedCerts.map((c) => c.id));
+  const staleCertIds = (existingCertRows || [])
+    .map((r) => r.id)
+    .filter((id) => !keepCertIds.has(id));
+  if (staleCertIds.length > 0) {
+    await supabase.from("certifications").delete().in("id", staleCertIds);
+  }
+  for (let i = 0; i < preparedCerts.length; i += 1) {
+    await upsertCertification(preparedCerts[i]);
+  }
+
+  await removeLocalItem(PRE_CLOUD_BACKUP_KEY);
+  notifyDataChanged();
+
+  return {
+    projects: preparedProjects.length,
+    experience: preparedExp.length,
+    skills: preparedSkills.length,
+    education: preparedEdu.length,
+    certifications: preparedCerts.length,
+    uploadedImages,
+  };
+}
+
+// Import a JSON CMS backup into local IndexedDB and optionally Supabase
+export async function importCmsSnapshot(snapshot, onProgress = () => {}) {
+  if (!snapshot || typeof snapshot !== "object") {
+    throw new Error("Format file backup JSON tidak valid.");
+  }
+
+  onProgress("Menyimpan backup ke penyimpanan lokal...");
+  if (snapshot.settings) {
+    await setLocalItem(CACHE_KEYS.SETTINGS, snapshot.settings);
+  }
+  if (Array.isArray(snapshot.projects)) {
+    await setLocalItem(CACHE_KEYS.PROJECTS, snapshot.projects);
+  }
+  if (Array.isArray(snapshot.experience)) {
+    await setLocalItem(
+      CACHE_KEYS.EXPERIENCE,
+      sortExperiencesLatestFirst(snapshot.experience.map(normalizeExperienceItem))
+    );
+  }
+  if (Array.isArray(snapshot.skills)) {
+    await setLocalItem(CACHE_KEYS.SKILLS, snapshot.skills);
+  }
+  if (Array.isArray(snapshot.education)) {
+    await setLocalItem(CACHE_KEYS.EDUCATION, snapshot.education);
+  }
+  if (Array.isArray(snapshot.certifications)) {
+    await setLocalItem(CACHE_KEYS.CERTS, snapshot.certifications);
+  }
+
+  if (supabase) {
+    return syncLocalDataToSupabase(onProgress, snapshot);
+  }
+
+  notifyDataChanged();
+  return {
+    projects: Array.isArray(snapshot.projects) ? snapshot.projects.length : 0,
+    experience: Array.isArray(snapshot.experience)
+      ? snapshot.experience.length
+      : 0,
+    skills: Array.isArray(snapshot.skills) ? snapshot.skills.length : 0,
+    education: Array.isArray(snapshot.education)
+      ? snapshot.education.length
+      : 0,
+    certifications: Array.isArray(snapshot.certifications)
+      ? snapshot.certifications.length
+      : 0,
+    uploadedImages: 0,
+  };
 }

@@ -134,6 +134,28 @@ export async function setLocalItem(key, value) {
   }
 }
 
+// Remove key from IndexedDB and legacy localStorage
+export async function removeLocalItem(key) {
+  const db = await openDb();
+  if (db) {
+    await new Promise((resolve) => {
+      try {
+        const tx = db.transaction(STORE_NAME, "readwrite");
+        tx.objectStore(STORE_NAME).delete(key);
+        tx.oncomplete = () => resolve(true);
+        tx.onerror = () => resolve(false);
+      } catch {
+        resolve(false);
+      }
+    });
+  }
+  try {
+    localStorage.removeItem(key);
+  } catch {
+    // Ignore cleanup errors
+  }
+}
+
 // Notify current tab and other open tabs that persisted data changed
 export function broadcastDataSync() {
   if (typeof window === "undefined") return;
