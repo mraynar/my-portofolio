@@ -478,16 +478,23 @@ export async function saveSiteSettings(id, fields) {
 
   if (supabase) {
     const payload = {
-      site_name: fields.name || updated.name,
-      kicker: fields.kicker || updated.kicker,
+      site_name: fields.name || updated.name || PERSONAL_INFO.name,
+      kicker:
+        fields.kicker ||
+        updated.kicker ||
+        "SISTEM INFORMASI & SOFTWARE ENGINEER",
       role: fields.role || updated.role || "",
-      status_badge: fields.statusBadge || updated.statusBadge,
-      headline: fields.headline || updated.headline,
-      headline_accent: fields.headlineAccent || updated.headlineAccent,
+      status_badge:
+        fields.statusBadge || updated.statusBadge || "UPN Veteran Jawa Timur",
+      headline: fields.headline || updated.headline || "Muhammad Raynar",
+      headline_accent:
+        fields.headlineAccent || updated.headlineAccent || "Hammam",
       code_card_title:
         fields.codeCardTitle || updated.codeCardTitle || "raynar-dev.ts",
-      value_prop: fields.valueProp || updated.valueProp,
-      university: fields.university || updated.university,
+      value_prop:
+        fields.valueProp || updated.valueProp || PERSONAL_INFO.valueProp,
+      university:
+        fields.university || updated.university || PERSONAL_INFO.university,
       photo_url: fields.avatar || updated.avatar || "",
       cv_url: fields.cvUrl || updated.cvUrl || "",
       github_url: fields.github || updated.github || "",
@@ -690,17 +697,23 @@ export async function upsertProject(project) {
   if (supabase) {
     const dbPayload = {
       id: payload.id,
-      title: payload.title,
-      label: payload.label,
+      title: payload.title || "Tanpa Judul",
+      label: payload.label || "Web App",
       featured: Boolean(payload.featured),
       image: payload.image || "",
-      problem: payload.problem,
-      solution: payload.solution,
-      impact: payload.impact,
-      badges: payload.badges || [],
+      problem: payload.problem || "",
+      solution: payload.solution || "",
+      impact: payload.impact || "",
+      badges: Array.isArray(payload.badges) ? payload.badges : [],
       demo_url: payload.demoUrl || null,
-      repo_notice: payload.repoNotice,
-      repo_reason: payload.repoReason,
+      repo_notice:
+        payload.repoNotice ||
+        payload.repo_notice ||
+        "Repositori Privat (Proyek Komersial / Institusi)",
+      repo_reason:
+        payload.repoReason ||
+        payload.repo_reason ||
+        "Kode sumber dilindungi NDA atau hak cipta klien.",
       case_study_role: payload.caseStudy?.role || "Full-Stack Developer",
       case_study_client: payload.caseStudy?.client || null,
       case_study_duration: payload.caseStudy?.duration || "2024",
@@ -708,7 +721,7 @@ export async function upsertProject(project) {
       case_study_solution: payload.caseStudy?.solution || null,
       case_study_architecture: payload.caseStudy?.architecture || null,
       case_study_impact: payload.caseStudy?.impact || null,
-      status: payload.status || "published",
+      status: payload.status === "draft" ? "draft" : "published",
       order_index: payload.orderIndex ?? 0,
     };
     const { error } = await supabase.from("projects").upsert(dbPayload);
@@ -750,17 +763,23 @@ export async function reorderProjects(orderedList = []) {
   if (supabase) {
     const updates = updated.map((item) => ({
       id: item.id,
-      title: item.title,
-      label: item.label,
+      title: item.title || "Tanpa Judul",
+      label: item.label || "Web App",
       featured: Boolean(item.featured),
       image: item.image || "",
       problem: item.problem || "",
       solution: item.solution || "",
       impact: item.impact || "",
-      badges: item.badges || [],
+      badges: Array.isArray(item.badges) ? item.badges : [],
       demo_url: item.demoUrl || null,
-      repo_notice: item.repoNotice,
-      repo_reason: item.repoReason,
+      repo_notice:
+        item.repoNotice ||
+        item.repo_notice ||
+        "Repositori Privat (Proyek Komersial / Institusi)",
+      repo_reason:
+        item.repoReason ||
+        item.repo_reason ||
+        "Kode sumber dilindungi NDA atau hak cipta klien.",
       case_study_role: item.caseStudy?.role || "Full-Stack Developer",
       case_study_client: item.caseStudy?.client || null,
       case_study_duration: item.caseStudy?.duration || "2024",
@@ -768,7 +787,7 @@ export async function reorderProjects(orderedList = []) {
       case_study_solution: item.caseStudy?.solution || null,
       case_study_architecture: item.caseStudy?.architecture || null,
       case_study_impact: item.caseStudy?.impact || null,
-      status: item.status || "published",
+      status: item.status === "draft" ? "draft" : "published",
       order_index: item.orderIndex,
     }));
 
@@ -1141,10 +1160,10 @@ export async function upsertEducation(item) {
   if (supabase) {
     const dbPayload = {
       ...(isValidUuid(id) ? { id } : {}),
-      school: payload.school,
-      degree: payload.degree,
-      period: payload.period,
-      focus: payload.focus,
+      school: payload.school || "",
+      degree: payload.degree || "",
+      period: payload.period || "",
+      focus: payload.focus || "",
       active: Boolean(payload.active),
       order_index: payload.order_index ?? payload.orderIndex ?? 0,
       score: payload.score || payload.ipk || null,
@@ -1247,12 +1266,12 @@ export async function upsertCertification(cert) {
   if (supabase) {
     const dbPayload = {
       ...(isValidUuid(id) ? { id } : {}),
-      title: payload.title,
-      issuer: payload.issuer,
-      provider: payload.provider,
-      credential_id: payload.credentialId,
-      credential_url: payload.credentialUrl,
-      date: payload.date,
+      title: payload.title || "Sertifikasi",
+      issuer: payload.issuer || "",
+      provider: payload.provider || "Lainnya",
+      credential_id: payload.credentialId || payload.credential_id || "-",
+      credential_url: payload.credentialUrl || payload.credential_url || "#",
+      date: payload.date || "",
       order_index: payload.orderIndex ?? 0,
       image_url: payload.image || payload.imageUrl || null,
     };
