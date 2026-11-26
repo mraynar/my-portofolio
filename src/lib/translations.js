@@ -29,8 +29,12 @@ export const EXACT_TRANSLATIONS = {
   "Perbesar": "Zoom in",
   "Perkecil": "Zoom out",
   "FOTO PROFIL": "PROFILE PHOTO",
+  "Pratinjau Foto": "Photo Preview",
+  "Sertifikat": "Certificate",
   "Input via Admin CMS": "Input via Admin CMS",
   "Surabaya, Jawa Timur, Indonesia": "Surabaya, East Java, Indonesia",
+  "UPN Veteran Jawa Timur": "UPN Veteran East Java",
+  "UPN \"Veteran\" Jawa Timur": "UPN \"Veteran\" East Java",
   "WIB (UTC+7)": "WIB (UTC+7)",
   "Terbuka untuk Magang & Peluang Kolaborasi Proyek": "Open for Internship & Project Collaboration Opportunities",
   "Terbuka untuk Magang & Peluang Kolaborasi": "Open for Internship & Collaboration Opportunities",
@@ -38,7 +42,9 @@ export const EXACT_TRANSLATIONS = {
   // Hero section
   "SISTEM INFORMASI & SOFTWARE ENGINEER": "INFORMATION SYSTEMS & SOFTWARE ENGINEER",
   "SOFTWARE ENGINEERING • APPLIED AI • DATA ANALYTICS": "SOFTWARE ENGINEERING • APPLIED AI • DATA ANALYTICS",
+  "AI ENGINEER • FULL-STACK DEVELOPER • DATA ANALYST": "AI ENGINEER • FULL-STACK DEVELOPER • DATA ANALYST",
   "Mahasiswa Sistem Informasi & Pengembang Perangkat Lunak": "Information Systems Student & Software Developer",
+  "Mahasiswa Sistem Informasi yang fokus mengembangkan solusi kecerdasan buatan (AI), aplikasi web dan mobile secara menyeluruh, serta analitik data untuk mendukung pengambilan keputusan. Berpengalaman membangun sistem digital siap pakai di lingkungan profesional guna menyelesaikan tantangan operasional secara efektif, cepat, dan terukur.": "Information Systems student focused on developing artificial intelligence (AI) solutions, end-to-end web and mobile applications, and data analytics to support strategic decision-making. Experienced in building production-ready digital systems in professional environments to solve operational challenges effectively, rapidly, and measurably.",
   "Mengembangkan aplikasi web dan mobile berbasis sistem informasi yang terukur, fungsional, dan berorientasi pada efisiensi operasional.": "Developing scalable, functional, and operationally efficient web and mobile applications.",
   "Mengembangkan aplikasi web dan mobile berbasis sistem informasi yang terukur, fungsional, dan berorientasi pada efisiensi operasional. Mahasiswa aktif Sistem Informasi di UPN \"Veteran\" Jawa Timur.": "Developing scalable, functional, and operationally efficient web and mobile applications. Undergraduate Information Systems student at UPN \"Veteran\" Jawa Timur.",
   "Mengembangkan aplikasi web dan mobile full-stack, model AI terapan, serta pipeline analitik dan automasi data untuk menghadirkan sistem digital yang skalabel, akurat, dan terukur.": "Developing full-stack web and mobile apps, applied AI models, and data analytics pipelines to deliver scalable, accurate, and measurable digital systems.",
@@ -57,7 +63,7 @@ export const EXACT_TRANSLATIONS = {
   "Teknologi yang saya gunakan secara aktif dalam pengembangan perangkat lunak dan manajemen sistem informasi.": "Technologies I actively use in software development and information systems management.",
   "PORTOFOLIO DIGITAL": "DIGITAL PORTFOLIO",
   "PORTOFOLIO TERPILIH": "FEATURED PORTFOLIO",
-  "Unggulan": "Projects",
+  "Unggulan": "Featured",
   "Proyek Unggulan": "Featured Projects",
   "Karya & Rekayasa Perangkat Lunak": "Works & Software Engineering",
   "Studi kasus arsitektur perangkat lunak terkurasi dengan pemodelan sistem bisnis dan performa terukur.": "Curated software architecture case studies with business system modeling and measurable performance.",
@@ -90,6 +96,9 @@ export const EXACT_TRANSLATIONS = {
   "Dampak & Pencapaian Riil": "Measurable Impact & Milestones",
 
   // About Narrative Paragraphs
+  "Saya adalah mahasiswa Sistem Informasi di UPN \"Veteran\" Jawa Timur (IPK 3.82/4.00) dengan fokus utama pada AI Engineering, pengembangan perangkat lunak full-stack, dan analitik data untuk membangun solusi digital yang terintegrasi.": "I am an Information Systems student at UPN \"Veteran\" East Java (GPA 3.82/4.00) focusing on AI Engineering, full-stack software development, and data analytics to build integrated digital solutions.",
+  "Perjalanan teknis saya berawal dari Rekayasa Perangkat Lunak di SMKN 2 Surabaya, lalu berkembang membangun sistem Computer Vision, pipeline RAG, dan aplikasi di lingkungan enterprise.": "My technical journey began in Software Engineering at SMKN 2 Surabaya and evolved into building Computer Vision systems, RAG pipelines, and enterprise-grade applications.",
+  "Di setiap proyek, saya menjembatani kebutuhan bisnis dan eksekusi teknis merancang sistem AI yang akurat, arsitektur aplikasi yang skalabel, serta analitik data yang berdampak di produksi.": "In every project, I bridge business needs and technical execution by designing accurate AI systems, scalable application architectures, and high-impact production data analytics.",
   "Saya adalah mahasiswa Sistem Informasi di UPN \"Veteran\" Jawa Timur dengan fokus pada rekayasa perangkat lunak full-stack, kecerdasan buatan terapan (Applied AI), dan analitik data.": "I am an Information Systems student at UPN \"Veteran\" Jawa Timur focusing on full-stack software engineering, applied artificial intelligence (Applied AI), and data analytics.",
   "Saya adalah mahasiswa Sistem Informasi UPN \"Veteran\" Jawa Timur dengan fokus rekayasa perangkat lunak terapan. Memadukan analisis kebutuhan bisnis, desain arsitektur modular, dan implementasi kode yang bersih.": "Information Systems student at UPN \"Veteran\" Jawa Timur focusing on applied software engineering. Combining business requirements analysis, modular architecture design, and clean code implementation.",
   "Perjalanan teknis saya berakar dari pendidikan Rekayasa Perangkat Lunak di SMKN 26 Surabaya, tempat saya membangun fondasi algoritma, arsitektur web modern, dan pemodelan sistem cerdas.": "My technical journey began with Software Engineering vocational education at SMKN 26 Surabaya, where I established a strong foundation in algorithms, modern web architecture, and intelligent systems modeling.",
@@ -101,6 +110,7 @@ export const EXACT_TRANSLATIONS = {
 
   // Principle Quote
   "PRINSIP REKAYASA (KEY POINT)": "ENGINEERING PRINCIPLE (KEY POINT)",
+  "Menghubungkan AI yang akurat dengan arsitektur skalabel dan analitik data berdampak.": "Connecting accurate AI with scalable architecture and impactful data analytics.",
   "Menghubungkan arsitektur perangkat lunak yang skalabel dengan kecerdasan buatan dan analitik data yang presisi.": "Connecting scalable software architecture with precision artificial intelligence and data analytics.",
   "Menghubungkan proses bisnis nyata dengan arsitektur perangkat lunak yang fungsional, terukur, dan efisien.": "Connecting real-world business processes with functional, scalable, and efficient software architecture.",
 
@@ -148,14 +158,32 @@ export const EXACT_TRANSLATIONS = {
   "Kemitraan publik, riset penalaran, dan pembinaan komunitas.": "Public partnerships, research reasoning, and community development.",
   "Lihat Linimasa Lengkap": "View Full Timeline",
   "Magang Industri": "Industry Internship",
+  "Studi Independence": "Independent Study",
+  "Studi Independen": "Independent Study",
   "Program Kepemimpinan": "Leadership Program",
 
   // Experience Organizations
   "PT Solusi Rekayasa Digital": "PT Solusi Rekayasa Digital",
+  "PT Indosat Tbk (Indosat Ooredoo Hutchison)": "PT Indosat Tbk (Indosat Ooredoo Hutchison)",
+  "PT Pelindo Terminal Petikemas Surabaya": "PT Pelindo Terminal Petikemas Surabaya",
+  "ASAH by Dicoding Indonesia": "ASAH by Dicoding Indonesia",
+  "PT Kelas Kampus Indonesia": "PT Kelas Kampus Indonesia",
   "Novo Club by ParagonCorp": "Novo Club by ParagonCorp",
+  "Novo Club by Paragon Corp": "Novo Club by Paragon Corp",
+  "Himpunan Mahasiswa Sistem Informasi": "Information Systems Student Association (HIMASIFO)",
   "HIMASIFO UPN Veteran Jawa Timur": "HIMASIFO UPN Veteran East Java",
+  "UKM Penalaran dan Kreativitas": "Student Reasoning & Creativity Club",
   "UKM Penalaran dan Penelitian": "Student Research & Reasoning Club",
+  "Information Systems Community": "Information Systems Community",
+  "Society of Renewable Energy": "Society of Renewable Energy",
   "CV Indra Protection": "CV Indra Protection",
+
+  // Experience Photo Alt Texts
+  "Dokumentasi Full-Stack Web Developer Intern": "Full-Stack Web Developer Intern Documentation",
+  "Dokumentasi Magang Frontend Developer CV Indra Protection": "CV Indra Protection Frontend Developer Internship Documentation",
+  "Dokumentasi Program Novo Entrepreneurship ParagonCorp": "ParagonCorp Novo Entrepreneurship Program Documentation",
+  "Dokumentasi Staf Humas HIMASIFO UPN Veteran Jawa Timur": "HIMASIFO UPN Veteran East Java Public Relations Staff Documentation",
+  "Dokumentasi Tim Staf IT UKM Penalaran": "Student Reasoning Club IT Staff Team Documentation",
 
   // Experience Roles & Details
   "Full-Stack Web Developer Intern": "Full-Stack Web Developer Intern",
@@ -167,6 +195,14 @@ export const EXACT_TRANSLATIONS = {
   "Februari 2026 - Sekarang": "February 2026 – Present",
   "Maret 2026 – Sekarang": "March 2026 – Present",
   "Maret 2026 - Sekarang": "March 2026 – Present",
+  "April 2026 – Sekarang": "April 2026 – Present",
+  "April 2026 - Sekarang": "April 2026 – Present",
+  "August 2026 – Sekarang": "August 2026 – Present",
+  "August 2026 - Sekarang": "August 2026 – Present",
+  "Agustus 2026 – Sekarang": "August 2026 – Present",
+  "Agustus 2026 - Sekarang": "August 2026 – Present",
+  "Maret 2026 – August 2026": "March 2026 – August 2026",
+  "Maret 2026 - August 2026": "March 2026 – August 2026",
   "Januari 2025 – Desember 2025": "January 2025 – December 2025",
   "Januari 2025 - Desember 2025": "January 2025 – December 2025",
   "Januari 2024 – Desember 2024": "January 2024 – December 2024",
@@ -174,7 +210,29 @@ export const EXACT_TRANSLATIONS = {
   "Juli 2022 – Desember 2022": "July 2022 – December 2022",
   "Juli 2022 - Desember 2022": "July 2022 – December 2022",
 
-  // Experience Bullets (All 15 items)
+  // Live Experience Bullets
+  "Mengaudit dan mengonsolidasikan 36 file Excel (17.000+ baris data dari 4 sumber) ke dalam pipeline ETL Power Query untuk menghasilkan 9 laporan kinerja bulanan guna mendukung keputusan berbasis data.": "Audited and consolidated 36 Excel files (17,000+ rows across 4 sources) into a Power Query ETL pipeline to generate 9 monthly performance reports supporting data-driven decision-making.",
+  "Mengembangkan aplikasi web absensi magang, mengelola operasional Learning Management System (LMS), serta merencanakan dan mengawasi pelaksanaan acara capability building.": "Developed an internship attendance web application, managed Learning Management System (LMS) operations, and planned and supervised capability-building events.",
+  "Merancang sistem AI siap produksi untuk operasional terminal peti kemas, meliputi Computer Vision (DeepFace, YOLO, OCR) untuk verifikasi wajah (<300ms, akurasi 98%+) dan deteksi plat kendaraan, serta Hybrid RAG Engine (pgvector, ChromaDB, Gemini, Groq) yang memangkas waktu pencarian data hingga 85%.": "Engineered production-ready AI systems for container terminal operations, including Computer Vision (DeepFace, YOLO, OCR) for facial verification (<300ms, 98%+ accuracy) and license plate detection, plus a Hybrid RAG Engine (pgvector, ChromaDB, Gemini, Groq) cutting data lookup times by up to 85%.",
+  "Mengembangkan aplikasi web dan mobile full-stack (Next.js, FastAPI, React Native, Docker, PostgreSQL) beserta dashboard KPI analitik untuk mendukung pelaporan dan pengambilan keputusan operasional secara real-time.": "Built full-stack web and mobile applications (Next.js, FastAPI, React Native, Docker, PostgreSQL) alongside analytical KPI dashboards to support real-time operational reporting and decision-making.",
+  "Terpilih dalam program sertifikasi industri skala nasional (MBKM) yang berfokus pada pemrograman Python, SQL, visualisasi data, dan analitik data berbasis kebutuhan bisnis.": "Selected for a national industry certification program (MBKM) focused on Python programming, SQL, data visualization, and business-driven data analytics.",
+  "Melakukan pembersihan dan analisis data kapasitas meja serta reservasi pada proyek capstone untuk merancang solusi pencegahan double-booking secara terukur.": "Performed data cleaning and analysis on table capacity and reservation datasets in the capstone project to design a measurable double-booking prevention solution.",
+  "Membangun ulang halaman landing, layanan, dan produk kelaskampus.id secara pixel-perfect dari desain Figma menggunakan Next.js, React, TypeScript, dan Tailwind CSS v4 hingga meraih peringkat teratas SEO dan 100+ pengguna aktif.": "Rebuilt the landing, service, and product pages of kelaskampus.id pixel-perfectly from Figma designs using Next.js, React, TypeScript, and Tailwind CSS v4, achieving top SEO rankings and 100+ active users.",
+  "Mengoptimalkan responsivitas lintas perangkat dan memperbaiki anomali tata letak menggunakan ResponsivelyApp, serta menjaga standar kode bersih bebas eror di produksi melalui alur kerja Git, ESLint, dan Husky.": "Optimized cross-device responsiveness and resolved layout anomalies with ResponsivelyApp, while maintaining clean, error-free production code through Git, ESLint, and Husky workflows.",
+  "Membangun aplikasi web fungsional serta purwarupa UI/UX dari tahap konsep hingga peluncuran untuk menerjemahkan ide produk menjadi antarmuka yang siap digunakan.": "Built functional web applications and UI/UX prototypes from concept to launch, translating product ideas into ready-to-use interfaces.",
+  "Berkolaborasi lintas divisi bersama tim pengembang dan multimedia guna menyelaraskan implementasi front-end dengan perencanaan produk agar pengiriman solusi berjalan lebih cepat.": "Collaborated across divisions with engineering and multimedia teams to align front-end implementation with product planning for faster solution delivery.",
+  "Memimpin tim lintas universitas beranggotakan 7 orang (UPN Veteran Jawa Timur, ITS, UNESA) melalui 6 tahap kerangka konsultasi untuk UMKM seafood Toko Tiga Putra, berhasil mendiagnosis 5 permasalahan operasional utama melalui audit lapangan dan wawancara pemilik.": "Led a 7-member cross-university team (UPN Veteran East Java, ITS, UNESA) through a 6-stage consulting framework for seafood SME Toko Tiga Putra, diagnosing 5 core operational bottlenecks via field audits and owner interviews.",
+  "Merancang perombakan identitas merek (Graphic Standard Manual) serta membangun funnel social commerce di 3 kanal (Instagram Business, TikTok Shop, WhatsApp Business Catalog) beserta templat konten agar tim pemilik yang beranggotakan 2 orang dapat menjalankan pemasaran digital secara mandiri.": "Designed a complete brand identity overhaul (Graphic Standard Manual) and built a 3-channel social commerce funnel (Instagram Business, TikTok Shop, WhatsApp Business Catalog) with content templates enabling the 2-person owner team to run digital marketing independently.",
+  "Menginisiasi komunikasi strategis dan menegosiasikan kemitraan bersama pemangku kepentingan eksternal, termasuk mitra korporat dan perwakilan universitas, untuk menyukseskan program Company Visit dan benchmarking.": "Initiated strategic communications and negotiated partnerships with external stakeholders, including corporate partners and university representatives, to deliver Company Visit and benchmarking programs.",
+  "Menyusun dokumentasi formal, protokol acara, serta materi hubungan masyarakat guna menjaga konsistensi pesan dan citra profesional organisasi di setiap agenda eksternal.": "Prepared formal documentation, event protocols, and public relations materials to maintain consistent messaging and a professional organizational image across external agendas.",
+  "Menyelaraskan kebutuhan lintas divisi antara tim teknis, non-teknis, dan pihak eksternal guna memastikan prioritas pengembangan situs web sejalan dengan strategi komunikasi organisasi.": "Aligned cross-divisional requirements across technical, non-technical, and external stakeholders to keep website development priorities synced with organizational communication strategy.",
+  "Merestrukturisasi arsitektur konten digital, mengelola alur publikasi, serta menjaga stabilitas (uptime) dan akurasi informasi situs web selama satu periode kepengurusan.": "Restructured digital content architecture, managed publishing workflows, and maintained website uptime and information accuracy throughout a full stewardship term.",
+  "Memimpin Divisi Programming Mentor dengan mengelola rekrutmen, onboarding, dan koordinasi mentor, sekaligus menyusun kurikulum pembelajaran pemrograman terstruktur untuk berbagai tingkat keahlian.": "Led the Programming Mentor Division by overseeing mentor recruitment, onboarding, and coordination while designing a structured programming curriculum for multiple skill levels.",
+  "Mengarahkan sesi mentoring berbasis proyek bagi 149 anggota di Fakultas Ilmu Komputer guna memperkuat fondasi pemrograman dan problem solving, serta menyempurnakan metode belajar secara berkala berdasarkan umpan balik peserta.": "Directed project-based mentoring sessions for 149 members in the Faculty of Computer Science to strengthen programming fundamentals and problem solving, iteratively refining teaching methods from participant feedback.",
+  "Memimpin pengembangan end-to-end portal web resmi SRE UPNVJT yang melayani 100+ pengguna aktif, memangkas ukuran unggahan media sebesar 75% melalui kompresi sisi klien, serta merilis build bebas eror di 52 rute.": "Led end-to-end development of the official SRE UPNVJT web portal serving 100+ active users, reducing media upload sizes by 75% through client-side compression and shipping an error-free build across 52 routes.",
+  "Mengoordinasikan kebutuhan teknis dan non-teknis lintas divisi, sekaligus mengatur pembagian tugas dan lini masa tim pengembang agar peluncuran platform tepat waktu dan selaras dengan prioritas organisasi.": "Coordinated technical and non-technical requirements across divisions while managing engineering task allocation and timelines to ensure an on-schedule launch aligned with organizational priorities.",
+
+  // Legacy Seed Experience Bullets
   "Mengembangkan modul RESTful API dan integrasi basis data PostgreSQL untuk sistem pengelolaan transaksi internal perusahaan.": "Developed RESTful API modules and PostgreSQL database integrations for internal company transaction management systems.",
   "Membangun antarmuka dashboard monitoring operasional berbasis React dan Tailwind CSS yang responsif serta teruji di berbagai viewport.": "Engineered operational monitoring dashboard interfaces using React and Tailwind CSS, responsive and thoroughly tested across viewports.",
   "Menerapkan mekanisme validasi data terpusat dan penanganan galat asinkron guna menjaga integritas data operasional.": "Implemented centralized data validation mechanisms and asynchronous error handling to preserve operational data integrity.",
@@ -282,6 +340,9 @@ export const EXACT_TRANSLATIONS = {
 
   // Case Study Notices & Meta
   "Repositori Privat (Proyek Komersial Klien)": "Private Repository (Commercial Client Project)",
+  "Repositori Privat (Proyek Komersial / Institusi)": "Private Repository (Commercial / Institutional Project)",
+  "Kode sumber dilindungi NDA atau hak cipta klien.": "Source code is protected by NDA or client copyright.",
+  "Staff Web & Maintenance": "Web & Maintenance Staff",
   "Repositori Institusi Kampus": "Campus Institutional Repository",
   "Repositori Privat (Proyek Tim Pengembang)": "Private Repository (Developer Team Project)",
   "Repositori Privat": "Private Repository",
@@ -511,7 +572,6 @@ const WORD_REPLACEMENTS = [
   [/\bdampak\b/gi, "impact"],
   [/\bsolusi\b/gi, "solutions"],
   [/\bmasalah\b/gi, "challenges"],
-  [/\btarget\b/gi, "targets"],
   [/\bcapaian\b/gi, "milestones"],
   [/\bhasil\b/gi, "results"],
   [/\bpengujian\b/gi, "testing"],
@@ -568,42 +628,77 @@ function preserveCase(original, replacement) {
   return replacement.charAt(0).toLowerCase() + replacement.slice(1);
 }
 
+// Normalized lookup maps built once for fast, idempotent translations
+const EXACT_LOWER_MAP = new Map();
+const EXACT_EN_VALUES = new Set();
+for (const [key, val] of Object.entries(EXACT_TRANSLATIONS)) {
+  const normKey = key.replace(/\s+/g, " ").trim().toLowerCase();
+  const normVal = val.replace(/\s+/g, " ").trim().toLowerCase();
+  EXACT_LOWER_MAP.set(normKey, val);
+  EXACT_EN_VALUES.add(normVal);
+}
+
+// Parse JSON-encoded string arrays defensively for architecture lists
+function parseStringArray(value) {
+  if (Array.isArray(value)) return value;
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    if (trimmed.startsWith("[")) {
+      try {
+        const parsed = JSON.parse(trimmed);
+        if (Array.isArray(parsed)) return parsed;
+      } catch {
+        // Fallback to raw string when invalid JSON
+      }
+    }
+  }
+  return null;
+}
+
 // Translate arbitrary Indonesian sentence or paragraph to English
 export function translateText(text, lang = "en") {
   if (!text || typeof text !== "string" || lang !== "en") return text;
   const trimmed = text.trim();
   if (!trimmed) return text;
+  const normalized = trimmed.replace(/\s+/g, " ");
 
   // Direct exact lookup
   if (EXACT_TRANSLATIONS[trimmed]) {
     return EXACT_TRANSLATIONS[trimmed];
   }
+  if (EXACT_TRANSLATIONS[normalized]) {
+    return EXACT_TRANSLATIONS[normalized];
+  }
 
-  // Strip leading and trailing quotation marks
-  const unquoted = trimmed.replace(/^["“'”]+|["“'”]+$/g, "").trim();
-  if (unquoted && EXACT_TRANSLATIONS[unquoted]) {
-    return EXACT_TRANSLATIONS[unquoted];
+  // Return immediately when text is already an exact English translation
+  const lower = normalized.toLowerCase();
+  if (EXACT_EN_VALUES.has(lower)) {
+    return normalized;
   }
 
   // Case-insensitive exact lookup
-  const lower = trimmed.toLowerCase();
-  for (const [key, val] of Object.entries(EXACT_TRANSLATIONS)) {
-    if (key.toLowerCase() === lower) {
-      return val;
-    }
+  if (EXACT_LOWER_MAP.has(lower)) {
+    return EXACT_LOWER_MAP.get(lower);
   }
 
-  // Case-insensitive unquoted lookup
-  const lowerUnquoted = unquoted.toLowerCase();
-  for (const [key, val] of Object.entries(EXACT_TRANSLATIONS)) {
-    if (key.toLowerCase() === lowerUnquoted) {
-      return val;
+  // Strip leading and trailing quotation marks
+  const unquoted = normalized.replace(/^["“'”]+|["“'”]+$/g, "").trim();
+  if (unquoted) {
+    if (EXACT_TRANSLATIONS[unquoted]) {
+      return EXACT_TRANSLATIONS[unquoted];
+    }
+    const lowerUnquoted = unquoted.toLowerCase();
+    if (EXACT_EN_VALUES.has(lowerUnquoted)) {
+      return unquoted;
+    }
+    if (EXACT_LOWER_MAP.has(lowerUnquoted)) {
+      return EXACT_LOWER_MAP.get(lowerUnquoted);
     }
   }
 
   // Prefix splitting for colons
-  if (trimmed.includes(": ")) {
-    const parts = trimmed.split(": ");
+  if (normalized.includes(": ")) {
+    const parts = normalized.split(": ");
     if (parts.length === 2) {
       const translatedPrefix = translateText(parts[0], lang);
       const translatedSuffix = translateText(parts[1], lang);
@@ -613,7 +708,7 @@ export function translateText(text, lang = "en") {
 
   // Multi-sentence splitting
   const sentenceRegex = /([.!?]\s+)/;
-  const tokens = trimmed.split(sentenceRegex);
+  const tokens = normalized.split(sentenceRegex);
   if (tokens.length > 1) {
     const translatedTokens = tokens.map((tok, idx) => {
       // Delimiters are at odd indices
@@ -624,7 +719,7 @@ export function translateText(text, lang = "en") {
   }
 
   // Pattern-based substitution fallback for phrases and words
-  let result = trimmed;
+  let result = normalized;
   for (const [regex, replacement] of MONTH_REPLACEMENTS) {
     result = result.replace(regex, (match) =>
       preserveCase(match, replacement)
@@ -648,10 +743,20 @@ export function translateText(text, lang = "en") {
 export function translateInfo(info, lang = "en") {
   if (!info || typeof info !== "object" || lang !== "en") return info;
 
+  const isDefaultProjectsPair =
+    String(info.projectsTitle || "").trim().toLowerCase() === "proyek" &&
+    String(info.projectsTitleAccent || "").trim().toLowerCase() === "unggulan";
+  const isDefaultExpPair =
+    String(info.expTitle || "").trim().toLowerCase() === "pengalaman" &&
+    String(info.expTitleAccent || "").trim().toLowerCase() ===
+      "magang & organisasi";
+
   return {
     ...info,
     kicker: translateText(info.kicker, lang),
     role: translateText(info.role, lang),
+    statusBadge: translateText(info.statusBadge, lang),
+    location: translateText(info.location, lang),
     status: translateText(info.status, lang),
     valueProp: translateText(info.valueProp, lang),
     codeCardTitle: info.codeCardTitle,
@@ -669,12 +774,20 @@ export function translateInfo(info, lang = "en") {
     skillsTitleAccent: translateText(info.skillsTitleAccent, lang),
     skillsSubtitle: translateText(info.skillsSubtitle, lang),
     projectsKicker: translateText(info.projectsKicker, lang),
-    projectsTitle: translateText(info.projectsTitle, lang),
-    projectsTitleAccent: translateText(info.projectsTitleAccent, lang),
+    projectsTitle: isDefaultProjectsPair
+      ? "Featured"
+      : translateText(info.projectsTitle, lang),
+    projectsTitleAccent: isDefaultProjectsPair
+      ? "Projects"
+      : translateText(info.projectsTitleAccent, lang),
     projectsSubtitle: translateText(info.projectsSubtitle, lang),
     expKicker: translateText(info.expKicker, lang),
-    expTitle: translateText(info.expTitle, lang),
-    expTitleAccent: translateText(info.expTitleAccent, lang),
+    expTitle: isDefaultExpPair
+      ? "Internship &"
+      : translateText(info.expTitle, lang),
+    expTitleAccent: isDefaultExpPair
+      ? "Organization Experience"
+      : translateText(info.expTitleAccent, lang),
     expSubtitle: translateText(info.expSubtitle, lang),
     certsKicker: translateText(info.certsKicker, lang),
     certsTitle: translateText(info.certsTitle, lang),
@@ -715,18 +828,23 @@ export function translateEducation(edu, lang = "en") {
 export function translateProject(project, lang = "en") {
   if (!project || typeof project !== "object" || lang !== "en") return project;
 
+  const parsedArch = project.caseStudy
+    ? parseStringArray(project.caseStudy.architecture)
+    : null;
+
   const translatedCs = project.caseStudy
     ? {
         ...project.caseStudy,
         client: translateText(project.caseStudy.client, lang),
         role: translateText(project.caseStudy.role, lang),
         duration: translateText(project.caseStudy.duration, lang),
+        background: translateText(project.caseStudy.background, lang),
+        solution: translateText(project.caseStudy.solution, lang),
+        impact: translateText(project.caseStudy.impact, lang),
         challenges: translateText(project.caseStudy.challenges, lang),
         keyResults: translateText(project.caseStudy.keyResults, lang),
-        architecture: Array.isArray(project.caseStudy.architecture)
-          ? project.caseStudy.architecture.map((item) =>
-              translateText(item, lang)
-            )
+        architecture: parsedArch
+          ? parsedArch.map((item) => translateText(item, lang))
           : translateText(project.caseStudy.architecture, lang),
       }
     : project.caseStudy;
@@ -738,6 +856,7 @@ export function translateProject(project, lang = "en") {
     solution: translateText(project.solution, lang),
     impact: translateText(project.impact, lang),
     repoNotice: translateText(project.repoNotice, lang),
+    repoReason: translateText(project.repoReason, lang),
     caseStudy: translatedCs,
   };
 }

@@ -643,6 +643,23 @@ export async function saveSiteSettings(id, fields) {
   return updated;
 }
 
+// Parse JSON-encoded architecture lists returned as strings by Postgres
+function parseArchitectureField(value) {
+  if (Array.isArray(value)) return value;
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    if (trimmed.startsWith("[")) {
+      try {
+        const parsed = JSON.parse(trimmed);
+        if (Array.isArray(parsed)) return parsed;
+      } catch {
+        // Keep raw string when not valid JSON
+      }
+    }
+  }
+  return value;
+}
+
 // Fetch published projects with dynamic persistence
 export async function getProjects() {
   await preserveLocalBeforeCloudSync();
@@ -675,7 +692,7 @@ export async function getProjects() {
             duration: p.case_study_duration,
             background: p.case_study_background,
             solution: p.case_study_solution,
-            architecture: p.case_study_architecture,
+            architecture: parseArchitectureField(p.case_study_architecture),
             impact: p.case_study_impact,
           },
         }));
