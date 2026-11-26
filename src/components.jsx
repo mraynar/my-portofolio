@@ -1629,7 +1629,8 @@ export function ExpCard({
                 src={item.photo}
                 alt={item.photoAlt || item.role}
                 className="w-full h-full object-cover object-center transition-transform duration-300 group-hover/exp:scale-105"
-                loading="lazy"
+                loading={index < 2 ? "eager" : "lazy"}
+                decoding="async"
               />
               <div className="absolute top-2 right-2 p-1.5 rounded-lg border-2 border-[var(--border)] bg-[var(--surface)] shadow-[2px_2px_0_var(--shadow-color)] opacity-85 group-hover/exp:opacity-100 transition-opacity">
                 <Icon name="zoom-in" size={13} />
@@ -1778,7 +1779,7 @@ export function Navbar({ info = {} }) {
         </a>
 
         {/* Desktop links */}
-        <nav className="hidden md:flex items-center gap-6 lg:gap-8">
+        <nav className="hidden lg:flex items-center gap-6 xl:gap-8">
           {navLinks.map((item) => {
             const isInternal = item.href.startsWith("/#");
             const isHomeActive =
@@ -1876,7 +1877,7 @@ export function Navbar({ info = {} }) {
 
           <button
             onClick={() => setOpen(!open)}
-            className="md:hidden flex items-center justify-center w-[30px] h-[30px] sm:w-[34px] sm:h-[34px] rounded-full border-2 border-[var(--border)] bg-[var(--surface)] shadow-[2px_2px_0_var(--shadow-color)] hover:translate-x-[-1px] hover:translate-y-[-1px] cursor-pointer shrink-0"
+            className="lg:hidden flex items-center justify-center w-[30px] h-[30px] sm:w-[34px] sm:h-[34px] rounded-full border-2 border-[var(--border)] bg-[var(--surface)] shadow-[2px_2px_0_var(--shadow-color)] hover:translate-x-[-1px] hover:translate-y-[-1px] cursor-pointer shrink-0"
             aria-label={open ? "Tutup menu" : "Buka menu"}
             aria-expanded={open}
           >
@@ -1885,10 +1886,10 @@ export function Navbar({ info = {} }) {
         </div>
       </Container>
 
-      {/* Mobile drawer */}
+      {/* Mobile and tablet drawer */}
       {open && (
         <div
-          className="md:hidden border-b-2 px-6 py-6 space-y-4"
+          className="lg:hidden border-b-2 px-6 py-6 space-y-4"
           style={{
             backgroundColor: "var(--surface)",
             borderColor: "var(--border)",
@@ -2118,18 +2119,18 @@ export function ScrollTopFab({ dark, toggleDark }) {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-40 flex flex-col items-center gap-3">
+    <div className="fixed bottom-3 right-2.5 sm:bottom-6 sm:right-6 z-40 flex flex-col items-center gap-2 sm:gap-3">
       {/* Light and dark mode toggle button placed above scroll controls */}
       {toggleDark && (
         <button
           onClick={toggleDark}
-          className="flex items-center justify-center w-12 h-12 rounded-full border-2 border-[var(--border)] bg-[var(--surface)] shadow-[3px_3px_0_var(--shadow-color)] hover:translate-x-[-1px] hover:translate-y-[-1px] cursor-pointer transition-all"
+          className="flex items-center justify-center w-9 h-9 sm:w-12 sm:h-12 rounded-full border-2 border-[var(--border)] bg-[var(--surface)]/95 shadow-[2px_2px_0_var(--shadow-color)] sm:shadow-[3px_3px_0_var(--shadow-color)] hover:translate-x-[-1px] hover:translate-y-[-1px] cursor-pointer transition-all"
           aria-label={
             dark ? "Beralih ke mode terang" : "Beralih ke mode gelap"
           }
           title={dark ? "Mode Terang" : "Mode Gelap"}
         >
-          <Icon name={dark ? "sun" : "moon"} size={20} />
+          <Icon name={dark ? "sun" : "moon"} size={16} className="sm:w-5 sm:h-5" />
         </button>
       )}
 
@@ -2137,11 +2138,11 @@ export function ScrollTopFab({ dark, toggleDark }) {
       {canScrollUp && (
         <button
           onClick={scrollToTop}
-          className="flex items-center justify-center w-12 h-12 rounded-full border-2 border-[var(--border)] bg-[var(--surface)] shadow-[3px_3px_0_var(--shadow-color)] hover:translate-x-[-1px] hover:translate-y-[-1px] cursor-pointer transition-all"
+          className="flex items-center justify-center w-9 h-9 sm:w-12 sm:h-12 rounded-full border-2 border-[var(--border)] bg-[var(--surface)]/95 shadow-[2px_2px_0_var(--shadow-color)] sm:shadow-[3px_3px_0_var(--shadow-color)] hover:translate-x-[-1px] hover:translate-y-[-1px] cursor-pointer transition-all"
           aria-label="Gulir ke atas"
           title="Gulir ke atas"
         >
-          <Icon name="chevron-up" size={22} />
+          <Icon name="chevron-up" size={18} className="sm:w-[22px] sm:h-[22px]" />
         </button>
       )}
 
@@ -2149,11 +2150,11 @@ export function ScrollTopFab({ dark, toggleDark }) {
       {canScrollDown && (
         <button
           onClick={scrollToBottom}
-          className="flex items-center justify-center w-12 h-12 rounded-full border-2 border-[var(--border)] bg-[var(--surface)] shadow-[3px_3px_0_var(--shadow-color)] hover:translate-x-[-1px] hover:translate-y-[-1px] cursor-pointer transition-all"
+          className="flex items-center justify-center w-9 h-9 sm:w-12 sm:h-12 rounded-full border-2 border-[var(--border)] bg-[var(--surface)]/95 shadow-[2px_2px_0_var(--shadow-color)] sm:shadow-[3px_3px_0_var(--shadow-color)] hover:translate-x-[-1px] hover:translate-y-[-1px] cursor-pointer transition-all"
           aria-label="Gulir ke bawah"
           title="Gulir ke bawah"
         >
-          <Icon name="chevron-down" size={22} />
+          <Icon name="chevron-down" size={18} className="sm:w-[22px] sm:h-[22px]" />
         </button>
       )}
     </div>
