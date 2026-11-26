@@ -14,6 +14,8 @@ import {
   deleteEducation,
   upsertCertification,
   deleteCertification,
+  purgeLegacyStaticCertifications,
+  LEGACY_STATIC_CERT_IDS,
   uploadStorageFile,
 } from "../lib/supabase";
 
@@ -102,13 +104,45 @@ export default function AdminEducationCerts({
     }
   };
 
-  const handleDeleteCert = async (id) => {
+  const handleDeleteCert = async (identifier) => {
     if (!window.confirm("Hapus sertifikasi ini?")) return;
     try {
-      await deleteCertification(id);
+      await deleteCertification(identifier);
       await onRefresh();
     } catch (err) {
       alert(err.message || "Gagal menghapus sertifikasi.");
+    }
+  };
+
+  const legacyStaticCertCount = certifications.filter((c) =>
+    LEGACY_STATIC_CERT_IDS.includes(c.credentialId)
+  ).length;
+
+  const handlePurgeLegacyCerts = async () => {
+    if (
+      !window.confirm(
+        `Hapus ${legacyStaticCertCount} data sertifikasi statis/lama? Sertifikasi baru milik Anda tetap aman.`
+      )
+    ) {
+      return;
+    }
+    setIsSubmitting(true);
+    setFeedback(null);
+    try {
+      const removed = await purgeLegacyStaticCertifications();
+      await onRefresh();
+      setCertPage(1);
+      setFeedback({
+        type: "success",
+        text: `${removed} data sertifikasi lama berhasil dihapus permanen.`,
+      });
+    } catch (err) {
+      setFeedback({
+        type: "error",
+        text: err.message || "Gagal menghapus data sertifikasi lama.",
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -917,36 +951,77 @@ export default function AdminEducationCerts({
             onUpdateInfo={onUpdateInfo}
           />
 
-          <div className="flex items-center justify-between">
+          <div className="flex flex-wrap items-center justify-between gap-3">
             <h3
               className="text-lg font-extrabold"
               style={{ fontFamily: "var(--font-display)" }}
             >
               Sertifikasi & Kredensial Resmi
             </h3>
-            <button
-              onClick={() => {
-                window.scrollTo({ top: 0, behavior: "smooth" });
-                setIsCustomProvider(false);
-                setEditingCert({
-                  title: "",
-                  issuer: "",
-                  provider: "Coursera",
-                  credentialId: "",
-                  credentialUrl: "",
-                  date: "2024",
-                  orderIndex: certifications.length,
-                  image: "",
-                });
-              }}
-              className="neo-btn-primary font-bold text-xs sm:text-sm"
-            >
+            <div className="flex flex-wrap items-center gap-2">
+              {legacyStaticCertCount > 0 && (
+                <button
+                  type="button"
+                  disabled={isSubmitting}
+                  onClick={handlePurgeLegacyCerts}
+                  className="neo-badge text-xs sm:text-sm font-bold py-2 px-3 cursor-pointer inline-flex items-center gap-1.5"
+                  style={{
+                    backgroundColor: "var(--google-red-bg)",
+                    color: "var(--google-red-text)",
+                    borderColor: "var(--google-red)",
+                  }}
+                >
+                  <Icon name="trash" size={14} />
+                  Hapus Sertifikasi Lama ({legacyStaticCertCount})
+                </button>
+              )}
+              <button
+                onClick={() => {
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                  setIsCustomProvider(false);
+                  setEditingCert({
+                    title: "",
+                    issuer: "",
+                    provider: "Coursera",
+                    credentialId: "",
+                    credentialUrl: "",
+                    date: String(new Date().getFullYear()),
+                    orderIndex: certifications.length,
+                    image: "",
+                  });
+                }}
+                className="neo-btn-primary font-bold text-xs sm:text-sm"
+              >
                 <Icon name="plus" size={15} />
                 Tambah Sertifikasi
               </button>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {certifications.length === 0 ? (
+            <Card className="p-8 text-center space-y-2">
+              <div
+                className="w-12 h-12 rounded-xl border-2 mx-auto flex items-center justify-center"
+                style={{
+                  backgroundColor: "var(--surface-alt)",
+                  borderColor: "var(--border)",
+                  color: "var(--google-blue)",
+                }}
+              >
+                <Icon name="award" size={22} />
+              </div>
+              <p className="font-bold text-sm">
+                Belum ada sertifikasi yang tersimpan.
+              </p>
+              <p
+                className="text-xs"
+                style={{ color: "var(--ink-secondary)" }}
+              >
+                Klik Tambah Sertifikasi untuk menambahkan kredensial baru secara dinamis.
+              </p>
+            </Card>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {(() => {
               const maxCertPage = Math.max(1, Math.ceil(certifications.length / certPageSize));
               const effectiveCertPage = Math.min(certPage, maxCertPage);
@@ -1019,25 +1094,28 @@ export default function AdminEducationCerts({
                       >
                         <Icon name="edit" size={12} />
                       </button>
-                      {c.id && (
-                        <button
-                          onClick={() => handleDeleteCert(c.id)}
-                          className="neo-badge text-xs font-bold py-1 px-2"
-                          style={{
-                            backgroundColor: "var(--google-red-bg)",
-                            color: "var(--google-red-text)",
-                            borderColor: "var(--google-red)",
-                          }}
-                        >
-                          <Icon name="trash" size={12} />
-                        </button>
-                      )}
+                      <button
+                        type="button"
+                        aria-label="Hapus sertifikasi"
+                        onClick={() =>
+                          handleDeleteCert(c.id || c.credentialId || c.title)
+                        }
+                        className="neo-badge text-xs font-bold py-1 px-2 cursor-pointer"
+                        style={{
+                          backgroundColor: "var(--google-red-bg)",
+                          color: "var(--google-red-text)",
+                          borderColor: "var(--google-red)",
+                        }}
+                      >
+                        <Icon name="trash" size={12} />
+                      </button>
                     </div>
                   </div>
                 </Card>
               ));
             })()}
           </div>
+          )}
 
           <Pagination
             currentPage={certPage}

@@ -1330,27 +1330,51 @@ function CertificationsSection({
           </div>
 
           {/* Horizontal navigation controls */}
-          <div className="flex items-center gap-2 self-end md:self-auto shrink-0">
-            <button
-              type="button"
-              onClick={() => scrollTrack(-1)}
-              aria-label={language === "en" ? "Scroll left" : "Geser ke kiri"}
-              className="w-10 h-10 rounded-full border-2 border-[var(--border)] bg-[var(--surface)] shadow-[2px_2px_0_var(--shadow-color)] hover:translate-x-[-1px] hover:translate-y-[-1px] active:translate-x-0 active:translate-y-0 transition-all cursor-pointer flex items-center justify-center shrink-0"
-            >
-              <Icon name="arrow-left" size={18} />
-            </button>
-            <button
-              type="button"
-              onClick={() => scrollTrack(1)}
-              aria-label={language === "en" ? "Scroll right" : "Geser ke kanan"}
-              className="w-10 h-10 rounded-full border-2 border-[var(--border)] bg-[var(--surface)] shadow-[2px_2px_0_var(--shadow-color)] hover:translate-x-[-1px] hover:translate-y-[-1px] active:translate-x-0 active:translate-y-0 transition-all cursor-pointer flex items-center justify-center shrink-0"
-            >
-              <Icon name="arrow-right" size={18} />
-            </button>
-          </div>
+          {certifications.length > 0 && (
+            <div className="flex items-center gap-2 self-end md:self-auto shrink-0">
+              <button
+                type="button"
+                onClick={() => scrollTrack(-1)}
+                aria-label={language === "en" ? "Scroll left" : "Geser ke kiri"}
+                className="w-10 h-10 rounded-full border-2 border-[var(--border)] bg-[var(--surface)] shadow-[2px_2px_0_var(--shadow-color)] hover:translate-x-[-1px] hover:translate-y-[-1px] active:translate-x-0 active:translate-y-0 transition-all cursor-pointer flex items-center justify-center shrink-0"
+              >
+                <Icon name="arrow-left" size={18} />
+              </button>
+              <button
+                type="button"
+                onClick={() => scrollTrack(1)}
+                aria-label={language === "en" ? "Scroll right" : "Geser ke kanan"}
+                className="w-10 h-10 rounded-full border-2 border-[var(--border)] bg-[var(--surface)] shadow-[2px_2px_0_var(--shadow-color)] hover:translate-x-[-1px] hover:translate-y-[-1px] active:translate-x-0 active:translate-y-0 transition-all cursor-pointer flex items-center justify-center shrink-0"
+              >
+                <Icon name="arrow-right" size={18} />
+              </button>
+            </div>
+          )}
         </div>
 
         {/* 1-line horizontal scrollable track */}
+        {certifications.length === 0 ? (
+          <Card variant="flat" className="p-8 text-center">
+            <div
+              className="w-12 h-12 rounded-xl border-2 mx-auto mb-3 flex items-center justify-center"
+              style={{
+                backgroundColor: "var(--surface-alt)",
+                borderColor: "var(--border)",
+                color: "var(--google-blue)",
+              }}
+            >
+              <Icon name="award" size={22} />
+            </div>
+            <p
+              className="text-sm sm:text-base font-bold"
+              style={{ color: "var(--ink)" }}
+            >
+              {language === "en"
+                ? "Certifications will appear here once published."
+                : "Sertifikasi akan tampil di sini setelah ditambahkan melalui Admin CMS."}
+            </p>
+          </Card>
+        ) : (
         <div className="relative">
           <div
             ref={trackRef}
@@ -1500,6 +1524,7 @@ function CertificationsSection({
             })}
           </div>
         </div>
+        )}
       </Container>
 
       {/* Lightbox modal for zooming certificate full-size */}

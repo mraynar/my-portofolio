@@ -1235,7 +1235,20 @@ export async function deleteEducation(id) {
   notifyDataChanged();
 }
 
-// Fetch certifications with dynamic persistence
+// Legacy static seed credential IDs eligible for one-click admin cleanup
+export const LEGACY_STATIC_CERT_IDS = [
+  "BABFA59PQ6P1",
+  "O4E735ED1C19",
+  "OPIQUC835DYO",
+  "4EXG140QQPRL",
+  "72ZDJ771LZYW",
+  "UC-b1e1180e-06a6-461a-91a7-b6f3f75ddce1",
+  "UC-e151d82f-7011-4b42-b94f-9f64eecb4eaa",
+  "UC-806f4b45-0109-4c65-9720-389fff8ca068",
+  "KNX-DA-001",
+];
+
+// Fetch certifications dynamically from Supabase without static seed fallback
 export async function getCertifications() {
   if (supabase) {
     try {
@@ -1244,7 +1257,7 @@ export async function getCertifications() {
         .select("*")
         .order("order_index", { ascending: true });
 
-      if (!error && data && data.length > 0) {
+      if (!error && Array.isArray(data)) {
         const mapped = data.map((c) => ({
           title: c.title,
           issuer: c.issuer,
@@ -1269,8 +1282,7 @@ export async function getCertifications() {
   }
 
   const cached = await getLocalItem(CACHE_KEYS.CERTS);
-  if (Array.isArray(cached) && cached.length > 0) return cached;
-  return CERTIFICATIONS;
+  return Array.isArray(cached) ? cached : [];
 }
 
 // Upsert certification entry
@@ -1325,24 +1337,71 @@ export async function upsertCertification(cert) {
   return payload;
 }
 
-// Delete certification entry
-export async function deleteCertification(id) {
+// Delete certification entry by UUID, credential ID, or title
+export async function deleteCertification(identifier) {
   const current = await getCertifications();
-  const updated = current.filter((c) => c.id !== id && c.credentialId !== id);
+  const target = current.find(
+    (c) =>
+      c.id === identifier ||
+      c.credentialId === identifier ||
+      c.title === identifier
+  );
+  const updated = current.filter(
+    (c) =>
+      c.id !== identifier &&
+      c.credentialId !== identifier &&
+      c.title !== identifier
+  );
 
   await setLocalItem(CACHE_KEYS.CERTS, updated);
+
+  if (supabase) {
+    const targetId = target?.id || identifier;
+    if (isValidUuid(targetId)) {
+      const { error } = await supabase
+        .from("certifications")
+        .delete()
+        .eq("id", targetId);
+      if (error) {
+        throw new Error(error.message || "Gagal menghapus sertifikasi.");
+      }
+    } else if (target?.credentialId || identifier) {
+      const { error } = await supabase
+        .from("certifications")
+        .delete()
+        .eq("credential_id", target?.credentialId || identifier);
+      if (error) {
+        throw new Error(error.message || "Gagal menghapus sertifikasi.");
+      }
+    }
+  }
+
+  notifyDataChanged();
+}
+
+// Remove all legacy static seed certifications from local cache and Supabase
+export async function purgeLegacyStaticCertifications() {
+  const current = await getCertifications();
+  const legacySet = new Set(LEGACY_STATIC_CERT_IDS);
+  const remaining = current.filter((c) => !legacySet.has(c.credentialId));
+  const removedCount = current.length - remaining.length;
+
+  await setLocalItem(CACHE_KEYS.CERTS, remaining);
 
   if (supabase) {
     const { error } = await supabase
       .from("certifications")
       .delete()
-      .eq("id", id);
+      .in("credential_id", LEGACY_STATIC_CERT_IDS);
     if (error) {
-      throw new Error(error.message || "Gagal menghapus sertifikasi.");
+      throw new Error(
+        error.message || "Gagal menghapus data sertifikasi lama di Supabase."
+      );
     }
   }
 
   notifyDataChanged();
+  return removedCount;
 }
 
 // Submit visitor contact form
