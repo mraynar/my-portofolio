@@ -1519,11 +1519,15 @@ function Contact({ info = PERSONAL_INFO }) {
   return (
     <Section id="contact" style={{ backgroundColor: "transparent" }}>
       <Container>
-        <Card variant="flat" className="p-0 overflow-hidden w-full">
+        <Card
+          variant="flat"
+          className="overflow-hidden w-full"
+          style={{ padding: 0 }}
+        >
           <div className="google-bar" />
 
-          <div className="p-6 sm:p-8 lg:p-10">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-stretch">
+          <div className="px-4 py-5 sm:p-6 lg:p-8">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch">
               {/* Left column: narrative and direct channels (5 cols) */}
               <div className="lg:col-span-5 flex flex-col justify-between">
                 <div>
@@ -1616,7 +1620,7 @@ function Contact({ info = PERSONAL_INFO }) {
 
               {/* Right column: interactive contact form (7 cols) */}
               <div
-                className="lg:col-span-7 p-5 sm:p-6 rounded-2xl border-2 flex flex-col justify-between"
+                className="lg:col-span-7 p-3.5 sm:p-5 lg:p-6 rounded-2xl border-2 flex flex-col justify-between"
                 style={{
                   backgroundColor: "var(--surface-alt)",
                   borderColor: "var(--border)",
