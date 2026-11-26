@@ -142,7 +142,9 @@ function Hero({ info = PERSONAL_INFO }) {
           <div className="lg:col-span-7 xl:col-span-6 flex flex-col justify-between">
             <div className="pt-4 sm:pt-6 lg:pt-9">
               <div className="mb-3.5 sm:mb-4">
-                <Chip variant="blue">{kicker}</Chip>
+                <Chip variant="blue" className="neo-badge-wrap leading-snug">
+                  {kicker}
+                </Chip>
               </div>
 
               {/* Heading with one word per line */}

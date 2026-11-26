@@ -248,6 +248,12 @@ section[id] {
   white-space: nowrap;
 }
 
+.neo-badge-wrap {
+  white-space: normal;
+  max-width: 100%;
+  text-align: center;
+}
+
 /* Standardized form input heights and styling */
 input[type="text"],
 input[type="email"],
