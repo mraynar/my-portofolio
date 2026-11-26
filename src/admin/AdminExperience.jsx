@@ -86,13 +86,25 @@ export default function AdminExperience({
   };
 
   const handleCreate = () => {
+    const isOrgTab = filterType === "organisasi";
+    const defaultType = isOrgTab ? "Organisasi" : "Magang";
+    const defaultCategory = isOrgTab ? "Organisasi Kampus" : "Magang Industri";
+    const newId = `exp-${Date.now()}`;
+
     const currentList = sortExperiencesLatestFirst(experience).filter((it) => {
+      if (isOrgTab) return !isInternshipExperience(it);
       if (filterType === "magang") return isInternshipExperience(it);
-      if (filterType === "organisasi") return !isInternshipExperience(it);
       return true;
     });
     const defaultPos = currentList.length + 1;
-    setEditingItem({ ...EMPTY_EXP, order_index: experience.length + 1 });
+
+    setEditingItem({
+      ...EMPTY_EXP,
+      id: newId,
+      type: defaultType,
+      category: defaultCategory,
+      order_index: experience.length + 1,
+    });
     setBulletsText("");
     setTagsText("");
     setFeedback(null);
@@ -236,10 +248,15 @@ export default function AdminExperience({
           e.org === editingItem.org)
     );
 
+    const isMagangItem =
+      editingItem.type === "Magang" || isInternshipExperience(editingItem);
+
+    // List of items in the same category as the item being edited
     const currentList = sortExperiencesLatestFirst(experience).filter((it) => {
-      if (filterType === "magang") return isInternshipExperience(it);
-      if (filterType === "organisasi") return !isInternshipExperience(it);
-      return true;
+      if (filterType === "all") return true;
+      return isMagangItem
+        ? isInternshipExperience(it)
+        : !isInternshipExperience(it);
     });
 
     const totalSlots = isNew
@@ -281,8 +298,10 @@ export default function AdminExperience({
     const isMagang =
       editingItem.type === "Magang" || isInternshipExperience(editingItem);
     const resolvedType = isMagang ? "Magang" : "Organisasi";
+    const assignedId = editingItem.id || `exp-${Date.now()}`;
     const payload = {
       ...editingItem,
+      id: assignedId,
       type: resolvedType,
       category:
         editingItem.category ||
@@ -301,17 +320,34 @@ export default function AdminExperience({
 
     try {
       const masterList = sortExperiencesLatestFirst(experience);
-      const isMagangTab = filterType === "magang";
-      const isOrganisasiTab = filterType === "organisasi";
 
       let newMaster;
 
-      if (isMagangTab || isOrganisasiTab) {
+      if (filterType === "all") {
+        // Reordering within the full master list
+        const currentIdx = masterList.findIndex(
+          (it) =>
+            (payload.id && it.id === payload.id) ||
+            (payload.role && it.role === payload.role && it.org === payload.org)
+        );
+
+        const updatedMaster = [...masterList];
+        if (currentIdx >= 0) {
+          updatedMaster.splice(currentIdx, 1);
+        }
+        const safeTarget = Math.max(
+          1,
+          Math.min(targetPosition, updatedMaster.length + 1)
+        );
+        updatedMaster.splice(safeTarget - 1, 0, payload);
+        newMaster = updatedMaster;
+      } else {
+        // Reordering within specific category (Magang vs Organisasi)
         const categoryItems = masterList.filter((item) =>
-          isMagangTab ? isInternshipExperience(item) : !isInternshipExperience(item)
+          isMagang ? isInternshipExperience(item) : !isInternshipExperience(item)
         );
         const otherItems = masterList.filter((item) =>
-          isMagangTab ? !isInternshipExperience(item) : isInternshipExperience(item)
+          isMagang ? !isInternshipExperience(item) : isInternshipExperience(item)
         );
 
         const currentIdx = categoryItems.findIndex(
@@ -330,26 +366,9 @@ export default function AdminExperience({
         );
         updatedCategory.splice(safeTarget - 1, 0, payload);
 
-        newMaster = isMagangTab
+        newMaster = isMagang
           ? [...updatedCategory, ...otherItems]
           : [...otherItems, ...updatedCategory];
-      } else {
-        const currentIdx = masterList.findIndex(
-          (it) =>
-            (payload.id && it.id === payload.id) ||
-            (payload.role && it.role === payload.role && it.org === payload.org)
-        );
-
-        const updatedMaster = [...masterList];
-        if (currentIdx >= 0) {
-          updatedMaster.splice(currentIdx, 1);
-        }
-        const safeTarget = Math.max(
-          1,
-          Math.min(targetPosition, updatedMaster.length + 1)
-        );
-        updatedMaster.splice(safeTarget - 1, 0, payload);
-        newMaster = updatedMaster;
       }
 
       const indexedMaster = newMaster.map((item, idx) => ({
@@ -357,8 +376,10 @@ export default function AdminExperience({
         order_index: idx + 1,
       }));
 
+      // Persist full indexed master list
       await reorderExperience(indexedMaster);
 
+      // Ensure upsert for the target item payload with its updated order_index
       const savedPayload =
         indexedMaster.find(
           (it) =>
@@ -367,6 +388,13 @@ export default function AdminExperience({
         ) || payload;
       await upsertExperience(savedPayload);
 
+      // Ensure the active tab matches the item category so it is ALWAYS visible
+      const targetCategoryTab = isMagang ? "magang" : "organisasi";
+      if (filterType !== "all" && filterType !== targetCategoryTab) {
+        setFilterType(targetCategoryTab);
+      }
+
+      // Automatically jump to the page containing the target position
       const safeTargetPage = Math.max(1, Math.ceil(targetPosition / pageSize));
       setCurrentPage(safeTargetPage);
 
@@ -512,14 +540,21 @@ export default function AdminExperience({
                   }
                   onChange={(e) => {
                     const nextType = e.target.value;
+                    const prevDefaultCategory =
+                      nextType === "Magang"
+                        ? "Organisasi Kampus"
+                        : "Magang Industri";
+                    const isDefault =
+                      !editingItem.category ||
+                      editingItem.category === prevDefaultCategory;
                     setEditingItem({
                       ...editingItem,
                       type: nextType,
-                      category:
-                        editingItem.category ||
-                        (nextType === "Magang"
+                      category: isDefault
+                        ? nextType === "Magang"
                           ? "Magang Industri"
-                          : "Organisasi Kampus"),
+                          : "Organisasi Kampus"
+                        : editingItem.category,
                     });
                   }}
                   options={[

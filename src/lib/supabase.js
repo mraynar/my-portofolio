@@ -706,9 +706,18 @@ export async function upsertExperience(item) {
     current: item.current !== undefined ? item.current : item.active,
     photoAlt: item.photoAlt || item.photo_alt || "",
   };
-  const exists = current.some((e) => e.id === id || e.role === item.role);
+  const exists = current.some(
+    (e) =>
+      e.id === id ||
+      (item.role && e.role === item.role && e.org === item.org)
+  );
   const updated = exists
-    ? current.map((e) => (e.id === id || e.role === item.role ? payload : e))
+    ? current.map((e) =>
+        e.id === id ||
+        (item.role && e.role === item.role && e.org === item.org)
+          ? payload
+          : e
+      )
     : [...current, payload];
 
   try {
