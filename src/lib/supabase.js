@@ -1470,7 +1470,7 @@ export async function exportCmsSnapshot() {
 
 // Push complete local CMS dataset and inline images into Supabase Cloud
 export async function syncLocalDataToSupabase(
-  onProgress = () => {},
+  onProgress = () => { },
   customSnapshot = null
 ) {
   if (!supabase) {
@@ -1504,13 +1504,18 @@ export async function syncLocalDataToSupabase(
     if (res.uploaded) uploadedImages += 1;
   }
 
-  const { data: existingSettings } = await supabase
+  const { data: allSettingsRows } = await supabase
     .from("site_settings")
     .select("id")
-    .limit(1)
-    .maybeSingle();
+    .order("updated_at", { ascending: false });
 
-  await saveSiteSettings(existingSettings?.id || null, settingsData);
+  const primarySettingsId = allSettingsRows?.[0]?.id || null;
+  if (allSettingsRows && allSettingsRows.length > 1) {
+    const duplicateIds = allSettingsRows.slice(1).map((r) => r.id);
+    await supabase.from("site_settings").delete().in("id", duplicateIds);
+  }
+
+  await saveSiteSettings(primarySettingsId, settingsData);
 
   // 2. Sync projects
   const rawProjects = Array.isArray(snapshot.projects) ? snapshot.projects : [];
@@ -1667,7 +1672,7 @@ export async function syncLocalDataToSupabase(
 }
 
 // Import a JSON CMS backup into local IndexedDB and optionally Supabase
-export async function importCmsSnapshot(snapshot, onProgress = () => {}) {
+export async function importCmsSnapshot(snapshot, onProgress = () => { }) {
   if (!snapshot || typeof snapshot !== "object") {
     throw new Error("Format file backup JSON tidak valid.");
   }
