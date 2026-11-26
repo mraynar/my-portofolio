@@ -59,3 +59,16 @@ alter table public.certifications
 
 -- Relax project label check so custom labels sync cleanly
 alter table public.projects drop constraint if exists projects_label_check;
+
+-- Grant required schema and table privileges (RLS enforces access rules)
+grant usage on schema public to anon, authenticated;
+grant select on public.site_settings, public.stat_metrics, public.education,
+  public.skill_categories, public.projects, public.experience,
+  public.certifications to anon, authenticated;
+grant insert on public.contact_messages to anon, authenticated;
+grant select on public.admins to authenticated;
+grant insert, update, delete on public.site_settings, public.stat_metrics,
+  public.education, public.skill_categories, public.projects,
+  public.experience, public.certifications, public.contact_messages
+  to authenticated;
+grant execute on function public.is_admin() to anon, authenticated;

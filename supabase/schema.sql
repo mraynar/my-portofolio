@@ -201,6 +201,19 @@ alter table public.experience enable row level security;
 alter table public.certifications enable row level security;
 alter table public.contact_messages enable row level security;
 
+-- Grant schema and table privileges (RLS policies enforce row-level access)
+grant usage on schema public to anon, authenticated;
+grant select on public.site_settings, public.stat_metrics, public.education,
+  public.skill_categories, public.projects, public.experience,
+  public.certifications to anon, authenticated;
+grant insert on public.contact_messages to anon, authenticated;
+grant select on public.admins to authenticated;
+grant insert, update, delete on public.site_settings, public.stat_metrics,
+  public.education, public.skill_categories, public.projects,
+  public.experience, public.certifications, public.contact_messages
+  to authenticated;
+grant execute on function public.is_admin() to anon, authenticated;
+
 -- Drop existing policies cleanly
 drop policy if exists "Admins viewable by authenticated admins" on public.admins;
 drop policy if exists "Public site settings read access" on public.site_settings;
