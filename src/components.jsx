@@ -2012,25 +2012,25 @@ export function Footer({ info = {} }) {
             </p>
           </div>
 
-          <Cluster gap={8} className="justify-center">
+          <div className="flex flex-nowrap items-center justify-center gap-1.5 sm:gap-2 max-w-full">
             <a
               href={github}
               target="_blank"
               rel="noreferrer"
-              className="neo-badge text-xs sm:text-sm font-bold inline-flex items-center gap-1.5"
+              className="neo-badge text-[11px] sm:text-sm font-bold inline-flex items-center !gap-1 sm:!gap-1.5 !px-2 sm:!px-3 !py-1 sm:!py-1.5 !min-h-[30px] sm:!min-h-[34px] shrink-0"
               style={{
                 backgroundColor: "var(--surface)",
                 color: "var(--ink)",
               }}
             >
               GitHub
-              <Icon name="github" size={14} />
+              <Icon name="github" size={12} className="sm:w-3.5 sm:h-3.5" />
             </a>
             <a
               href={linkedin}
               target="_blank"
               rel="noreferrer"
-              className="neo-badge text-xs sm:text-sm font-bold inline-flex items-center gap-1.5"
+              className="neo-badge text-[11px] sm:text-sm font-bold inline-flex items-center !gap-1 sm:!gap-1.5 !px-2 sm:!px-3 !py-1 sm:!py-1.5 !min-h-[30px] sm:!min-h-[34px] shrink-0"
               style={{
                 backgroundColor: "var(--google-blue-bg)",
                 color: "var(--google-blue-text)",
@@ -2038,13 +2038,13 @@ export function Footer({ info = {} }) {
               }}
             >
               LinkedIn
-              <Icon name="linkedin" size={14} />
+              <Icon name="linkedin" size={12} className="sm:w-3.5 sm:h-3.5" />
             </a>
             <a
               href={instagram}
               target="_blank"
               rel="noreferrer"
-              className="neo-badge text-xs sm:text-sm font-bold inline-flex items-center gap-1.5"
+              className="neo-badge text-[11px] sm:text-sm font-bold inline-flex items-center !gap-1 sm:!gap-1.5 !px-2 sm:!px-3 !py-1 sm:!py-1.5 !min-h-[30px] sm:!min-h-[34px] shrink-0"
               style={{
                 backgroundColor: "var(--google-yellow-bg)",
                 color: "var(--google-yellow-text)",
@@ -2052,11 +2052,11 @@ export function Footer({ info = {} }) {
               }}
             >
               Instagram
-              <Icon name="instagram" size={14} />
+              <Icon name="instagram" size={12} className="sm:w-3.5 sm:h-3.5" />
             </a>
             <a
               href={`mailto:${email}`}
-              className="neo-badge text-xs sm:text-sm font-bold inline-flex items-center gap-1.5"
+              className="neo-badge text-[11px] sm:text-sm font-bold inline-flex items-center !gap-1 sm:!gap-1.5 !px-2 sm:!px-3 !py-1 sm:!py-1.5 !min-h-[30px] sm:!min-h-[34px] shrink-0"
               style={{
                 backgroundColor: "var(--google-red-bg)",
                 color: "var(--google-red-text)",
@@ -2064,9 +2064,9 @@ export function Footer({ info = {} }) {
               }}
             >
               Email
-              <Icon name="mail" size={14} />
+              <Icon name="mail" size={12} className="sm:w-3.5 sm:h-3.5" />
             </a>
-          </Cluster>
+          </div>
         </div>
 
         <div
