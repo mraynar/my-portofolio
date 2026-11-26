@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useLocation } from "react-router-dom";
-import { PERSONAL_INFO } from "./data";
+import { PERSONAL_INFO, isInternshipExperience } from "./data";
 import { Icon } from "./components/icons/Icon";
 import { useLanguage } from "./context/LanguageContext";
 import {
@@ -1548,10 +1548,7 @@ export function ExpCard({
   const numColor = numberThemes[index % 4];
   const displayNum =
     typeof customIndex === "number" ? customIndex : index + 1;
-  const isMagang =
-    item.type === "Magang" ||
-    String(item.category || "").toLowerCase().includes("magang") ||
-    String(item.role || "").toLowerCase().includes("intern");
+  const isMagang = isInternshipExperience(item);
 
   return (
     <div className="relative mb-7 sm:mb-10 last:mb-0">

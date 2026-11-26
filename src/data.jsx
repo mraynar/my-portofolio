@@ -309,21 +309,34 @@ export const PROJECTS = [
 
 // Helper to check if experience item belongs to internship category
 export function isInternshipExperience(item) {
-  const typeText = String(item.type || "").toLowerCase();
-  const catText = String(item.category || "").toLowerCase();
-  const roleText = String(item.role || "").toLowerCase();
+  const typeText = String(item?.type || "").trim().toLowerCase();
+  const catText = String(item?.category || "").trim().toLowerCase();
+  const roleText = String(item?.role || "").trim().toLowerCase();
 
-  if (typeText === "magang" || typeText === "internship" || typeText === "profesional") {
+  if (
+    typeText === "magang" ||
+    typeText === "internship" ||
+    typeText === "profesional" ||
+    typeText === "professional"
+  ) {
     return true;
   }
-  if (typeText === "organisasi" || typeText === "leadership" || typeText === "kepemimpinan") {
+  if (
+    typeText === "organisasi" ||
+    typeText === "organization" ||
+    typeText === "leadership" ||
+    typeText === "kepemimpinan" ||
+    typeText === "komunitas" ||
+    typeText === "community"
+  ) {
     return false;
   }
+  const internWordRegex = /\bintern(ship|s)?\b/i;
   return (
     catText.includes("magang") ||
-    catText.includes("intern") ||
+    internWordRegex.test(catText) ||
     catText.includes("industri") ||
-    roleText.includes("intern") ||
+    internWordRegex.test(roleText) ||
     roleText.includes("magang")
   );
 }
