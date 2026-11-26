@@ -137,9 +137,9 @@ function Hero({ info = PERSONAL_INFO }) {
       }}
     >
       <Container className="relative z-10 w-full my-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-8 xl:gap-10 items-stretch">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-8 xl:gap-10 items-stretch">
           {/* Left column: narrative and actions */}
-          <div className="lg:col-span-7 xl:col-span-6 flex flex-col justify-between">
+          <div className="md:col-span-7 xl:col-span-6 flex flex-col justify-between">
             <div className="pt-4 sm:pt-6 lg:pt-9">
               <div className="mb-3.5 sm:mb-4">
                 <Chip variant="blue" className="neo-badge-wrap leading-snug">
@@ -206,7 +206,7 @@ function Hero({ info = PERSONAL_INFO }) {
             </div>
 
             {/* Social link pills */}
-            <div className="mt-6 sm:mt-8 lg:mt-0 lg:mb-8 xl:mb-10 flex flex-nowrap sm:flex-wrap items-center gap-1.5 sm:gap-2.5">
+            <div className="mt-6 sm:mt-8 md:mt-6 lg:mt-0 md:mb-4 lg:mb-8 xl:mb-10 flex flex-nowrap sm:flex-wrap items-center gap-1.5 sm:gap-2">
               <span
                 className="text-xs sm:text-sm font-extrabold uppercase tracking-wider font-mono shrink-0 mr-0.5 sm:mr-1"
                 style={{ color: "var(--ink-muted)" }}
@@ -270,9 +270,9 @@ function Hero({ info = PERSONAL_INFO }) {
             </div>
           </div>
 
-        {/* Profile photo card on desktop */}
-          <div className="hidden lg:flex lg:col-span-5 xl:col-span-6 justify-center lg:justify-end">
-            <div className="w-full max-w-[440px] lg:max-w-[480px] xl:max-w-[540px] h-full">
+          {/* Profile photo card on tablet (iPad) and desktop */}
+          <div className="hidden md:flex md:col-span-5 xl:col-span-6 justify-center md:justify-end">
+            <div className="w-full max-w-[360px] lg:max-w-[480px] xl:max-w-[540px] h-full">
               <Card variant="flat" className="p-0 overflow-hidden h-full flex flex-col">
                 <div
                   className="h-9 sm:h-10 px-3.5 flex items-center justify-between border-b-2 flex-shrink-0"
@@ -297,7 +297,7 @@ function Hero({ info = PERSONAL_INFO }) {
                   </Chip>
                 </div>
 
-                <div className="relative w-full aspect-[4/5] min-h-[360px] sm:min-h-[420px] lg:min-h-[450px] overflow-hidden bg-[var(--surface-alt)] flex-1">
+                <div className="relative w-full aspect-[4/5] min-h-[340px] md:min-h-[380px] lg:min-h-[450px] overflow-hidden bg-[var(--surface-alt)] flex-1">
                   {avatar ? (
                     <button
                       type="button"
