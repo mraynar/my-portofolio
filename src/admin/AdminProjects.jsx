@@ -10,9 +10,11 @@ import {
 } from "../components";
 import ImageCropModal from "./ImageCropModal";
 import AdminSectionHeaderEditor from "./AdminSectionHeaderEditor";
+import BulkActionBar, { SelectCheckbox } from "./BulkActionBar";
 import {
   upsertProject,
   deleteProject,
+  deleteProjectsBulk,
   uploadStorageFile,
   saveSiteSettings,
   reorderProjects,
@@ -66,6 +68,47 @@ export default function AdminProjects({
   );
   const [isSavingCount, setIsSavingCount] = useState(false);
   const [countFeedback, setCountFeedback] = useState(null);
+  const [selectedIds, setSelectedIds] = useState([]);
+  const [isBulkDeleting, setIsBulkDeleting] = useState(false);
+
+  const validSelectedIds = selectedIds.filter((id) =>
+    projects.some((p) => p.id === id)
+  );
+
+  const toggleSelectProject = (id) => {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
+  };
+
+  const handleBulkDelete = async () => {
+    if (validSelectedIds.length === 0) return;
+    if (
+      !window.confirm(
+        `Hapus ${validSelectedIds.length} proyek yang dipilih secara permanen?`
+      )
+    ) {
+      return;
+    }
+    setIsBulkDeleting(true);
+    setFeedback(null);
+    try {
+      const removed = await deleteProjectsBulk(validSelectedIds);
+      setSelectedIds([]);
+      await onRefresh();
+      setFeedback({
+        type: "success",
+        text: `${removed} proyek berhasil dihapus.`,
+      });
+    } catch (err) {
+      setFeedback({
+        type: "error",
+        text: err.message || "Gagal menghapus proyek terpilih.",
+      });
+    } finally {
+      setIsBulkDeleting(false);
+    }
+  };
 
   const hasCustomCount = Boolean(
     info?.customProjectCount && String(info.customProjectCount).trim() !== ""
@@ -1021,15 +1064,36 @@ export default function AdminProjects({
 
       <FloatingAlert feedback={feedback} onClose={() => setFeedback(null)} />
 
-      {/* Reorder hint and projects list */}
-      <div className="flex items-center justify-between gap-3 pb-1">
-        <div
-          className="text-xs font-mono font-medium flex items-center gap-1.5"
-          style={{ color: "var(--ink-muted)" }}
-        >
-          <Icon name="info" size={14} />
-          <span>Tarik kartu untuk mengatur urutan posisi tampilan proyek.</span>
+      {/* Reorder hint and bulk actions */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between gap-3">
+          <div
+            className="text-xs font-mono font-medium flex items-center gap-1.5"
+            style={{ color: "var(--ink-muted)" }}
+          >
+            <Icon name="info" size={14} />
+            <span>Tarik kartu untuk mengatur urutan posisi tampilan proyek.</span>
+          </div>
         </div>
+
+        <BulkActionBar
+          totalCount={projects.length}
+          selectedCount={validSelectedIds.length}
+          allSelected={
+            projects.length > 0 && validSelectedIds.length === projects.length
+          }
+          onToggleSelectAll={() =>
+            setSelectedIds(
+              validSelectedIds.length === projects.length
+                ? []
+                : projects.map((p) => p.id)
+            )
+          }
+          onClearSelection={() => setSelectedIds([])}
+          onBulkDelete={handleBulkDelete}
+          isDeleting={isBulkDeleting}
+          itemLabel="proyek"
+        />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
@@ -1048,6 +1112,7 @@ export default function AdminProjects({
             const absoluteIdx = (effectivePage - 1) * pageSize + localIdx;
             const isDragging = draggedIdx === absoluteIdx;
             const isOver = dragOverIdx === absoluteIdx;
+            const isSelected = validSelectedIds.includes(p.id);
 
             return (
               <div
@@ -1084,12 +1149,19 @@ export default function AdminProjects({
                   className={`p-5 h-full flex flex-col justify-between transition-all relative ${
                     isOver
                       ? "ring-4 ring-[var(--google-blue)] border-[var(--google-blue)] shadow-[0_0_15px_rgba(26,115,232,0.25)]"
+                      : isSelected
+                      ? "ring-2 ring-[var(--google-blue)]"
                       : ""
                   }`}
                 >
                   <div>
                     <div className="flex items-center justify-between mb-3 pb-2 border-b-2">
                       <div className="flex items-center gap-2">
+                        <SelectCheckbox
+                          checked={isSelected}
+                          onChange={() => toggleSelectProject(p.id)}
+                          ariaLabel={`Pilih ${p.title}`}
+                        />
                         <span
                           className="neo-badge text-[11px] font-mono font-extrabold px-2 py-0.5"
                           style={{

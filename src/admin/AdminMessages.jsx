@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Card, Icon, Pagination } from "../components";
+import { Card, Icon, Pagination, FloatingAlert } from "../components";
 import AdminSectionHeaderEditor from "./AdminSectionHeaderEditor";
-import { supabase } from "../lib/supabase";
+import BulkActionBar, { SelectCheckbox } from "./BulkActionBar";
+import { deleteContactMessagesBulk } from "../lib/supabase";
 
 // Contact messages inbox tab
 export default function AdminMessages({
@@ -11,16 +12,62 @@ export default function AdminMessages({
   onUpdateInfo,
 }) {
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedIds, setSelectedIds] = useState([]);
+  const [isBulkDeleting, setIsBulkDeleting] = useState(false);
+  const [feedback, setFeedback] = useState(null);
   const pageSize = 5;
+
+  const validSelectedIds = selectedIds.filter((id) =>
+    messages.some((m) => m.id === id)
+  );
+
+  const toggleSelectMessage = (id) => {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
+  };
+
   const handleDelete = async (id) => {
     if (!window.confirm("Hapus pesan ini dari database?")) return;
     try {
-      if (supabase) {
-        await supabase.from("contact_messages").delete().eq("id", id);
-      }
+      await deleteContactMessagesBulk([id]);
+      setSelectedIds((prev) => prev.filter((item) => item !== id));
       await onRefresh();
     } catch (err) {
-      alert(err.message || "Gagal menghapus pesan.");
+      setFeedback({
+        type: "error",
+        text: err.message || "Gagal menghapus pesan.",
+      });
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (validSelectedIds.length === 0) return;
+    if (
+      !window.confirm(
+        `Hapus ${validSelectedIds.length} pesan yang dipilih secara permanen?`
+      )
+    ) {
+      return;
+    }
+    setIsBulkDeleting(true);
+    setFeedback(null);
+    try {
+      const removed = await deleteContactMessagesBulk(validSelectedIds);
+      setSelectedIds([]);
+      await onRefresh();
+      setCurrentPage(1);
+      setFeedback({
+        type: "success",
+        text: `${removed} pesan berhasil dihapus.`,
+      });
+    } catch (err) {
+      setFeedback({
+        type: "error",
+        text: err.message || "Gagal menghapus pesan terpilih.",
+      });
+    } finally {
+      setIsBulkDeleting(false);
     }
   };
 
@@ -40,6 +87,8 @@ export default function AdminMessages({
           Pesan pertanyaan, tawaran magang, dan kolaborasi dari formulir kontak.
         </p>
       </div>
+
+      <FloatingAlert feedback={feedback} onClose={() => setFeedback(null)} />
 
       {/* Section Heading Customization */}
       <AdminSectionHeaderEditor
@@ -86,6 +135,25 @@ export default function AdminMessages({
         </Card>
       ) : (
         <div className="space-y-4">
+          <BulkActionBar
+            totalCount={messages.length}
+            selectedCount={validSelectedIds.length}
+            allSelected={
+              messages.length > 0 && validSelectedIds.length === messages.length
+            }
+            onToggleSelectAll={() =>
+              setSelectedIds(
+                validSelectedIds.length === messages.length
+                  ? []
+                  : messages.map((m) => m.id)
+              )
+            }
+            onClearSelection={() => setSelectedIds([])}
+            onBulkDelete={handleBulkDelete}
+            isDeleting={isBulkDeleting}
+            itemLabel="pesan"
+          />
+
           {(() => {
             const maxPage = Math.max(1, Math.ceil(messages.length / pageSize));
             const effectivePage = Math.min(currentPage, maxPage);
@@ -96,18 +164,34 @@ export default function AdminMessages({
 
             return (
               <>
-                {paginated.map((msg) => (
-                  <Card key={msg.id} className="p-5 sm:p-6 space-y-4">
+                {paginated.map((msg) => {
+                  const isSelected = validSelectedIds.includes(msg.id);
+                  return (
+                  <Card
+                    key={msg.id}
+                    className={`p-5 sm:p-6 space-y-4 transition-all ${
+                      isSelected ? "ring-2 ring-[var(--google-blue)]" : ""
+                    }`}
+                  >
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b-2">
-                      <div>
-                        <h4 className="font-extrabold text-base">{msg.name}</h4>
-                        <a
-                          href={`mailto:${msg.email}`}
-                          className="text-xs font-mono font-bold hover:underline"
-                          style={{ color: "var(--google-blue)" }}
-                        >
-                          {msg.email}
-                        </a>
+                      <div className="flex items-start gap-2.5">
+                        <div className="pt-0.5">
+                          <SelectCheckbox
+                            checked={isSelected}
+                            onChange={() => toggleSelectMessage(msg.id)}
+                            ariaLabel={`Pilih pesan dari ${msg.name}`}
+                          />
+                        </div>
+                        <div>
+                          <h4 className="font-extrabold text-base">{msg.name}</h4>
+                          <a
+                            href={`mailto:${msg.email}`}
+                            className="text-xs font-mono font-bold hover:underline"
+                            style={{ color: "var(--google-blue)" }}
+                          >
+                            {msg.email}
+                          </a>
+                        </div>
                       </div>
 
                       <div className="flex items-center gap-2">
@@ -122,7 +206,7 @@ export default function AdminMessages({
                         {msg.id && (
                           <button
                             onClick={() => handleDelete(msg.id)}
-                            className="neo-badge text-xs font-bold py-1 px-2.5"
+                            className="neo-badge text-xs font-bold py-1 px-2.5 cursor-pointer"
                             style={{
                               backgroundColor: "var(--google-red-bg)",
                               color: "var(--google-red-text)",
@@ -162,7 +246,8 @@ export default function AdminMessages({
                       </a>
                     </div>
                   </Card>
-                ))}
+                  );
+                })}
 
                 <Pagination
                   currentPage={currentPage}

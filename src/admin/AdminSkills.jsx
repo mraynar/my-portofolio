@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Card, Chip, Icon, FloatingAlert } from "../components";
 import AdminSectionHeaderEditor from "./AdminSectionHeaderEditor";
+import BulkActionBar, { SelectCheckbox } from "./BulkActionBar";
 import {
   upsertSkillCategory,
   deleteSkillCategory,
+  deleteSkillCategoriesBulk,
   reorderSkillCategories,
 } from "../lib/supabase";
 
@@ -26,6 +28,48 @@ export default function AdminSkills({
   const [editingSkillIdx, setEditingSkillIdx] = useState(null);
   const [editingSkillText, setEditingSkillText] = useState("");
   const [isReordering, setIsReordering] = useState(false);
+  const [selectedIds, setSelectedIds] = useState([]);
+  const [isBulkDeleting, setIsBulkDeleting] = useState(false);
+
+  const getSkillKey = (cat) => cat.id || cat.name;
+  const validSelectedIds = selectedIds.filter((id) =>
+    skills.some((cat) => getSkillKey(cat) === id)
+  );
+
+  const toggleSelectSkill = (key) => {
+    setSelectedIds((prev) =>
+      prev.includes(key) ? prev.filter((id) => id !== key) : [...prev, key]
+    );
+  };
+
+  const handleBulkDelete = async () => {
+    if (validSelectedIds.length === 0) return;
+    if (
+      !window.confirm(
+        `Hapus ${validSelectedIds.length} kategori keahlian yang dipilih secara permanen?`
+      )
+    ) {
+      return;
+    }
+    setIsBulkDeleting(true);
+    setFeedback(null);
+    try {
+      const removed = await deleteSkillCategoriesBulk(validSelectedIds);
+      setSelectedIds([]);
+      await onRefresh();
+      setFeedback({
+        type: "success",
+        text: `${removed} kategori keahlian berhasil dihapus.`,
+      });
+    } catch (err) {
+      setFeedback({
+        type: "error",
+        text: err.message || "Gagal menghapus kategori keahlian terpilih.",
+      });
+    } finally {
+      setIsBulkDeleting(false);
+    }
+  };
 
   // Start inline editing for a specific skill item
   const handleStartEditSkill = (idx, text) => {
@@ -569,6 +613,25 @@ export default function AdminSkills({
         onUpdateInfo={onUpdateInfo}
       />
 
+      <BulkActionBar
+        totalCount={skills.length}
+        selectedCount={validSelectedIds.length}
+        allSelected={
+          skills.length > 0 && validSelectedIds.length === skills.length
+        }
+        onToggleSelectAll={() =>
+          setSelectedIds(
+            validSelectedIds.length === skills.length
+              ? []
+              : skills.map(getSkillKey)
+          )
+        }
+        onClearSelection={() => setSelectedIds([])}
+        onBulkDelete={handleBulkDelete}
+        isDeleting={isBulkDeleting}
+        itemLabel="kategori"
+      />
+
       {/* Categories grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-6 items-stretch">
         {(() => {
@@ -581,6 +644,8 @@ export default function AdminSkills({
           return sortedSkills.map((cat, idx) => {
             const isDragging = draggedIdx === idx;
             const isOver = dragOverIdx === idx;
+            const skillKey = getSkillKey(cat);
+            const isSelected = validSelectedIds.includes(skillKey);
 
             return (
               <div
@@ -622,18 +687,29 @@ export default function AdminSkills({
                     : ""
                 }`}
               >
-                <Card className="p-5 flex flex-col justify-between h-full">
+                <Card
+                  className={`p-5 flex flex-col justify-between h-full transition-all ${
+                    isSelected ? "ring-2 ring-[var(--google-blue)]" : ""
+                  }`}
+                >
                   <div>
                     <div
-                      className="flex items-center justify-between mb-4 pb-3 border-b-2 min-h-[56px]"
+                      className="flex items-center justify-between gap-2 mb-4 pb-3 border-b-2 min-h-[56px]"
                       style={{ borderColor: "var(--border)" }}
                     >
-                      <h4
-                        className="font-extrabold text-base sm:text-lg"
-                        style={{ fontFamily: "var(--font-display)" }}
-                      >
-                        {cat.name}
-                      </h4>
+                      <div className="flex items-center gap-2 min-w-0">
+                        <SelectCheckbox
+                          checked={isSelected}
+                          onChange={() => toggleSelectSkill(skillKey)}
+                          ariaLabel={`Pilih ${cat.name}`}
+                        />
+                        <h4
+                          className="font-extrabold text-base sm:text-lg truncate"
+                          style={{ fontFamily: "var(--font-display)" }}
+                        >
+                          {cat.name}
+                        </h4>
+                      </div>
                       <div className="flex items-center gap-1.5 shrink-0">
                         <button
                           type="button"

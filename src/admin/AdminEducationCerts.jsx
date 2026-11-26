@@ -9,11 +9,14 @@ import {
   ImageLightboxModal,
 } from "../components";
 import AdminSectionHeaderEditor from "./AdminSectionHeaderEditor";
+import BulkActionBar, { SelectCheckbox } from "./BulkActionBar";
 import {
   upsertEducation,
   deleteEducation,
+  deleteEducationBulk,
   upsertCertification,
   deleteCertification,
+  deleteCertificationsBulk,
   purgeLegacyStaticCertifications,
   LEGACY_STATIC_CERT_IDS,
   uploadStorageFile,
@@ -42,6 +45,9 @@ export default function AdminEducationCerts({
   const certFileInputRef = useRef(null);
   const [eduPage, setEduPage] = useState(1);
   const [certPage, setCertPage] = useState(1);
+  const [selectedEduIds, setSelectedEduIds] = useState([]);
+  const [selectedCertIds, setSelectedCertIds] = useState([]);
+  const [isBulkDeleting, setIsBulkDeleting] = useState(false);
   const eduPageSize = 4;
   const certPageSize = 6;
 
@@ -117,6 +123,88 @@ export default function AdminEducationCerts({
   const legacyStaticCertCount = certifications.filter((c) =>
     LEGACY_STATIC_CERT_IDS.includes(c.credentialId)
   ).length;
+
+  const getEduKey = (edu) => edu.id || edu.school;
+  const getCertKey = (c) => c.id || c.credentialId || c.title;
+
+  const validSelectedEdu = selectedEduIds.filter((id) =>
+    education.some((e) => getEduKey(e) === id)
+  );
+  const validSelectedCert = selectedCertIds.filter((id) =>
+    certifications.some((c) => getCertKey(c) === id)
+  );
+
+  const toggleSelectEdu = (key) => {
+    setSelectedEduIds((prev) =>
+      prev.includes(key) ? prev.filter((id) => id !== key) : [...prev, key]
+    );
+  };
+
+  const toggleSelectCert = (key) => {
+    setSelectedCertIds((prev) =>
+      prev.includes(key) ? prev.filter((id) => id !== key) : [...prev, key]
+    );
+  };
+
+  const handleBulkDeleteEdu = async () => {
+    if (validSelectedEdu.length === 0) return;
+    if (
+      !window.confirm(
+        `Hapus ${validSelectedEdu.length} data pendidikan yang dipilih secara permanen?`
+      )
+    ) {
+      return;
+    }
+    setIsBulkDeleting(true);
+    setFeedback(null);
+    try {
+      const removed = await deleteEducationBulk(validSelectedEdu);
+      setSelectedEduIds([]);
+      await onRefresh();
+      setEduPage(1);
+      setFeedback({
+        type: "success",
+        text: `${removed} data pendidikan berhasil dihapus.`,
+      });
+    } catch (err) {
+      setFeedback({
+        type: "error",
+        text: err.message || "Gagal menghapus data pendidikan terpilih.",
+      });
+    } finally {
+      setIsBulkDeleting(false);
+    }
+  };
+
+  const handleBulkDeleteCerts = async () => {
+    if (validSelectedCert.length === 0) return;
+    if (
+      !window.confirm(
+        `Hapus ${validSelectedCert.length} sertifikasi yang dipilih secara permanen?`
+      )
+    ) {
+      return;
+    }
+    setIsBulkDeleting(true);
+    setFeedback(null);
+    try {
+      const removed = await deleteCertificationsBulk(validSelectedCert);
+      setSelectedCertIds([]);
+      await onRefresh();
+      setCertPage(1);
+      setFeedback({
+        type: "success",
+        text: `${removed} sertifikasi berhasil dihapus.`,
+      });
+    } catch (err) {
+      setFeedback({
+        type: "error",
+        text: err.message || "Gagal menghapus sertifikasi terpilih.",
+      });
+    } finally {
+      setIsBulkDeleting(false);
+    }
+  };
 
   const handlePurgeLegacyCerts = async () => {
     if (
@@ -837,6 +925,26 @@ export default function AdminEducationCerts({
               </button>
           </div>
 
+          <BulkActionBar
+            totalCount={education.length}
+            selectedCount={validSelectedEdu.length}
+            allSelected={
+              education.length > 0 &&
+              validSelectedEdu.length === education.length
+            }
+            onToggleSelectAll={() =>
+              setSelectedEduIds(
+                validSelectedEdu.length === education.length
+                  ? []
+                  : education.map(getEduKey)
+              )
+            }
+            onClearSelection={() => setSelectedEduIds([])}
+            onBulkDelete={handleBulkDeleteEdu}
+            isDeleting={isBulkDeleting}
+            itemLabel="pendidikan"
+          />
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-stretch">
             {(() => {
               const maxEduPage = Math.max(1, Math.ceil(education.length / eduPageSize));
@@ -846,10 +954,23 @@ export default function AdminEducationCerts({
                 effectiveEduPage * eduPageSize
               );
 
-              return paginatedEdu.map((edu, idx) => (
-                <Card key={edu.id || edu.school + idx} className="p-5">
+              return paginatedEdu.map((edu, idx) => {
+                const eduKey = getEduKey(edu);
+                const isSelected = validSelectedEdu.includes(eduKey);
+                return (
+                <Card
+                  key={edu.id || edu.school + idx}
+                  className={`p-5 transition-all ${
+                    isSelected ? "ring-2 ring-[var(--google-blue)]" : ""
+                  }`}
+                >
                   <div className="flex items-center justify-between mb-2 pb-2 border-b-2">
                     <div className="flex items-center gap-2">
+                      <SelectCheckbox
+                        checked={isSelected}
+                        onChange={() => toggleSelectEdu(eduKey)}
+                        ariaLabel={`Pilih ${edu.school}`}
+                      />
                       <span className="text-xs font-mono font-bold">
                         {edu.period}
                       </span>
@@ -867,19 +988,19 @@ export default function AdminEducationCerts({
                       >
                         <Icon name="edit" size={13} />
                       </button>
-                      {edu.id && (
-                        <button
-                          onClick={() => handleDeleteEdu(edu.id)}
-                          className="neo-badge text-xs font-bold py-1 px-2.5"
-                          style={{
-                            backgroundColor: "var(--google-red-bg)",
-                            color: "var(--google-red-text)",
-                            borderColor: "var(--google-red)",
-                          }}
-                        >
-                          <Icon name="trash" size={13} />
-                        </button>
-                      )}
+                      <button
+                        type="button"
+                        aria-label={`Hapus ${edu.school}`}
+                        onClick={() => handleDeleteEdu(eduKey)}
+                        className="neo-badge text-xs font-bold py-1 px-2.5 cursor-pointer"
+                        style={{
+                          backgroundColor: "var(--google-red-bg)",
+                          color: "var(--google-red-text)",
+                          borderColor: "var(--google-red)",
+                        }}
+                      >
+                        <Icon name="trash" size={13} />
+                      </button>
                     </div>
                   </div>
                   <h4
@@ -911,7 +1032,8 @@ export default function AdminEducationCerts({
                     </div>
                   )}
                 </Card>
-              ));
+                );
+              });
             })()}
           </div>
 
@@ -998,6 +1120,26 @@ export default function AdminEducationCerts({
             </div>
           </div>
 
+          <BulkActionBar
+            totalCount={certifications.length}
+            selectedCount={validSelectedCert.length}
+            allSelected={
+              certifications.length > 0 &&
+              validSelectedCert.length === certifications.length
+            }
+            onToggleSelectAll={() =>
+              setSelectedCertIds(
+                validSelectedCert.length === certifications.length
+                  ? []
+                  : certifications.map(getCertKey)
+              )
+            }
+            onClearSelection={() => setSelectedCertIds([])}
+            onBulkDelete={handleBulkDeleteCerts}
+            isDeleting={isBulkDeleting}
+            itemLabel="sertifikasi"
+          />
+
           {certifications.length === 0 ? (
             <Card className="p-8 text-center space-y-2">
               <div
@@ -1030,8 +1172,16 @@ export default function AdminEducationCerts({
                 effectiveCertPage * certPageSize
               );
 
-              return paginatedCerts.map((c, idx) => (
-                <Card key={c.id || c.credentialId || idx} className="p-4 flex flex-col justify-between">
+              return paginatedCerts.map((c, idx) => {
+                const certKey = getCertKey(c);
+                const isSelected = validSelectedCert.includes(certKey);
+                return (
+                <Card
+                  key={c.id || c.credentialId || idx}
+                  className={`p-4 flex flex-col justify-between transition-all ${
+                    isSelected ? "ring-2 ring-[var(--google-blue)]" : ""
+                  }`}
+                >
                   <div>
                     {c.image && (
                       <div
@@ -1052,9 +1202,16 @@ export default function AdminEducationCerts({
                         </span>
                       </div>
                     )}
-                    <div className="flex items-center justify-between mb-2 pb-2 border-b-2">
-                      <Chip variant="blue">{c.provider}</Chip>
-                      <span className="text-xs font-mono font-bold">
+                    <div className="flex items-center justify-between gap-2 mb-2 pb-2 border-b-2">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <SelectCheckbox
+                          checked={isSelected}
+                          onChange={() => toggleSelectCert(certKey)}
+                          ariaLabel={`Pilih ${c.title}`}
+                        />
+                        <Chip variant="blue">{c.provider}</Chip>
+                      </div>
+                      <span className="text-xs font-mono font-bold shrink-0">
                         {c.date}
                       </span>
                     </div>
@@ -1097,9 +1254,7 @@ export default function AdminEducationCerts({
                       <button
                         type="button"
                         aria-label="Hapus sertifikasi"
-                        onClick={() =>
-                          handleDeleteCert(c.id || c.credentialId || c.title)
-                        }
+                        onClick={() => handleDeleteCert(certKey)}
                         className="neo-badge text-xs font-bold py-1 px-2 cursor-pointer"
                         style={{
                           backgroundColor: "var(--google-red-bg)",
@@ -1112,7 +1267,8 @@ export default function AdminEducationCerts({
                     </div>
                   </div>
                 </Card>
-              ));
+                );
+              });
             })()}
           </div>
           )}

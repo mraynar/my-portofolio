@@ -10,10 +10,12 @@ import {
 } from "../components";
 import ImageCropModal from "./ImageCropModal";
 import AdminSectionHeaderEditor from "./AdminSectionHeaderEditor";
+import BulkActionBar, { SelectCheckbox } from "./BulkActionBar";
 import {
   getExperience,
   upsertExperience,
   deleteExperience,
+  deleteExperiencesBulk,
   uploadStorageFile,
   reorderExperience,
   generateRecordId,
@@ -62,7 +64,61 @@ export default function AdminExperience({
   const [currentPage, setCurrentPage] = useState(1);
   const [targetPosition, setTargetPosition] = useState(1);
   const [originalPosition, setOriginalPosition] = useState(1);
+  const [selectedIds, setSelectedIds] = useState([]);
+  const [isBulkDeleting, setIsBulkDeleting] = useState(false);
   const pageSize = 4;
+
+  const getExpKey = (item) => item.id || item.role;
+
+  const filteredExperience = useMemo(
+    () =>
+      sortExperiencesLatestFirst(experience).filter((item) => {
+        if (filterType === "magang") return isInternshipExperience(item);
+        if (filterType === "organisasi") return !isInternshipExperience(item);
+        return true;
+      }),
+    [experience, filterType]
+  );
+
+  const validSelectedIds = selectedIds.filter((id) =>
+    filteredExperience.some((item) => getExpKey(item) === id)
+  );
+
+  const toggleSelectExp = (key) => {
+    setSelectedIds((prev) =>
+      prev.includes(key) ? prev.filter((id) => id !== key) : [...prev, key]
+    );
+  };
+
+  const handleBulkDelete = async () => {
+    if (validSelectedIds.length === 0) return;
+    if (
+      !window.confirm(
+        `Hapus ${validSelectedIds.length} pengalaman yang dipilih secara permanen?`
+      )
+    ) {
+      return;
+    }
+    setIsBulkDeleting(true);
+    setFeedback(null);
+    try {
+      const removed = await deleteExperiencesBulk(validSelectedIds);
+      setSelectedIds([]);
+      await onRefresh();
+      setCurrentPage(1);
+      setFeedback({
+        type: "success",
+        text: `${removed} pengalaman berhasil dihapus.`,
+      });
+    } catch (err) {
+      setFeedback({
+        type: "error",
+        text: err.message || "Gagal menghapus pengalaman terpilih.",
+      });
+    } finally {
+      setIsBulkDeleting(false);
+    }
+  };
 
   const handleEdit = (item) => {
     setTargetExpForCrop(null);
@@ -953,6 +1009,7 @@ export default function AdminExperience({
               type="button"
               onClick={() => {
                 setFilterType(tab.key);
+                setSelectedIds([]);
                 setCurrentPage(1);
               }}
               className="px-3.5 py-1.5 rounded-xl border-2 text-xs font-bold transition-all cursor-pointer"
@@ -982,17 +1039,30 @@ export default function AdminExperience({
         </div>
       </div>
 
+      <BulkActionBar
+        totalCount={filteredExperience.length}
+        selectedCount={validSelectedIds.length}
+        allSelected={
+          filteredExperience.length > 0 &&
+          validSelectedIds.length === filteredExperience.length
+        }
+        onToggleSelectAll={() =>
+          setSelectedIds(
+            validSelectedIds.length === filteredExperience.length
+              ? []
+              : filteredExperience.map(getExpKey)
+          )
+        }
+        onClearSelection={() => setSelectedIds([])}
+        onBulkDelete={handleBulkDelete}
+        isDeleting={isBulkDeleting}
+        itemLabel="pengalaman"
+      />
+
       {/* Experience list with drag-and-drop reordering */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-stretch">
         {(() => {
-          const displayedList = sortExperiencesLatestFirst(experience).filter(
-            (item) => {
-              if (filterType === "magang") return isInternshipExperience(item);
-              if (filterType === "organisasi")
-                return !isInternshipExperience(item);
-              return true;
-            }
-          );
+          const displayedList = filteredExperience;
           const maxPage = Math.max(1, Math.ceil(displayedList.length / pageSize));
           const effectivePage = Math.min(currentPage, maxPage);
           const paginatedList = displayedList.slice(
@@ -1006,6 +1076,8 @@ export default function AdminExperience({
             const canDrag = filterType !== "all" && !isReordering;
             const isDragging = canDrag && draggedIdx === absoluteIdx;
             const isOver = canDrag && dragOverIdx === absoluteIdx;
+            const expKey = getExpKey(item);
+            const isSelected = validSelectedIds.includes(expKey);
 
             return (
               <div
@@ -1045,6 +1117,8 @@ export default function AdminExperience({
                 <Card
                   className={`p-5 h-full flex flex-col justify-between transition-all relative ${isOver
                     ? "ring-4 ring-[var(--google-blue)] border-[var(--google-blue)] shadow-[0_0_15px_rgba(26,115,232,0.25)]"
+                    : isSelected
+                    ? "ring-2 ring-[var(--google-blue)]"
                     : ""
                     }`}
                 >
@@ -1052,6 +1126,11 @@ export default function AdminExperience({
                     {/* Top toolbar: position indicator and actions */}
                     <div className="flex flex-wrap items-center justify-between gap-2 mb-3 pb-3 border-b-2">
                       <div className="flex items-center gap-2">
+                        <SelectCheckbox
+                          checked={isSelected}
+                          onChange={() => toggleSelectExp(expKey)}
+                          ariaLabel={`Pilih ${item.role}`}
+                        />
                         <span
                           className="neo-badge text-xs font-mono font-extrabold px-2.5 py-1"
                           style={{
