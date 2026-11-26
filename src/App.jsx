@@ -1906,9 +1906,18 @@ export default function App() {
       loadPortfolioData();
     });
 
+    // Refetch fresh cloud data when returning to an idle mobile/desktop tab
+    const handleVisibility = () => {
+      if (document.visibilityState === "visible") {
+        loadPortfolioData();
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
+
     return () => {
       isMounted = false;
       unsubscribe();
+      document.removeEventListener("visibilitychange", handleVisibility);
     };
   }, []);
 
