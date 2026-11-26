@@ -782,6 +782,30 @@ export async function deleteProject(id) {
   notifyDataChanged();
 }
 
+// Delete multiple projects in one batch across local cache and Supabase
+export async function deleteProjectsBulk(ids = []) {
+  const uniqueIds = [...new Set(ids.filter(Boolean))];
+  if (uniqueIds.length === 0) return 0;
+
+  const current = await getProjects();
+  const idSet = new Set(uniqueIds);
+  const updated = current.filter((p) => !idSet.has(p.id));
+  await setLocalItem(CACHE_KEYS.PROJECTS, updated);
+
+  if (supabase) {
+    const { error } = await supabase
+      .from("projects")
+      .delete()
+      .in("id", uniqueIds);
+    if (error) {
+      throw new Error(error.message || "Gagal menghapus proyek di Supabase.");
+    }
+  }
+
+  notifyDataChanged();
+  return uniqueIds.length;
+}
+
 // Reorder projects array and persist new order_index
 export async function reorderProjects(orderedList = []) {
   const updated = orderedList.map((item, idx) => ({
@@ -967,6 +991,52 @@ export async function deleteExperience(id) {
   notifyDataChanged();
 }
 
+// Delete multiple experiences in one batch across local cache and Supabase
+export async function deleteExperiencesBulk(ids = []) {
+  const uniqueIds = [...new Set(ids.filter(Boolean))];
+  if (uniqueIds.length === 0) return 0;
+
+  const current = await getExperience();
+  const idSet = new Set(uniqueIds);
+  const updated = current.filter(
+    (e) => !idSet.has(e.id) && !idSet.has(e.role)
+  );
+  await setLocalItem(
+    CACHE_KEYS.EXPERIENCE,
+    sortExperiencesLatestFirst(updated)
+  );
+
+  if (supabase) {
+    const uuidIds = uniqueIds.filter(isValidUuid);
+    const nonUuidRoles = uniqueIds.filter((val) => !isValidUuid(val));
+    if (uuidIds.length > 0) {
+      const { error } = await supabase
+        .from("experience")
+        .delete()
+        .in("id", uuidIds);
+      if (error) {
+        throw new Error(
+          error.message || "Gagal menghapus pengalaman di server."
+        );
+      }
+    }
+    if (nonUuidRoles.length > 0) {
+      const { error } = await supabase
+        .from("experience")
+        .delete()
+        .in("role", nonUuidRoles);
+      if (error) {
+        throw new Error(
+          error.message || "Gagal menghapus pengalaman di server."
+        );
+      }
+    }
+  }
+
+  notifyDataChanged();
+  return uniqueIds.length;
+}
+
 // Reorder experiences array and persist new order_index atomically
 export async function reorderExperience(orderedList = []) {
   const updated = orderedList.map((item, idx) =>
@@ -1138,6 +1208,45 @@ export async function deleteSkillCategory(id) {
   notifyDataChanged();
 }
 
+// Delete multiple skill categories in one batch across local cache and Supabase
+export async function deleteSkillCategoriesBulk(ids = []) {
+  const uniqueIds = [...new Set(ids.filter(Boolean))];
+  if (uniqueIds.length === 0) return 0;
+
+  const current = await getSkillCategories();
+  const idSet = new Set(uniqueIds);
+  const updated = current.filter(
+    (c) => !idSet.has(c.id) && !idSet.has(c.name)
+  );
+  await setLocalItem(CACHE_KEYS.SKILLS, updated);
+
+  if (supabase) {
+    const uuidIds = uniqueIds.filter(isValidUuid);
+    const names = uniqueIds.filter((val) => !isValidUuid(val));
+    if (uuidIds.length > 0) {
+      const { error } = await supabase
+        .from("skill_categories")
+        .delete()
+        .in("id", uuidIds);
+      if (error) {
+        throw new Error(error.message || "Gagal menghapus keahlian di server.");
+      }
+    }
+    if (names.length > 0) {
+      const { error } = await supabase
+        .from("skill_categories")
+        .delete()
+        .in("name", names);
+      if (error) {
+        throw new Error(error.message || "Gagal menghapus keahlian di server.");
+      }
+    }
+  }
+
+  notifyDataChanged();
+  return uniqueIds.length;
+}
+
 // Fetch education list with dynamic persistence
 export async function getEducation() {
   if (supabase) {
@@ -1233,6 +1342,45 @@ export async function deleteEducation(id) {
   }
 
   notifyDataChanged();
+}
+
+// Delete multiple education entries in one batch
+export async function deleteEducationBulk(ids = []) {
+  const uniqueIds = [...new Set(ids.filter(Boolean))];
+  if (uniqueIds.length === 0) return 0;
+
+  const current = await getEducation();
+  const idSet = new Set(uniqueIds);
+  const updated = current.filter(
+    (e) => !idSet.has(e.id) && !idSet.has(e.school)
+  );
+  await setLocalItem(CACHE_KEYS.EDUCATION, updated);
+
+  if (supabase) {
+    const uuidIds = uniqueIds.filter(isValidUuid);
+    const schools = uniqueIds.filter((val) => !isValidUuid(val));
+    if (uuidIds.length > 0) {
+      const { error } = await supabase
+        .from("education")
+        .delete()
+        .in("id", uuidIds);
+      if (error) {
+        throw new Error(error.message || "Gagal menghapus pendidikan.");
+      }
+    }
+    if (schools.length > 0) {
+      const { error } = await supabase
+        .from("education")
+        .delete()
+        .in("school", schools);
+      if (error) {
+        throw new Error(error.message || "Gagal menghapus pendidikan.");
+      }
+    }
+  }
+
+  notifyDataChanged();
+  return uniqueIds.length;
 }
 
 // Legacy static seed credential IDs eligible for one-click admin cleanup
@@ -1377,6 +1525,90 @@ export async function deleteCertification(identifier) {
   }
 
   notifyDataChanged();
+}
+
+// Delete multiple certifications in one batch across local cache and Supabase
+export async function deleteCertificationsBulk(identifiers = []) {
+  const uniqueIds = [...new Set(identifiers.filter(Boolean))];
+  if (uniqueIds.length === 0) return 0;
+
+  const current = await getCertifications();
+  const idSet = new Set(uniqueIds);
+  const targets = current.filter(
+    (c) => idSet.has(c.id) || idSet.has(c.credentialId) || idSet.has(c.title)
+  );
+  const updated = current.filter(
+    (c) =>
+      !idSet.has(c.id) &&
+      !idSet.has(c.credentialId) &&
+      !idSet.has(c.title)
+  );
+  await setLocalItem(CACHE_KEYS.CERTS, updated);
+
+  if (supabase) {
+    const uuidIds = [
+      ...new Set(
+        [...targets.map((t) => t.id), ...uniqueIds].filter(isValidUuid)
+      ),
+    ];
+    const credIds = [
+      ...new Set(
+        targets
+          .filter((t) => !isValidUuid(t.id) && t.credentialId)
+          .map((t) => t.credentialId)
+      ),
+    ];
+    if (uuidIds.length > 0) {
+      const { error } = await supabase
+        .from("certifications")
+        .delete()
+        .in("id", uuidIds);
+      if (error) {
+        throw new Error(error.message || "Gagal menghapus sertifikasi.");
+      }
+    }
+    if (credIds.length > 0) {
+      const { error } = await supabase
+        .from("certifications")
+        .delete()
+        .in("credential_id", credIds);
+      if (error) {
+        throw new Error(error.message || "Gagal menghapus sertifikasi.");
+      }
+    }
+  }
+
+  notifyDataChanged();
+  return uniqueIds.length;
+}
+
+// Delete multiple contact messages across local cache and Supabase
+export async function deleteContactMessagesBulk(ids = []) {
+  const uniqueIds = [...new Set(ids.filter(Boolean))];
+  if (uniqueIds.length === 0) return 0;
+
+  const list = (await getLocalItem(CACHE_KEYS.MESSAGES)) || [];
+  const idSet = new Set(uniqueIds);
+  await setLocalItem(
+    CACHE_KEYS.MESSAGES,
+    list.filter((m) => !idSet.has(m.id))
+  );
+
+  if (supabase) {
+    const uuidIds = uniqueIds.filter(isValidUuid);
+    if (uuidIds.length > 0) {
+      const { error } = await supabase
+        .from("contact_messages")
+        .delete()
+        .in("id", uuidIds);
+      if (error) {
+        throw new Error(error.message || "Gagal menghapus pesan.");
+      }
+    }
+  }
+
+  notifyDataChanged();
+  return uniqueIds.length;
 }
 
 // Remove all legacy static seed certifications from local cache and Supabase
