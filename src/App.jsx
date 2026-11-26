@@ -48,6 +48,7 @@ import {
   getCertifications,
   submitContactMessage,
 } from "./lib/supabase";
+import { subscribeDataSync } from "./lib/localDb";
 import ProjectPage from "./ProjectPage";
 import ExperiencePage from "./ExperiencePage";
 import AdminLogin from "./admin/AdminLogin";
@@ -1890,17 +1891,14 @@ export default function App() {
 
     loadPortfolioData();
 
-    // Listen for data update notifications from Admin CMS
-    const handleUpdate = () => {
+    // Listen for data update notifications across same and other tabs
+    const unsubscribe = subscribeDataSync(() => {
       loadPortfolioData();
-    };
-    window.addEventListener("portfolio_data_updated", handleUpdate);
-    window.addEventListener("storage", handleUpdate);
+    });
 
     return () => {
       isMounted = false;
-      window.removeEventListener("portfolio_data_updated", handleUpdate);
-      window.removeEventListener("storage", handleUpdate);
+      unsubscribe();
     };
   }, []);
 

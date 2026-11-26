@@ -11,10 +11,12 @@ import {
 import ImageCropModal from "./ImageCropModal";
 import AdminSectionHeaderEditor from "./AdminSectionHeaderEditor";
 import {
+  getExperience,
   upsertExperience,
   deleteExperience,
   uploadStorageFile,
   reorderExperience,
+  generateRecordId,
 } from "../lib/supabase";
 import {
   isInternshipExperience,
@@ -63,16 +65,21 @@ export default function AdminExperience({
   const pageSize = 4;
 
   const handleEdit = (item) => {
-    setEditingItem(item);
+    setTargetExpForCrop(null);
+    setEditingItem({ ...item });
     setBulletsText((item.bullets || []).join("\n"));
     setTagsText((item.tags || []).join(", "));
     setFeedback(null);
 
     // Compute current 1-based position in active view
+    const isMagangItem =
+      item.type === "Magang" || isInternshipExperience(item);
+
     const currentList = sortExperiencesLatestFirst(experience).filter((it) => {
-      if (filterType === "magang") return isInternshipExperience(it);
-      if (filterType === "organisasi") return !isInternshipExperience(it);
-      return true;
+      if (filterType === "all") return true;
+      return isMagangItem
+        ? isInternshipExperience(it)
+        : !isInternshipExperience(it);
     });
     const idx = currentList.findIndex(
       (it) =>
@@ -86,10 +93,10 @@ export default function AdminExperience({
   };
 
   const handleCreate = () => {
+    setTargetExpForCrop(null);
     const isOrgTab = filterType === "organisasi";
     const defaultType = isOrgTab ? "Organisasi" : "Magang";
     const defaultCategory = isOrgTab ? "Organisasi Kampus" : "Magang Industri";
-    const newId = `exp-${Date.now()}`;
 
     const currentList = sortExperiencesLatestFirst(experience).filter((it) => {
       if (isOrgTab) return !isInternshipExperience(it);
@@ -100,7 +107,7 @@ export default function AdminExperience({
 
     setEditingItem({
       ...EMPTY_EXP,
-      id: newId,
+      id: "",
       type: defaultType,
       category: defaultCategory,
       order_index: experience.length + 1,
@@ -123,6 +130,7 @@ export default function AdminExperience({
   const handleCropConfirm = async (croppedFile, previewUrl) => {
     setCropFile(null);
     setIsSubmitting(true);
+    setFeedback(null);
     try {
       const cleanName = (croppedFile?.name || "experience.jpg").replace(
         /[^a-zA-Z0-9._-]/g,
@@ -132,42 +140,66 @@ export default function AdminExperience({
       const url = await uploadStorageFile("media", path, croppedFile);
       const effectiveUrl = url || previewUrl;
 
+      if (!effectiveUrl) {
+        throw new Error("Gagal memproses hasil potongan foto.");
+      }
+
       if (editingItem) {
-        const updated = { ...editingItem, photo: effectiveUrl };
-        setEditingItem(updated);
-        if (updated.id) {
-          await upsertExperience(updated);
-          if (onRefresh) onRefresh();
+        const isExisting = Boolean(
+          editingItem.id && experience.some((e) => e.id === editingItem.id)
+        );
+        setEditingItem((prev) =>
+          prev ? { ...prev, photo: effectiveUrl } : prev
+        );
+
+        if (isExisting) {
+          const isMagang =
+            editingItem.type === "Magang" ||
+            isInternshipExperience(editingItem);
+          const merged = {
+            ...editingItem,
+            type: isMagang ? "Magang" : "Organisasi",
+            category:
+              editingItem.category ||
+              (isMagang ? "Magang Industri" : "Organisasi Kampus"),
+            active: Boolean(editingItem.active),
+            current: Boolean(editingItem.active),
+            bullets: bulletsText
+              .split("\n")
+              .map((b) => b.trim())
+              .filter(Boolean),
+            tags: tagsText
+              .split(",")
+              .map((t) => t.trim())
+              .filter(Boolean),
+            photo: effectiveUrl,
+          };
+          await upsertExperience(merged);
+          if (onRefresh) await onRefresh();
+          setFeedback({
+            type: "success",
+            text: "Foto dokumentasi berhasil disesuaikan dan disimpan.",
+          });
+        } else {
+          setFeedback({
+            type: "success",
+            text: "Foto siap digunakan. Klik Simpan Pengalaman untuk menyimpan.",
+          });
         }
       } else if (targetExpForCrop) {
         const updated = { ...targetExpForCrop, photo: effectiveUrl };
         await upsertExperience(updated);
-        if (onRefresh) onRefresh();
+        if (onRefresh) await onRefresh();
         setTargetExpForCrop(null);
+        setFeedback({
+          type: "success",
+          text: "Foto dokumentasi berhasil disesuaikan dan disimpan.",
+        });
       }
-
+    } catch (err) {
       setFeedback({
-        type: "success",
-        text: "Foto dokumentasi berhasil disesuaikan dan disimpan.",
-      });
-    } catch {
-      // Fallback preview for offline environments
-      if (editingItem) {
-        const updated = { ...editingItem, photo: previewUrl };
-        setEditingItem(updated);
-        if (updated.id) {
-          await upsertExperience(updated);
-          if (onRefresh) onRefresh();
-        }
-      } else if (targetExpForCrop) {
-        const updated = { ...targetExpForCrop, photo: previewUrl };
-        await upsertExperience(updated);
-        if (onRefresh) onRefresh();
-        setTargetExpForCrop(null);
-      }
-      setFeedback({
-        type: "success",
-        text: "Foto dokumentasi berhasil disesuaikan dan dipratinjau.",
+        type: "error",
+        text: err?.message || "Gagal menyimpan foto dokumentasi.",
       });
     } finally {
       setIsSubmitting(false);
@@ -251,7 +283,6 @@ export default function AdminExperience({
     const isMagangItem =
       editingItem.type === "Magang" || isInternshipExperience(editingItem);
 
-    // List of items in the same category as the item being edited
     const currentList = sortExperiencesLatestFirst(experience).filter((it) => {
       if (filterType === "all") return true;
       return isMagangItem
@@ -298,7 +329,7 @@ export default function AdminExperience({
     const isMagang =
       editingItem.type === "Magang" || isInternshipExperience(editingItem);
     const resolvedType = isMagang ? "Magang" : "Organisasi";
-    const assignedId = editingItem.id || `exp-${Date.now()}`;
+    const assignedId = editingItem.id || generateRecordId();
     const payload = {
       ...editingItem,
       id: assignedId,
@@ -308,6 +339,9 @@ export default function AdminExperience({
         (isMagang ? "Magang Industri" : "Organisasi Kampus"),
       active: Boolean(editingItem.active),
       current: Boolean(editingItem.active),
+      photo: editingItem.photo || "",
+      photoAlt: editingItem.photoAlt || "",
+      photo_alt: editingItem.photoAlt || "",
       bullets: bulletsText
         .split("\n")
         .map((b) => b.trim())
@@ -319,30 +353,34 @@ export default function AdminExperience({
     };
 
     try {
-      const masterList = sortExperiencesLatestFirst(experience);
+      // Always read latest persisted records to prevent stale prop overwrites
+      const latestRecords = await getExperience();
+      const masterList = sortExperiencesLatestFirst(latestRecords);
 
       let newMaster;
+      let finalPos = targetPosition;
 
       if (filterType === "all") {
-        // Reordering within the full master list
         const currentIdx = masterList.findIndex(
           (it) =>
             (payload.id && it.id === payload.id) ||
-            (payload.role && it.role === payload.role && it.org === payload.org)
+            (!editingItem.id &&
+              payload.role &&
+              it.role === payload.role &&
+              it.org === payload.org)
         );
 
         const updatedMaster = [...masterList];
         if (currentIdx >= 0) {
           updatedMaster.splice(currentIdx, 1);
         }
-        const safeTarget = Math.max(
+        finalPos = Math.max(
           1,
           Math.min(targetPosition, updatedMaster.length + 1)
         );
-        updatedMaster.splice(safeTarget - 1, 0, payload);
+        updatedMaster.splice(finalPos - 1, 0, payload);
         newMaster = updatedMaster;
       } else {
-        // Reordering within specific category (Magang vs Organisasi)
         const categoryItems = masterList.filter((item) =>
           isMagang ? isInternshipExperience(item) : !isInternshipExperience(item)
         );
@@ -353,18 +391,21 @@ export default function AdminExperience({
         const currentIdx = categoryItems.findIndex(
           (it) =>
             (payload.id && it.id === payload.id) ||
-            (payload.role && it.role === payload.role && it.org === payload.org)
+            (!editingItem.id &&
+              payload.role &&
+              it.role === payload.role &&
+              it.org === payload.org)
         );
 
         const updatedCategory = [...categoryItems];
         if (currentIdx >= 0) {
           updatedCategory.splice(currentIdx, 1);
         }
-        const safeTarget = Math.max(
+        finalPos = Math.max(
           1,
           Math.min(targetPosition, updatedCategory.length + 1)
         );
-        updatedCategory.splice(safeTarget - 1, 0, payload);
+        updatedCategory.splice(finalPos - 1, 0, payload);
 
         newMaster = isMagang
           ? [...updatedCategory, ...otherItems]
@@ -376,34 +417,24 @@ export default function AdminExperience({
         order_index: idx + 1,
       }));
 
-      // Persist full indexed master list
+      // Single atomic write avoids race conditions and duplicate cloud inserts
       await reorderExperience(indexedMaster);
 
-      // Ensure upsert for the target item payload with its updated order_index
-      const savedPayload =
-        indexedMaster.find(
-          (it) =>
-            (payload.id && it.id === payload.id) ||
-            (it.role === payload.role && it.org === payload.org)
-        ) || payload;
-      await upsertExperience(savedPayload);
-
-      // Ensure the active tab matches the item category so it is ALWAYS visible
       const targetCategoryTab = isMagang ? "magang" : "organisasi";
       if (filterType !== "all" && filterType !== targetCategoryTab) {
         setFilterType(targetCategoryTab);
       }
 
-      // Automatically jump to the page containing the target position
-      const safeTargetPage = Math.max(1, Math.ceil(targetPosition / pageSize));
+      const safeTargetPage = Math.max(1, Math.ceil(finalPos / pageSize));
       setCurrentPage(safeTargetPage);
 
-      setFeedback({
-        type: "success",
-        text: `Data pengalaman berhasil disimpan di Posisi #${targetPosition}.`,
-      });
       await onRefresh();
       setEditingItem(null);
+      setTargetExpForCrop(null);
+      setFeedback({
+        type: "success",
+        text: `Data pengalaman berhasil disimpan di Posisi #${finalPos}.`,
+      });
     } catch (err) {
       setFeedback({
         type: "error",
@@ -414,7 +445,7 @@ export default function AdminExperience({
     }
   };
 
-    if (editingItem) {
+  if (editingItem) {
     const isNew = !experience.some((e) => e.id === editingItem.id);
     return (
       <div className="space-y-6 w-full">
@@ -540,17 +571,17 @@ export default function AdminExperience({
                   }
                   onChange={(e) => {
                     const nextType = e.target.value;
-                    const prevDefaultCategory =
+                    const prevDefault =
                       nextType === "Magang"
                         ? "Organisasi Kampus"
                         : "Magang Industri";
-                    const isDefault =
+                    const shouldReplaceCategory =
                       !editingItem.category ||
-                      editingItem.category === prevDefaultCategory;
+                      editingItem.category === prevDefault;
                     setEditingItem({
                       ...editingItem,
                       type: nextType,
-                      category: isDefault
+                      category: shouldReplaceCategory
                         ? nextType === "Magang"
                           ? "Magang Industri"
                           : "Organisasi Kampus"
@@ -878,12 +909,12 @@ export default function AdminExperience({
         </div>
 
         <button
-            onClick={handleCreate}
-            className="neo-btn-primary font-bold text-xs sm:text-sm self-start sm:self-auto"
-          >
-            <Icon name="plus" size={16} />
-            Tambah Pengalaman
-          </button>
+          onClick={handleCreate}
+          className="neo-btn-primary font-bold text-xs sm:text-sm self-start sm:self-auto"
+        >
+          <Icon name="plus" size={16} />
+          Tambah Pengalaman
+        </button>
       </div>
 
       <FloatingAlert feedback={feedback} onClose={() => setFeedback(null)} />
@@ -1006,18 +1037,16 @@ export default function AdminExperience({
                   setDraggedIdx(null);
                   setDragOverIdx(null);
                 }}
-                className={`transition-all duration-200 select-none ${
-                  canDrag
-                    ? "cursor-grab active:cursor-grabbing"
-                    : "cursor-default"
-                } ${isDragging ? "opacity-40 scale-[0.98]" : "opacity-100"}`}
+                className={`transition-all duration-200 select-none ${canDrag
+                  ? "cursor-grab active:cursor-grabbing"
+                  : "cursor-default"
+                  } ${isDragging ? "opacity-40 scale-[0.98]" : "opacity-100"}`}
               >
                 <Card
-                  className={`p-5 h-full flex flex-col justify-between transition-all relative ${
-                    isOver
-                      ? "ring-4 ring-[var(--google-blue)] border-[var(--google-blue)] shadow-[0_0_15px_rgba(26,115,232,0.25)]"
-                      : ""
-                  }`}
+                  className={`p-5 h-full flex flex-col justify-between transition-all relative ${isOver
+                    ? "ring-4 ring-[var(--google-blue)] border-[var(--google-blue)] shadow-[0_0_15px_rgba(26,115,232,0.25)]"
+                    : ""
+                    }`}
                 >
                   <div>
                     {/* Top toolbar: position indicator and actions */}

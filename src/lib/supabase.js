@@ -8,6 +8,7 @@ import {
   CERTIFICATIONS,
   sortExperiencesLatestFirst,
 } from "../data";
+import { getLocalItem, setLocalItem, broadcastDataSync } from "./localDb";
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -18,7 +19,7 @@ export const supabase =
     ? createClient(supabaseUrl, supabaseAnonKey)
     : null;
 
-// Dynamic cache keys for resilient offline and local fallback
+// Storage keys shared across IndexedDB and legacy localStorage migration
 const CACHE_KEYS = {
   SETTINGS: "portfolio_site_settings_cache",
   PROJECTS: "portfolio_projects_cache",
@@ -26,13 +27,113 @@ const CACHE_KEYS = {
   SKILLS: "portfolio_skill_categories_cache",
   EDUCATION: "portfolio_education_cache",
   CERTS: "portfolio_certifications_cache",
+  MESSAGES: "portfolio_contact_messages",
 };
 
-// Global event notifier for instant reactive UI updates
-export function notifyDataChanged() {
-  if (typeof window !== "undefined") {
-    window.dispatchEvent(new CustomEvent("portfolio_data_updated"));
+const UUID_REGEX =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+function isValidUuid(value) {
+  return typeof value === "string" && UUID_REGEX.test(value);
+}
+
+// Generate RFC4122 UUID so local records stay compatible with Postgres uuid
+export function generateRecordId() {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
   }
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === "x" ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+}
+
+// Normalize experience object across local cache and Supabase schemas
+function normalizeExperienceItem(item) {
+  const activeVal =
+    item.active !== undefined ? Boolean(item.active) : Boolean(item.current);
+  return {
+    ...item,
+    category: item.category || item.type || "Organisasi",
+    type: item.type || item.category || "Organisasi",
+    active: activeVal,
+    current: activeVal,
+    bullets: Array.isArray(item.bullets) ? item.bullets : [],
+    tags: Array.isArray(item.tags) ? item.tags : [],
+    photo: item.photo || "",
+    photoAlt: item.photoAlt || item.photo_alt || "",
+    photo_alt: item.photo_alt || item.photoAlt || "",
+    order_index: typeof item.order_index === "number" ? item.order_index : 0,
+  };
+}
+
+// Compress oversized images without cropping to keep storage fast and lean
+function compressImageToDataUrl(file, maxDim = 1400, quality = 0.84) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = (err) => reject(err);
+    reader.onload = () => {
+      const rawDataUrl = reader.result;
+      if (typeof rawDataUrl !== "string") {
+        reject(new Error("Gagal membaca file gambar."));
+        return;
+      }
+      // Keep small images or SVGs untouched
+      if (file.type === "image/svg+xml" || file.size <= 180 * 1024) {
+        resolve(rawDataUrl);
+        return;
+      }
+      const img = new Image();
+      img.onerror = () => resolve(rawDataUrl);
+      img.onload = () => {
+        try {
+          const nw = img.naturalWidth || 1;
+          const nh = img.naturalHeight || 1;
+          const scale = Math.min(1, maxDim / Math.max(nw, nh));
+          const w = Math.max(1, Math.round(nw * scale));
+          const h = Math.max(1, Math.round(nh * scale));
+
+          const canvas = document.createElement("canvas");
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext("2d");
+          if (!ctx) {
+            resolve(rawDataUrl);
+            return;
+          }
+          ctx.imageSmoothingEnabled = true;
+          ctx.imageSmoothingQuality = "high";
+
+          // Try WebP first to preserve alpha at small size, fallback to JPEG
+          ctx.drawImage(img, 0, 0, w, h);
+          const webpUrl = canvas.toDataURL("image/webp", quality);
+          if (
+            webpUrl.startsWith("data:image/webp") &&
+            webpUrl.length < rawDataUrl.length
+          ) {
+            resolve(webpUrl);
+            return;
+          }
+
+          ctx.fillStyle = "#ffffff";
+          ctx.fillRect(0, 0, w, h);
+          ctx.drawImage(img, 0, 0, w, h);
+          const jpegUrl = canvas.toDataURL("image/jpeg", quality);
+          resolve(jpegUrl.length < rawDataUrl.length ? jpegUrl : rawDataUrl);
+        } catch {
+          resolve(rawDataUrl);
+        }
+      };
+      img.src = rawDataUrl;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+// Global event notifier for instant reactive UI updates across tabs
+export function notifyDataChanged() {
+  broadcastDataSync();
 }
 
 // Auth helper verifying current admin session
@@ -75,13 +176,7 @@ export async function signOutAdmin() {
 
 // Fetch site configuration with dynamic persistence
 export async function getSiteSettings() {
-  let cachedSettings = {};
-  try {
-    const raw = localStorage.getItem(CACHE_KEYS.SETTINGS);
-    if (raw) cachedSettings = JSON.parse(raw);
-  } catch {
-    // Ignore error
-  }
+  const cachedSettings = (await getLocalItem(CACHE_KEYS.SETTINGS)) || {};
 
   if (supabase) {
     try {
@@ -230,13 +325,13 @@ export async function getSiteSettings() {
             PERSONAL_INFO.numbersTitle,
           stat1Value:
             data.stat1_value !== undefined &&
-            data.stat1_value !== null &&
-            data.stat1_value !== ""
+              data.stat1_value !== null &&
+              data.stat1_value !== ""
               ? data.stat1_value
               : cachedSettings.stat1Value ||
-                data.custom_project_count ||
-                cachedSettings.customProjectCount ||
-                PERSONAL_INFO.stat1Value,
+              data.custom_project_count ||
+              cachedSettings.customProjectCount ||
+              PERSONAL_INFO.stat1Value,
           stat1Label:
             data.stat1_label ||
             cachedSettings.stat1Label ||
@@ -247,13 +342,13 @@ export async function getSiteSettings() {
             PERSONAL_INFO.stat1Desc,
           stat2Value:
             data.stat2_value !== undefined &&
-            data.stat2_value !== null &&
-            data.stat2_value !== ""
+              data.stat2_value !== null &&
+              data.stat2_value !== ""
               ? data.stat2_value
               : cachedSettings.stat2Value ||
-                data.custom_cert_count ||
-                cachedSettings.customCertCount ||
-                PERSONAL_INFO.stat2Value,
+              data.custom_cert_count ||
+              cachedSettings.customCertCount ||
+              PERSONAL_INFO.stat2Value,
           stat2Label:
             data.stat2_label ||
             cachedSettings.stat2Label ||
@@ -264,13 +359,13 @@ export async function getSiteSettings() {
             PERSONAL_INFO.stat2Desc,
           stat3Value:
             data.stat3_value !== undefined &&
-            data.stat3_value !== null &&
-            data.stat3_value !== ""
+              data.stat3_value !== null &&
+              data.stat3_value !== ""
               ? data.stat3_value
               : cachedSettings.stat3Value ||
-                data.start_year ||
-                cachedSettings.startYear ||
-                PERSONAL_INFO.stat3Value,
+              data.start_year ||
+              cachedSettings.startYear ||
+              PERSONAL_INFO.stat3Value,
           stat3Label:
             data.stat3_label ||
             cachedSettings.stat3Label ||
@@ -281,13 +376,13 @@ export async function getSiteSettings() {
             PERSONAL_INFO.stat3Desc,
           stat4Value:
             data.stat4_value !== undefined &&
-            data.stat4_value !== null &&
-            data.stat4_value !== ""
+              data.stat4_value !== null &&
+              data.stat4_value !== ""
               ? data.stat4_value
               : cachedSettings.stat4Value ||
-                data.code_quality ||
-                cachedSettings.codeQuality ||
-                PERSONAL_INFO.stat4Value,
+              data.code_quality ||
+              cachedSettings.codeQuality ||
+              PERSONAL_INFO.stat4Value,
           stat4Label:
             data.stat4_label ||
             cachedSettings.stat4Label ||
@@ -299,9 +394,9 @@ export async function getSiteSettings() {
           rawId: data.id,
         };
         try {
-          localStorage.setItem(CACHE_KEYS.SETTINGS, JSON.stringify(mapped));
+          await setLocalItem(CACHE_KEYS.SETTINGS, mapped);
         } catch {
-          // Ignore storage quota
+          // Ignore non-critical read cache failure
         }
         return mapped;
       }
@@ -322,147 +417,147 @@ export async function saveSiteSettings(id, fields) {
     rawId: id || current.rawId || "default-site-settings",
   };
 
-  try {
-    localStorage.setItem(CACHE_KEYS.SETTINGS, JSON.stringify(updated));
-  } catch {
-    // Ignore storage quota
-  }
+  await setLocalItem(CACHE_KEYS.SETTINGS, updated);
 
   if (supabase) {
-    try {
-      const payload = {
-        site_name: fields.name || updated.name,
-        kicker: fields.kicker || updated.kicker,
-        role: fields.role || updated.role || "",
-        status_badge: fields.statusBadge || updated.statusBadge,
-        headline: fields.headline || updated.headline,
-        headline_accent: fields.headlineAccent || updated.headlineAccent,
-        code_card_title:
-          fields.codeCardTitle || updated.codeCardTitle || "raynar-dev.ts",
-        value_prop: fields.valueProp || updated.valueProp,
-        university: fields.university || updated.university,
-        photo_url: fields.avatar || updated.avatar || "",
-        cv_url: fields.cvUrl || updated.cvUrl || "",
-        github_url: fields.github || updated.github || "",
-        linkedin_url: fields.linkedin || updated.linkedin || "",
-        instagram_url: fields.instagram || updated.instagram || "",
-        email: fields.email || updated.email || "",
-        location: fields.location || updated.location || "",
-        timezone: fields.timezone || updated.timezone || "",
-        availability_status: fields.status || updated.status || "",
-        about_p1: fields.aboutP1 || updated.aboutP1 || "",
-        about_p2: fields.aboutP2 || updated.aboutP2 || "",
-        about_p3: fields.aboutP3 || updated.aboutP3 || "",
-        principle_title: fields.principleTitle || updated.principleTitle || "",
-        principle_quote: fields.principleQuote || updated.principleQuote || "",
-        numbers_kicker:
-          fields.numbersKicker || updated.numbersKicker || "BY THE NUMBERS",
-        numbers_title:
-          fields.numbersTitle ||
-          updated.numbersTitle ||
-          "Dampak & Pencapaian Riil",
-        stat1_value:
-          fields.stat1Value !== undefined
-            ? fields.stat1Value
-            : updated.stat1Value || "",
-        stat1_label:
-          fields.stat1Label !== undefined
-            ? fields.stat1Label
-            : updated.stat1Label || "",
-        stat1_desc:
-          fields.stat1Desc !== undefined
-            ? fields.stat1Desc
-            : updated.stat1Desc || "",
-        stat2_value:
-          fields.stat2Value !== undefined
-            ? fields.stat2Value
-            : updated.stat2Value || "",
-        stat2_label:
-          fields.stat2Label !== undefined
-            ? fields.stat2Label
-            : updated.stat2Label || "",
-        stat2_desc:
-          fields.stat2Desc !== undefined
-            ? fields.stat2Desc
-            : updated.stat2Desc || "",
-        stat3_value:
-          fields.stat3Value !== undefined
-            ? fields.stat3Value
-            : updated.stat3Value || "",
-        stat3_label:
-          fields.stat3Label !== undefined
-            ? fields.stat3Label
-            : updated.stat3Label || "",
-        stat3_desc:
-          fields.stat3Desc !== undefined
-            ? fields.stat3Desc
-            : updated.stat3Desc || "",
-        stat4_value:
-          fields.stat4Value !== undefined
-            ? fields.stat4Value
-            : updated.stat4Value || "",
-        stat4_label:
-          fields.stat4Label !== undefined
-            ? fields.stat4Label
-            : updated.stat4Label || "",
-        stat4_desc:
-          fields.stat4Desc !== undefined
-            ? fields.stat4Desc
-            : updated.stat4Desc || "",
-        custom_project_count:
-          fields.stat1Value ||
-          fields.customProjectCount ||
-          updated.stat1Value ||
-          updated.customProjectCount ||
-          "",
-        custom_cert_count:
-          fields.stat2Value ||
-          fields.customCertCount ||
-          updated.stat2Value ||
-          updated.customCertCount ||
-          "",
-        start_year:
-          fields.stat3Value ||
-          fields.startYear ||
-          updated.stat3Value ||
-          updated.startYear ||
-          "",
-        code_quality:
-          fields.stat4Value ||
-          fields.codeQuality ||
-          updated.stat4Value ||
-          updated.codeQuality ||
-          "",
-        updated_at: new Date().toISOString(),
-      };
-      try {
-        if (id && id !== "default-site-settings") {
-          await supabase.from("site_settings").update(payload).eq("id", id);
-        } else {
-          await supabase.from("site_settings").upsert(payload);
-        }
-      } catch {
-        const fallback = { ...payload };
-        delete fallback.stat1_value;
-        delete fallback.stat1_label;
-        delete fallback.stat1_desc;
-        delete fallback.stat2_value;
-        delete fallback.stat2_label;
-        delete fallback.stat2_desc;
-        delete fallback.stat3_value;
-        delete fallback.stat3_label;
-        delete fallback.stat3_desc;
-        delete fallback.stat4_value;
-        delete fallback.stat4_label;
-        delete fallback.stat4_desc;
-        if (id && id !== "default-site-settings") {
-          await supabase.from("site_settings").update(fallback).eq("id", id);
-        } else {
-          await supabase.from("site_settings").upsert(fallback);
-        }
+    const payload = {
+      site_name: fields.name || updated.name,
+      kicker: fields.kicker || updated.kicker,
+      role: fields.role || updated.role || "",
+      status_badge: fields.statusBadge || updated.statusBadge,
+      headline: fields.headline || updated.headline,
+      headline_accent: fields.headlineAccent || updated.headlineAccent,
+      code_card_title:
+        fields.codeCardTitle || updated.codeCardTitle || "raynar-dev.ts",
+      value_prop: fields.valueProp || updated.valueProp,
+      university: fields.university || updated.university,
+      photo_url: fields.avatar || updated.avatar || "",
+      cv_url: fields.cvUrl || updated.cvUrl || "",
+      github_url: fields.github || updated.github || "",
+      linkedin_url: fields.linkedin || updated.linkedin || "",
+      instagram_url: fields.instagram || updated.instagram || "",
+      email: fields.email || updated.email || "",
+      location: fields.location || updated.location || "",
+      timezone: fields.timezone || updated.timezone || "",
+      availability_status: fields.status || updated.status || "",
+      about_p1: fields.aboutP1 || updated.aboutP1 || "",
+      about_p2: fields.aboutP2 || updated.aboutP2 || "",
+      about_p3: fields.aboutP3 || updated.aboutP3 || "",
+      principle_title: fields.principleTitle || updated.principleTitle || "",
+      principle_quote: fields.principleQuote || updated.principleQuote || "",
+      numbers_kicker:
+        fields.numbersKicker || updated.numbersKicker || "BY THE NUMBERS",
+      numbers_title:
+        fields.numbersTitle ||
+        updated.numbersTitle ||
+        "Dampak & Pencapaian Riil",
+      stat1_value:
+        fields.stat1Value !== undefined
+          ? fields.stat1Value
+          : updated.stat1Value || "",
+      stat1_label:
+        fields.stat1Label !== undefined
+          ? fields.stat1Label
+          : updated.stat1Label || "",
+      stat1_desc:
+        fields.stat1Desc !== undefined
+          ? fields.stat1Desc
+          : updated.stat1Desc || "",
+      stat2_value:
+        fields.stat2Value !== undefined
+          ? fields.stat2Value
+          : updated.stat2Value || "",
+      stat2_label:
+        fields.stat2Label !== undefined
+          ? fields.stat2Label
+          : updated.stat2Label || "",
+      stat2_desc:
+        fields.stat2Desc !== undefined
+          ? fields.stat2Desc
+          : updated.stat2Desc || "",
+      stat3_value:
+        fields.stat3Value !== undefined
+          ? fields.stat3Value
+          : updated.stat3Value || "",
+      stat3_label:
+        fields.stat3Label !== undefined
+          ? fields.stat3Label
+          : updated.stat3Label || "",
+      stat3_desc:
+        fields.stat3Desc !== undefined
+          ? fields.stat3Desc
+          : updated.stat3Desc || "",
+      stat4_value:
+        fields.stat4Value !== undefined
+          ? fields.stat4Value
+          : updated.stat4Value || "",
+      stat4_label:
+        fields.stat4Label !== undefined
+          ? fields.stat4Label
+          : updated.stat4Label || "",
+      stat4_desc:
+        fields.stat4Desc !== undefined
+          ? fields.stat4Desc
+          : updated.stat4Desc || "",
+      custom_project_count:
+        fields.stat1Value ||
+        fields.customProjectCount ||
+        updated.stat1Value ||
+        updated.customProjectCount ||
+        "",
+      custom_cert_count:
+        fields.stat2Value ||
+        fields.customCertCount ||
+        updated.stat2Value ||
+        updated.customCertCount ||
+        "",
+      start_year:
+        fields.stat3Value ||
+        fields.startYear ||
+        updated.stat3Value ||
+        updated.startYear ||
+        "",
+      code_quality:
+        fields.stat4Value ||
+        fields.codeQuality ||
+        updated.stat4Value ||
+        updated.codeQuality ||
+        "",
+      updated_at: new Date().toISOString(),
+    };
+
+    const targetId = isValidUuid(id) ? id : null;
+    const { error } = targetId
+      ? await supabase.from("site_settings").update(payload).eq("id", targetId)
+      : await supabase.from("site_settings").upsert(payload);
+
+    if (error && (error.code === "42703" || error.message?.includes("column"))) {
+      const fallback = { ...payload };
+      [
+        "stat1_value",
+        "stat1_label",
+        "stat1_desc",
+        "stat2_value",
+        "stat2_label",
+        "stat2_desc",
+        "stat3_value",
+        "stat3_label",
+        "stat3_desc",
+        "stat4_value",
+        "stat4_label",
+        "stat4_desc",
+      ].forEach((col) => delete fallback[col]);
+      const retry = targetId
+        ? await supabase
+            .from("site_settings")
+            .update(fallback)
+            .eq("id", targetId)
+        : await supabase.from("site_settings").upsert(fallback);
+      if (retry.error) {
+        throw new Error(retry.error.message || "Gagal menyimpan ke Supabase.");
       }
-    } catch {
-      // Retain local cached state
+    } else if (error) {
+      throw new Error(error.message || "Gagal menyimpan ke Supabase.");
     }
   }
 
@@ -506,23 +601,19 @@ export async function getProjects() {
           },
         }));
         try {
-          localStorage.setItem(CACHE_KEYS.PROJECTS, JSON.stringify(mapped));
+          await setLocalItem(CACHE_KEYS.PROJECTS, mapped);
         } catch {
-          // Ignore
+          // Ignore non-critical read cache failure
         }
         return mapped;
       }
     } catch {
-      // Fall through to cache
+      // Fall through to local store
     }
   }
 
-  try {
-    const cached = localStorage.getItem(CACHE_KEYS.PROJECTS);
-    if (cached) return JSON.parse(cached);
-  } catch {
-    // Ignore
-  }
+  const cached = await getLocalItem(CACHE_KEYS.PROJECTS);
+  if (Array.isArray(cached) && cached.length > 0) return cached;
   return PROJECTS;
 }
 
@@ -536,40 +627,35 @@ export async function upsertProject(project) {
     ? current.map((p) => (p.id === id ? payload : p))
     : [...current, payload];
 
-  try {
-    localStorage.setItem(CACHE_KEYS.PROJECTS, JSON.stringify(updated));
-  } catch {
-    // Ignore
-  }
+  await setLocalItem(CACHE_KEYS.PROJECTS, updated);
 
   if (supabase) {
-    try {
-      const dbPayload = {
-        id: payload.id,
-        title: payload.title,
-        label: payload.label,
-        featured: Boolean(payload.featured),
-        image: payload.image || "",
-        problem: payload.problem,
-        solution: payload.solution,
-        impact: payload.impact,
-        badges: payload.badges || [],
-        demo_url: payload.demoUrl || null,
-        repo_notice: payload.repoNotice,
-        repo_reason: payload.repoReason,
-        case_study_role: payload.caseStudy?.role || "Full-Stack Developer",
-        case_study_client: payload.caseStudy?.client || null,
-        case_study_duration: payload.caseStudy?.duration || "2024",
-        case_study_background: payload.caseStudy?.background || null,
-        case_study_solution: payload.caseStudy?.solution || null,
-        case_study_architecture: payload.caseStudy?.architecture || null,
-        case_study_impact: payload.caseStudy?.impact || null,
-        status: payload.status || "published",
-        order_index: payload.orderIndex ?? 0,
-      };
-      await supabase.from("projects").upsert(dbPayload);
-    } catch {
-      // Retain local state
+    const dbPayload = {
+      id: payload.id,
+      title: payload.title,
+      label: payload.label,
+      featured: Boolean(payload.featured),
+      image: payload.image || "",
+      problem: payload.problem,
+      solution: payload.solution,
+      impact: payload.impact,
+      badges: payload.badges || [],
+      demo_url: payload.demoUrl || null,
+      repo_notice: payload.repoNotice,
+      repo_reason: payload.repoReason,
+      case_study_role: payload.caseStudy?.role || "Full-Stack Developer",
+      case_study_client: payload.caseStudy?.client || null,
+      case_study_duration: payload.caseStudy?.duration || "2024",
+      case_study_background: payload.caseStudy?.background || null,
+      case_study_solution: payload.caseStudy?.solution || null,
+      case_study_architecture: payload.caseStudy?.architecture || null,
+      case_study_impact: payload.caseStudy?.impact || null,
+      status: payload.status || "published",
+      order_index: payload.orderIndex ?? 0,
+    };
+    const { error } = await supabase.from("projects").upsert(dbPayload);
+    if (error) {
+      throw new Error(error.message || "Gagal menyimpan proyek ke Supabase.");
     }
   }
 
@@ -582,17 +668,12 @@ export async function deleteProject(id) {
   const current = await getProjects();
   const updated = current.filter((p) => p.id !== id);
 
-  try {
-    localStorage.setItem(CACHE_KEYS.PROJECTS, JSON.stringify(updated));
-  } catch {
-    // Ignore
-  }
+  await setLocalItem(CACHE_KEYS.PROJECTS, updated);
 
   if (supabase) {
-    try {
-      await supabase.from("projects").delete().eq("id", id);
-    } catch {
-      // Retain local deletion
+    const { error } = await supabase.from("projects").delete().eq("id", id);
+    if (error) {
+      throw new Error(error.message || "Gagal menghapus proyek di Supabase.");
     }
   }
 
@@ -606,45 +687,36 @@ export async function reorderProjects(orderedList = []) {
     orderIndex: idx + 1,
   }));
 
-  try {
-    localStorage.setItem(CACHE_KEYS.PROJECTS, JSON.stringify(updated));
-  } catch {
-    // Ignore
-  }
+  await setLocalItem(CACHE_KEYS.PROJECTS, updated);
 
   if (supabase) {
-    try {
-      const updates = updated.map((item) => ({
-        id: item.id,
-        title: item.title,
-        label: item.label,
-        featured: Boolean(item.featured),
-        image: item.image || "",
-        problem: item.problem || "",
-        solution: item.solution || "",
-        impact: item.impact || "",
-        badges: item.badges || [],
-        demo_url: item.demoUrl || null,
-        repo_notice: item.repoNotice,
-        repo_reason: item.repoReason,
-        case_study_role: item.caseStudy?.role || "Full-Stack Developer",
-        case_study_client: item.caseStudy?.client || null,
-        case_study_duration: item.caseStudy?.duration || "2024",
-        case_study_background: item.caseStudy?.background || null,
-        case_study_solution: item.caseStudy?.solution || null,
-        case_study_architecture: item.caseStudy?.architecture || null,
-        case_study_impact: item.caseStudy?.impact || null,
-        status: item.status || "published",
-        order_index: item.orderIndex,
-      }));
+    const updates = updated.map((item) => ({
+      id: item.id,
+      title: item.title,
+      label: item.label,
+      featured: Boolean(item.featured),
+      image: item.image || "",
+      problem: item.problem || "",
+      solution: item.solution || "",
+      impact: item.impact || "",
+      badges: item.badges || [],
+      demo_url: item.demoUrl || null,
+      repo_notice: item.repoNotice,
+      repo_reason: item.repoReason,
+      case_study_role: item.caseStudy?.role || "Full-Stack Developer",
+      case_study_client: item.caseStudy?.client || null,
+      case_study_duration: item.caseStudy?.duration || "2024",
+      case_study_background: item.caseStudy?.background || null,
+      case_study_solution: item.caseStudy?.solution || null,
+      case_study_architecture: item.caseStudy?.architecture || null,
+      case_study_impact: item.caseStudy?.impact || null,
+      status: item.status || "published",
+      order_index: item.orderIndex,
+    }));
 
-      await Promise.all(
-        updates.map((dbPayload) =>
-          supabase.from("projects").upsert(dbPayload)
-        )
-      );
-    } catch {
-      // Retain local state
+    const { error } = await supabase.from("projects").upsert(updates);
+    if (error) {
+      throw new Error(error.message || "Gagal memperbarui urutan proyek.");
     }
   }
 
@@ -662,107 +734,83 @@ export async function getExperience() {
         .order("order_index", { ascending: true });
 
       if (!error && data && data.length > 0) {
-        const normalized = data.map((item) => ({
-          ...item,
-          category: item.category || item.type || "Organisasi",
-          type: item.type || item.category || "Organisasi",
-          active: item.active !== undefined ? item.active : item.current,
-          current: item.current !== undefined ? item.current : item.active,
-          photoAlt: item.photoAlt || item.photo_alt || "",
-          photo_alt: item.photo_alt || item.photoAlt || "",
-        }));
+        const normalized = data.map(normalizeExperienceItem);
         const sorted = sortExperiencesLatestFirst(normalized);
         try {
-          localStorage.setItem(CACHE_KEYS.EXPERIENCE, JSON.stringify(sorted));
+          await setLocalItem(CACHE_KEYS.EXPERIENCE, sorted);
         } catch {
-          // Ignore
+          // Ignore non-critical read cache failure
         }
         return sorted;
       }
     } catch {
-      // Fall through to cache
+      // Fall through to local store
     }
   }
 
-  try {
-    const cached = localStorage.getItem(CACHE_KEYS.EXPERIENCE);
-    if (cached) return sortExperiencesLatestFirst(JSON.parse(cached));
-  } catch {
-    // Fallback to initial data
+  const cached = await getLocalItem(CACHE_KEYS.EXPERIENCE);
+  if (Array.isArray(cached) && cached.length > 0) {
+    return sortExperiencesLatestFirst(cached.map(normalizeExperienceItem));
   }
-  return sortExperiencesLatestFirst(EXPERIENCE);
+  return sortExperiencesLatestFirst(EXPERIENCE.map(normalizeExperienceItem));
 }
 
 // Create or update experience entry
 export async function upsertExperience(item) {
   const current = await getExperience();
-  const id = item.id || `exp-${Date.now()}`;
-  const payload = {
-    ...item,
-    id,
-    category: item.category || item.type || "Organisasi",
-    type: item.type || item.category || "Organisasi",
-    active: item.active !== undefined ? item.active : item.current,
-    current: item.current !== undefined ? item.current : item.active,
-    photoAlt: item.photoAlt || item.photo_alt || "",
-  };
-  const exists = current.some(
-    (e) =>
-      e.id === id ||
-      (item.role && e.role === item.role && e.org === item.org)
-  );
+  const id = item.id || generateRecordId();
+  const payload = normalizeExperienceItem({ ...item, id });
+
+  const hasIdMatch = current.some((e) => e.id && e.id === id);
+  const matchEntry = (e) =>
+    hasIdMatch
+      ? e.id === id
+      : Boolean(
+          !item.id &&
+            item.role &&
+            item.org &&
+            e.role === item.role &&
+            e.org === item.org
+        );
+
+  const exists = current.some(matchEntry);
   const updated = exists
-    ? current.map((e) =>
-        e.id === id ||
-        (item.role && e.role === item.role && e.org === item.org)
-          ? payload
-          : e
-      )
+    ? current.map((e) => (matchEntry(e) ? payload : e))
     : [...current, payload];
 
-  try {
-    localStorage.setItem(
-      CACHE_KEYS.EXPERIENCE,
-      JSON.stringify(sortExperiencesLatestFirst(updated))
-    );
-  } catch (err) {
-    // Evict non-essential items if quota exceeded
-    if (err && err.name === "QuotaExceededError") {
-      try {
-        localStorage.removeItem("portfolio_contact_messages");
-        localStorage.setItem(
-          CACHE_KEYS.EXPERIENCE,
-          JSON.stringify(sortExperiencesLatestFirst(updated))
-        );
-      } catch {
-        // Retain local memory state
-      }
-    }
-  }
+  const sorted = sortExperiencesLatestFirst(updated);
+  await setLocalItem(CACHE_KEYS.EXPERIENCE, sorted);
 
   if (supabase) {
-    try {
-      const isUuid =
-        item.id &&
-        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-          item.id
-        );
-      const dbPayload = {
-        ...(isUuid ? { id: item.id } : {}),
-        role: item.role,
-        org: item.org,
-        period: item.period,
-        type: item.type || item.category || "Organisasi",
-        current: Boolean(item.active ?? item.current ?? false),
-        bullets: Array.isArray(item.bullets) ? item.bullets : [],
-        tags: Array.isArray(item.tags) ? item.tags : [],
-        photo: item.photo || "",
-        photo_alt: item.photo_alt || item.photoAlt || "",
-        order_index: typeof item.order_index === "number" ? item.order_index : 0,
-      };
-      await supabase.from("experience").upsert(dbPayload);
-    } catch {
-      // Retain local state
+    const dbPayload = {
+      ...(isValidUuid(id) ? { id } : {}),
+      role: payload.role,
+      org: payload.org,
+      period: payload.period,
+      type: payload.type,
+      current: Boolean(payload.active),
+      bullets: payload.bullets,
+      tags: payload.tags,
+      photo: payload.photo || "",
+      photo_alt: payload.photoAlt || "",
+      order_index: payload.order_index,
+    };
+    const { data, error } = await supabase
+      .from("experience")
+      .upsert(dbPayload)
+      .select()
+      .maybeSingle();
+
+    if (error) {
+      throw new Error(error.message || "Gagal menyimpan pengalaman ke server.");
+    }
+    if (data && data.id && data.id !== id) {
+      const synced = sorted.map((e) =>
+        e.id === id ? { ...payload, id: data.id } : e
+      );
+      await setLocalItem(CACHE_KEYS.EXPERIENCE, synced);
+      notifyDataChanged();
+      return { ...payload, id: data.id };
     }
   }
 
@@ -775,95 +823,70 @@ export async function deleteExperience(id) {
   const current = await getExperience();
   const updated = current.filter((e) => e.id !== id && e.role !== id);
 
-  try {
-    localStorage.setItem(
-      CACHE_KEYS.EXPERIENCE,
-      JSON.stringify(sortExperiencesLatestFirst(updated))
-    );
-  } catch (err) {
-    // Evict non-essential items if quota exceeded
-    if (err && err.name === "QuotaExceededError") {
-      try {
-        localStorage.removeItem("portfolio_contact_messages");
-        localStorage.setItem(
-          CACHE_KEYS.EXPERIENCE,
-          JSON.stringify(sortExperiencesLatestFirst(updated))
-        );
-      } catch {
-        // Retain local memory state
-      }
-    }
-  }
+  await setLocalItem(
+    CACHE_KEYS.EXPERIENCE,
+    sortExperiencesLatestFirst(updated)
+  );
 
   if (supabase) {
-    try {
-      const { error } = await supabase.from("experience").delete().eq("id", id);
-      if (error) {
-        await supabase.from("experience").delete().eq("role", id);
-      }
-    } catch {
-      // Retain local deletion
+    const { error } = isValidUuid(id)
+      ? await supabase.from("experience").delete().eq("id", id)
+      : await supabase.from("experience").delete().eq("role", id);
+    if (error) {
+      throw new Error(error.message || "Gagal menghapus pengalaman di server.");
     }
   }
 
   notifyDataChanged();
 }
 
-// Reorder experiences array and persist new order_index
+// Reorder experiences array and persist new order_index atomically
 export async function reorderExperience(orderedList = []) {
-  const updated = orderedList.map((item, idx) => ({
-    ...item,
-    order_index: idx + 1,
-  }));
+  const updated = orderedList.map((item, idx) =>
+    normalizeExperienceItem({
+      ...item,
+      id: item.id || generateRecordId(),
+      order_index: idx + 1,
+    })
+  );
 
-  try {
-    localStorage.setItem(
-      CACHE_KEYS.EXPERIENCE,
-      JSON.stringify(updated)
-    );
-  } catch (err) {
-    // Evict non-essential items if quota exceeded
-    if (err && err.name === "QuotaExceededError") {
-      try {
-        localStorage.removeItem("portfolio_contact_messages");
-        localStorage.setItem(CACHE_KEYS.EXPERIENCE, JSON.stringify(updated));
-      } catch {
-        // Retain local memory state
-      }
-    }
-  }
+  await setLocalItem(CACHE_KEYS.EXPERIENCE, updated);
 
   if (supabase) {
-    try {
-      const updates = updated.map((item) => {
-        const isUuid =
-          item.id &&
-          /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-            item.id
-          );
-        return {
-          ...(isUuid ? { id: item.id } : {}),
-          role: item.role,
-          org: item.org,
-          period: item.period,
-          type: item.type || item.category || "Organisasi",
-          current: Boolean(item.active ?? item.current ?? false),
-          bullets: Array.isArray(item.bullets) ? item.bullets : [],
-          tags: Array.isArray(item.tags) ? item.tags : [],
-          photo: item.photo || "",
-          photo_alt: item.photo_alt || item.photoAlt || "",
-          order_index: item.order_index,
-        };
-      });
+    const syncedList = [...updated];
+    for (let i = 0; i < updated.length; i += 1) {
+      const item = updated[i];
+      const dbPayload = {
+        ...(isValidUuid(item.id) ? { id: item.id } : {}),
+        role: item.role,
+        org: item.org,
+        period: item.period,
+        type: item.type,
+        current: Boolean(item.active),
+        bullets: item.bullets,
+        tags: item.tags,
+        photo: item.photo || "",
+        photo_alt: item.photoAlt || "",
+        order_index: item.order_index,
+      };
+      const { data, error } = await supabase
+        .from("experience")
+        .upsert(dbPayload)
+        .select("id")
+        .maybeSingle();
 
-      await Promise.all(
-        updates.map((dbPayload) =>
-          supabase.from("experience").upsert(dbPayload)
-        )
-      );
-    } catch {
-      // Retain local state
+      if (error) {
+        throw new Error(
+          error.message || "Gagal menyimpan urutan pengalaman ke server."
+        );
+      }
+      if (data && data.id && data.id !== item.id) {
+        syncedList[i] = { ...item, id: data.id };
+      }
     }
+    await setLocalItem(CACHE_KEYS.EXPERIENCE, syncedList);
+    notifyDataChanged();
+    return syncedList;
   }
 
   notifyDataChanged();
@@ -881,47 +904,44 @@ export async function getSkillCategories() {
 
       if (!error && data && data.length > 0) {
         try {
-          localStorage.setItem(CACHE_KEYS.SKILLS, JSON.stringify(data));
+          await setLocalItem(CACHE_KEYS.SKILLS, data);
         } catch {
-          // Ignore
+          // Ignore non-critical read cache failure
         }
         return data;
       }
     } catch {
-      // Fall through
+      // Fall through to local store
     }
   }
 
-  try {
-    const cached = localStorage.getItem(CACHE_KEYS.SKILLS);
-    if (cached) return JSON.parse(cached);
-  } catch {
-    // Ignore
-  }
+  const cached = await getLocalItem(CACHE_KEYS.SKILLS);
+  if (Array.isArray(cached) && cached.length > 0) return cached;
   return SKILL_CATEGORIES;
 }
 
 // Create or update skill category
 export async function upsertSkillCategory(cat) {
   const current = await getSkillCategories();
-  const id = cat.id || `cat-${Date.now()}`;
+  const id = cat.id || generateRecordId();
   const payload = { ...cat, id };
   const exists = current.some((c) => c.id === id || c.name === cat.name);
   const updated = exists
     ? current.map((c) => (c.id === id || c.name === cat.name ? payload : c))
     : [...current, payload];
 
-  try {
-    localStorage.setItem(CACHE_KEYS.SKILLS, JSON.stringify(updated));
-  } catch {
-    // Ignore
-  }
+  await setLocalItem(CACHE_KEYS.SKILLS, updated);
 
   if (supabase) {
-    try {
-      await supabase.from("skill_categories").upsert(cat);
-    } catch {
-      // Retain local state
+    const dbPayload = {
+      ...(isValidUuid(id) ? { id } : {}),
+      name: payload.name,
+      skills: payload.skills || [],
+      order_index: payload.order_index ?? 0,
+    };
+    const { error } = await supabase.from("skill_categories").upsert(dbPayload);
+    if (error) {
+      throw new Error(error.message || "Gagal menyimpan keahlian ke server.");
     }
   }
 
@@ -933,34 +953,22 @@ export async function upsertSkillCategory(cat) {
 export async function reorderSkillCategories(orderedList = []) {
   const updated = orderedList.map((item, idx) => ({
     ...item,
+    id: item.id || generateRecordId(),
     order_index: idx + 1,
   }));
 
-  try {
-    localStorage.setItem(CACHE_KEYS.SKILLS, JSON.stringify(updated));
-  } catch {
-    // Ignore storage quota
-  }
+  await setLocalItem(CACHE_KEYS.SKILLS, updated);
 
   if (supabase) {
-    try {
-      const updates = updated.map((item) => {
-        const isUuid =
-          item.id &&
-          /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-            item.id
-          );
-        return {
-          ...(isUuid ? { id: item.id } : {}),
-          name: item.name,
-          skills: item.skills || [],
-          order_index: item.order_index,
-        };
-      });
-
-      await supabase.from("skill_categories").upsert(updates);
-    } catch {
-      // Retain local state
+    const updates = updated.map((item) => ({
+      ...(isValidUuid(item.id) ? { id: item.id } : {}),
+      name: item.name,
+      skills: item.skills || [],
+      order_index: item.order_index,
+    }));
+    const { error } = await supabase.from("skill_categories").upsert(updates);
+    if (error) {
+      throw new Error(error.message || "Gagal memperbarui urutan keahlian.");
     }
   }
 
@@ -973,23 +981,14 @@ export async function deleteSkillCategory(id) {
   const current = await getSkillCategories();
   const updated = current.filter((c) => c.id !== id && c.name !== id);
 
-  try {
-    localStorage.setItem(CACHE_KEYS.SKILLS, JSON.stringify(updated));
-  } catch {
-    // Ignore
-  }
+  await setLocalItem(CACHE_KEYS.SKILLS, updated);
 
   if (supabase) {
-    try {
-      const { error } = await supabase
-        .from("skill_categories")
-        .delete()
-        .eq("id", id);
-      if (error) {
-        await supabase.from("skill_categories").delete().eq("name", id);
-      }
-    } catch {
-      // Retain local deletion
+    const { error } = isValidUuid(id)
+      ? await supabase.from("skill_categories").delete().eq("id", id)
+      : await supabase.from("skill_categories").delete().eq("name", id);
+    if (error) {
+      throw new Error(error.message || "Gagal menghapus keahlian di server.");
     }
   }
 
@@ -1016,66 +1015,59 @@ export async function getEducation() {
           };
         });
         try {
-          localStorage.setItem(CACHE_KEYS.EDUCATION, JSON.stringify(mapped));
+          await setLocalItem(CACHE_KEYS.EDUCATION, mapped);
         } catch {
-          // Ignore
+          // Ignore non-critical read cache failure
         }
         return mapped;
       }
     } catch {
-      // Fall through
+      // Fall through to local store
     }
   }
 
-  try {
-    const cached = localStorage.getItem(CACHE_KEYS.EDUCATION);
-    if (cached) return JSON.parse(cached);
-  } catch {
-    // Ignore
-  }
+  const cached = await getLocalItem(CACHE_KEYS.EDUCATION);
+  if (Array.isArray(cached) && cached.length > 0) return cached;
   return EDUCATION;
 }
 
 // Upsert education entry
 export async function upsertEducation(item) {
   const current = await getEducation();
-  const id = item.id || `edu-${Date.now()}`;
+  const id = item.id || generateRecordId();
   const payload = { ...item, id };
   const exists = current.some((e) => e.id === id || e.school === item.school);
   const updated = exists
     ? current.map((e) =>
-        e.id === id || e.school === item.school ? payload : e
-      )
+      e.id === id || e.school === item.school ? payload : e
+    )
     : [...current, payload];
 
-  try {
-    localStorage.setItem(CACHE_KEYS.EDUCATION, JSON.stringify(updated));
-  } catch {
-    // Ignore
-  }
+  await setLocalItem(CACHE_KEYS.EDUCATION, updated);
 
   if (supabase) {
-    try {
-      const dbPayload = {
-        id: payload.id,
-        school: payload.school,
-        degree: payload.degree,
-        period: payload.period,
-        focus: payload.focus,
-        active: Boolean(payload.active),
-        order_index: payload.order_index ?? payload.orderIndex ?? 0,
-        score: payload.score || payload.ipk || null,
-        score_label: payload.scoreLabel || payload.score_label || null,
-      };
-      const { error } = await supabase.from("education").upsert(dbPayload);
-      if (error && (error.message.includes("score") || error.code === "42703")) {
-        const fallback = { ...dbPayload };
-        delete fallback.score;
-        delete fallback.score_label;
-        await supabase.from("education").upsert(fallback);
+    const dbPayload = {
+      ...(isValidUuid(id) ? { id } : {}),
+      school: payload.school,
+      degree: payload.degree,
+      period: payload.period,
+      focus: payload.focus,
+      active: Boolean(payload.active),
+      order_index: payload.order_index ?? payload.orderIndex ?? 0,
+      score: payload.score || payload.ipk || null,
+      score_label: payload.scoreLabel || payload.score_label || null,
+    };
+    const { error } = await supabase.from("education").upsert(dbPayload);
+    if (error && (error.message?.includes("score") || error.code === "42703")) {
+      const fallback = { ...dbPayload };
+      delete fallback.score;
+      delete fallback.score_label;
+      const retry = await supabase.from("education").upsert(fallback);
+      if (retry.error) {
+        throw new Error(retry.error.message || "Gagal menyimpan pendidikan.");
       }
-    } catch {
-      // Retain local state
+    } else if (error) {
+      throw new Error(error.message || "Gagal menyimpan pendidikan.");
     }
   }
 
@@ -1088,17 +1080,12 @@ export async function deleteEducation(id) {
   const current = await getEducation();
   const updated = current.filter((e) => e.id !== id && e.school !== id);
 
-  try {
-    localStorage.setItem(CACHE_KEYS.EDUCATION, JSON.stringify(updated));
-  } catch {
-    // Ignore
-  }
+  await setLocalItem(CACHE_KEYS.EDUCATION, updated);
 
   if (supabase) {
-    try {
-      await supabase.from("education").delete().eq("id", id);
-    } catch {
-      // Retain local deletion
+    const { error } = await supabase.from("education").delete().eq("id", id);
+    if (error) {
+      throw new Error(error.message || "Gagal menghapus pendidikan.");
     }
   }
 
@@ -1127,67 +1114,67 @@ export async function getCertifications() {
           image: c.image_url || c.image || "",
         }));
         try {
-          localStorage.setItem(CACHE_KEYS.CERTS, JSON.stringify(mapped));
+          await setLocalItem(CACHE_KEYS.CERTS, mapped);
         } catch {
-          // Ignore
+          // Ignore non-critical read cache failure
         }
         return mapped;
       }
     } catch {
-      // Fall through
+      // Fall through to local store
     }
   }
 
-  try {
-    const cached = localStorage.getItem(CACHE_KEYS.CERTS);
-    if (cached) return JSON.parse(cached);
-  } catch {
-    // Ignore
-  }
+  const cached = await getLocalItem(CACHE_KEYS.CERTS);
+  if (Array.isArray(cached) && cached.length > 0) return cached;
   return CERTIFICATIONS;
 }
 
 // Upsert certification entry
 export async function upsertCertification(cert) {
   const current = await getCertifications();
-  const id = cert.id || `cert-${Date.now()}`;
+  const id = cert.id || generateRecordId();
   const payload = { ...cert, id };
   const exists = current.some(
-    (c) => c.id === id || c.credentialId === cert.credentialId
+    (c) =>
+      c.id === id ||
+      (cert.credentialId && c.credentialId === cert.credentialId)
   );
   const updated = exists
     ? current.map((c) =>
-        c.id === id || c.credentialId === cert.credentialId ? payload : c
+        c.id === id ||
+        (cert.credentialId && c.credentialId === cert.credentialId)
+          ? payload
+          : c
       )
     : [...current, payload];
 
-  try {
-    localStorage.setItem(CACHE_KEYS.CERTS, JSON.stringify(updated));
-  } catch {
-    // Ignore
-  }
+  await setLocalItem(CACHE_KEYS.CERTS, updated);
 
   if (supabase) {
-    try {
-      const dbPayload = {
-        id: payload.id,
-        title: payload.title,
-        issuer: payload.issuer,
-        provider: payload.provider,
-        credential_id: payload.credentialId,
-        credential_url: payload.credentialUrl,
-        date: payload.date,
-        order_index: payload.orderIndex ?? 0,
-        image_url: payload.image || payload.imageUrl || null,
-      };
-      const { error } = await supabase.from("certifications").upsert(dbPayload);
-      if (error && error.message && error.message.includes("image_url")) {
-        const fallbackPayload = { ...dbPayload };
-        delete fallbackPayload.image_url;
-        await supabase.from("certifications").upsert(fallbackPayload);
+    const dbPayload = {
+      ...(isValidUuid(id) ? { id } : {}),
+      title: payload.title,
+      issuer: payload.issuer,
+      provider: payload.provider,
+      credential_id: payload.credentialId,
+      credential_url: payload.credentialUrl,
+      date: payload.date,
+      order_index: payload.orderIndex ?? 0,
+      image_url: payload.image || payload.imageUrl || null,
+    };
+    const { error } = await supabase.from("certifications").upsert(dbPayload);
+    if (error && error.message && error.message.includes("image_url")) {
+      const fallbackPayload = { ...dbPayload };
+      delete fallbackPayload.image_url;
+      const retry = await supabase
+        .from("certifications")
+        .upsert(fallbackPayload);
+      if (retry.error) {
+        throw new Error(retry.error.message || "Gagal menyimpan sertifikasi.");
       }
-    } catch {
-      // Retain local state
+    } else if (error) {
+      throw new Error(error.message || "Gagal menyimpan sertifikasi.");
     }
   }
 
@@ -1200,17 +1187,15 @@ export async function deleteCertification(id) {
   const current = await getCertifications();
   const updated = current.filter((c) => c.id !== id && c.credentialId !== id);
 
-  try {
-    localStorage.setItem(CACHE_KEYS.CERTS, JSON.stringify(updated));
-  } catch {
-    // Ignore
-  }
+  await setLocalItem(CACHE_KEYS.CERTS, updated);
 
   if (supabase) {
-    try {
-      await supabase.from("certifications").delete().eq("id", id);
-    } catch {
-      // Retain local deletion
+    const { error } = await supabase
+      .from("certifications")
+      .delete()
+      .eq("id", id);
+    if (error) {
+      throw new Error(error.message || "Gagal menghapus sertifikasi.");
     }
   }
 
@@ -1231,28 +1216,20 @@ export async function submitContactMessage(form) {
       ]);
       if (!error) return { success: true };
     } catch {
-      // Fall through to local simulation
+      // Fall through to local persistence
     }
   }
 
-  // Save to local contact messages list
-  try {
-    const list = JSON.parse(
-      localStorage.getItem("portfolio_contact_messages") || "[]"
-    );
-    list.unshift({
-      id: `msg-${Date.now()}`,
-      name: form.name,
-      email: form.email,
-      subject: form.subject || "Pesan dari Portofolio",
-      message: form.message,
-      created_at: new Date().toISOString(),
-    });
-    localStorage.setItem("portfolio_contact_messages", JSON.stringify(list));
-  } catch {
-    // Ignore
-  }
-
+  const list = (await getLocalItem(CACHE_KEYS.MESSAGES)) || [];
+  list.unshift({
+    id: `msg-${Date.now()}`,
+    name: form.name,
+    email: form.email,
+    subject: form.subject || "Pesan dari Portofolio",
+    message: form.message,
+    created_at: new Date().toISOString(),
+  });
+  await setLocalItem(CACHE_KEYS.MESSAGES, list);
   return { success: true, simulated: true };
 }
 
@@ -1267,20 +1244,15 @@ export async function getContactMessages() {
 
       if (!error && data) return data;
     } catch {
-      // Fall through
+      // Fall through to local store
     }
   }
 
-  try {
-    return JSON.parse(
-      localStorage.getItem("portfolio_contact_messages") || "[]"
-    );
-  } catch {
-    return [];
-  }
+  const list = await getLocalItem(CACHE_KEYS.MESSAGES);
+  return Array.isArray(list) ? list : [];
 }
 
-// Upload file to Supabase Storage or convert to Data URL for offline
+// Upload file to Supabase Storage or optimize into Data URL for local mode
 export async function uploadStorageFile(bucket, filePath, file) {
   if (supabase) {
     try {
@@ -1297,11 +1269,19 @@ export async function uploadStorageFile(bucket, filePath, file) {
         if (publicUrl) return publicUrl;
       }
     } catch {
-      // Fallback to local Data URL
+      // Fallback to optimized local Data URL
     }
   }
 
-  // Convert to local Data URL so images display without cloud bucket
+  if (
+    typeof document !== "undefined" &&
+    file instanceof Blob &&
+    file.type &&
+    file.type.startsWith("image/")
+  ) {
+    return compressImageToDataUrl(file);
+  }
+
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => resolve(reader.result);

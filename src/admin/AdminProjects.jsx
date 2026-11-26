@@ -229,7 +229,7 @@ export default function AdminProjects({
       if (!editingProject && targetProjectForCrop) {
         const updated = { ...targetProjectForCrop, image: effectiveUrl };
         await upsertProject(updated);
-        if (onRefresh) onRefresh();
+        if (onRefresh) await onRefresh();
         setTargetProjectForCrop(null);
       } else {
         setEditingProject((prev) => ({ ...prev, image: effectiveUrl }));
@@ -239,16 +239,10 @@ export default function AdminProjects({
         type: "success",
         text: "Gambar proyek berhasil disesuaikan dan disimpan.",
       });
-    } catch {
-      // Fallback preview for offline environments
-      if (!editingProject && targetProjectForCrop) {
-        setTargetProjectForCrop(null);
-      } else {
-        setEditingProject((prev) => ({ ...prev, image: previewUrl }));
-      }
+    } catch (err) {
       setFeedback({
-        type: "success",
-        text: "Gambar proyek berhasil disesuaikan dan dipratinjau.",
+        type: "error",
+        text: err?.message || "Gagal menyimpan gambar proyek.",
       });
     } finally {
       setUploadingImage(false);

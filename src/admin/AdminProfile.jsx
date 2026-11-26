@@ -37,29 +37,21 @@ export default function AdminProfile({ initialInfo, onUpdateInfo }) {
       setFormData((prev) => ({ ...prev, avatar: effectiveUrl }));
 
       // Auto-save site settings so the new avatar is immediately persisted
-      try {
-        const saved = await saveSiteSettings(
-          formData.rawId || "default-site-settings",
-          { ...formData, avatar: effectiveUrl }
-        );
-        if (onUpdateInfo) {
-          onUpdateInfo(saved || { ...formData, avatar: effectiveUrl });
-        }
-        setFeedback({
-          type: "success",
-          text: "Foto profil berhasil disesuaikan dan otomatis disimpan.",
-        });
-      } catch {
-        setFeedback({
-          type: "success",
-          text: "Foto profil berhasil disesuaikan dan diperbarui di form.",
-        });
+      const saved = await saveSiteSettings(
+        formData.rawId || "default-site-settings",
+        { ...formData, avatar: effectiveUrl }
+      );
+      if (onUpdateInfo) {
+        onUpdateInfo(saved || { ...formData, avatar: effectiveUrl });
       }
-    } catch {
-      setFormData((prev) => ({ ...prev, avatar: previewUrl }));
       setFeedback({
         type: "success",
-        text: "Foto profil berhasil disesuaikan dan dipratinjau.",
+        text: "Foto profil berhasil disesuaikan dan otomatis disimpan.",
+      });
+    } catch (err) {
+      setFeedback({
+        type: "error",
+        text: err?.message || "Gagal menyimpan foto profil.",
       });
     } finally {
       setUploadingAvatar(false);
