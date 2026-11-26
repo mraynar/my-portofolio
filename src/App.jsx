@@ -1014,9 +1014,20 @@ function ExperiencePreview({
   info = PERSONAL_INFO,
 }) {
   const { t, language } = useLanguage();
+  const [showAllInternships, setShowAllInternships] = useState(false);
+  const [showAllOrganizations, setShowAllOrganizations] = useState(false);
+  const previewLimit = 2;
   const sortedAll = sortExperiencesLatestFirst(experience);
   const internships = sortedAll.filter(isInternshipExperience);
   const organizations = sortedAll.filter((item) => !isInternshipExperience(item));
+  const visibleInternships = showAllInternships
+    ? internships
+    : internships.slice(0, previewLimit);
+  const visibleOrganizations = showAllOrganizations
+    ? organizations
+    : organizations.slice(0, previewLimit);
+  const hiddenInternshipCount = Math.max(0, internships.length - previewLimit);
+  const hiddenOrgCount = Math.max(0, organizations.length - previewLimit);
 
   return (
     <Section id="experience" style={{ backgroundColor: "transparent" }}>
@@ -1106,7 +1117,7 @@ function ExperiencePreview({
 
             <div className="relative">
               <RoadTrack />
-              {internships.map((item, idx) => (
+              {visibleInternships.map((item, idx) => (
                 <ExpCard
                   key={item.id || item.role + item.org}
                   item={item}
@@ -1116,6 +1127,27 @@ function ExperiencePreview({
                 />
               ))}
             </div>
+
+            {hiddenInternshipCount > 0 && (
+              <div className="mt-6 flex justify-center">
+                <button
+                  type="button"
+                  onClick={() => setShowAllInternships((prev) => !prev)}
+                  className="neo-btn-secondary text-sm font-bold py-2.5 px-5 cursor-pointer"
+                  aria-expanded={showAllInternships}
+                >
+                  <span>
+                    {showAllInternships
+                      ? t("exp_show_less")
+                      : `${t("exp_show_more")} (+${hiddenInternshipCount})`}
+                  </span>
+                  <Icon
+                    name={showAllInternships ? "chevron-up" : "chevron-down"}
+                    size={16}
+                  />
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Continuous career progression connector between sections */}
@@ -1177,16 +1209,37 @@ function ExperiencePreview({
 
             <div className="relative">
               <RoadTrack />
-              {organizations.map((item, idx) => (
+              {visibleOrganizations.map((item, idx) => (
                 <ExpCard
                   key={item.id || item.role + item.org}
                   item={item}
                   index={idx}
                   isLeft={idx % 2 === 0}
-                  customIndex={internships.length + idx + 1}
+                  customIndex={visibleInternships.length + idx + 1}
                 />
               ))}
             </div>
+
+            {hiddenOrgCount > 0 && (
+              <div className="mt-6 flex justify-center">
+                <button
+                  type="button"
+                  onClick={() => setShowAllOrganizations((prev) => !prev)}
+                  className="neo-btn-secondary text-sm font-bold py-2.5 px-5 cursor-pointer"
+                  aria-expanded={showAllOrganizations}
+                >
+                  <span>
+                    {showAllOrganizations
+                      ? t("exp_show_less")
+                      : `${t("exp_show_more")} (+${hiddenOrgCount})`}
+                  </span>
+                  <Icon
+                    name={showAllOrganizations ? "chevron-up" : "chevron-down"}
+                    size={16}
+                  />
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </Container>

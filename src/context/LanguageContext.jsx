@@ -105,6 +105,8 @@ export const TRANSLATIONS = {
     exp_org_desc:
       "Kemitraan publik, riset penalaran, dan pembinaan komunitas.",
     exp_view_timeline: "Lihat Linimasa Lengkap",
+    exp_show_more: "Lihat Lebih Banyak",
+    exp_show_less: "Tampilkan Lebih Sedikit",
     exp_tag_internship: "Magang",
     exp_tag_org: "Organisasi",
     exp_present: "Sekarang",
@@ -255,6 +257,8 @@ export const TRANSLATIONS = {
     exp_org_desc:
       "Public partnerships, research reasoning, and community development.",
     exp_view_timeline: "View Full Timeline",
+    exp_show_more: "View More",
+    exp_show_less: "Show Less",
     exp_tag_internship: "Internship",
     exp_tag_org: "Organization",
     exp_present: "Present",
