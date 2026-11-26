@@ -20,7 +20,7 @@ import { useLanguage } from "./context/LanguageContext";
 import {
   translateExperience,
   translateEducation,
-  translateText,
+  translateInfo,
 } from "./lib/translations";
 
 export default function ExperiencePage({
@@ -29,6 +29,10 @@ export default function ExperiencePage({
   info = {},
 }) {
   const { t, language } = useLanguage();
+  const localizedInfo = useMemo(
+    () => translateInfo(info, language),
+    [info, language]
+  );
   const localizedExperience = useMemo(
     () => (experience || []).map((e) => translateExperience(e, language)),
     [experience, language]
@@ -80,13 +84,9 @@ export default function ExperiencePage({
               color: "var(--ink)",
             }}
           >
-            {info.expTitle
-              ? translateText(info.expTitle, language)
-              : t("exp_page_title_1")}{" "}
+            {localizedInfo.expTitle || t("exp_page_title_1")}{" "}
             <span style={{ color: "var(--google-blue)" }}>
-              {info.expTitleAccent
-                ? translateText(info.expTitleAccent, language)
-                : t("exp_page_title_2")}
+              {localizedInfo.expTitleAccent || t("exp_page_title_2")}
             </span>
           </h1>
 
@@ -94,9 +94,7 @@ export default function ExperiencePage({
             className="text-base sm:text-lg lg:text-xl max-w-3xl leading-relaxed"
             style={{ color: "var(--ink-secondary)" }}
           >
-            {info.expSubtitle
-              ? translateText(info.expSubtitle, language)
-              : t("exp_page_desc")}
+            {localizedInfo.expSubtitle || t("exp_page_desc")}
           </p>
         </Container>
       </section>

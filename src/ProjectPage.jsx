@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Container, ProjectCard, Cluster, Icon, Pagination } from "./components";
 import { PROJECTS } from "./data";
 import { useLanguage } from "./context/LanguageContext";
-import { translateProject, translateText } from "./lib/translations";
+import { translateProject, translateInfo } from "./lib/translations";
 
 export default function ProjectPage({
   onOpenCaseStudy,
@@ -11,6 +11,10 @@ export default function ProjectPage({
   info = {},
 }) {
   const { t, language } = useLanguage();
+  const localizedInfo = useMemo(
+    () => translateInfo(info, language),
+    [info, language]
+  );
   const [activeFilter, setActiveFilter] = useState("ALL");
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 6;
@@ -103,13 +107,9 @@ export default function ProjectPage({
               color: "var(--ink)",
             }}
           >
-            {info.projectsTitle
-              ? translateText(info.projectsTitle, language)
-              : t("project_page_title_1")}{" "}
+            {localizedInfo.projectsTitle || t("project_page_title_1")}{" "}
             <span style={{ color: "var(--google-blue)" }}>
-              {info.projectsTitleAccent
-                ? translateText(info.projectsTitleAccent, language)
-                : t("project_page_title_2")}
+              {localizedInfo.projectsTitleAccent || t("project_page_title_2")}
             </span>
           </h1>
 
@@ -117,9 +117,7 @@ export default function ProjectPage({
             className="text-base sm:text-lg lg:text-xl max-w-3xl leading-relaxed mb-8"
             style={{ color: "var(--ink-secondary)" }}
           >
-            {info.projectsSubtitle
-              ? translateText(info.projectsSubtitle, language)
-              : t("project_page_desc")}
+            {localizedInfo.projectsSubtitle || t("project_page_desc")}
           </p>
 
           {/* Filter pills with Google category palette */}

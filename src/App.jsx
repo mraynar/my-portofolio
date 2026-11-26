@@ -315,7 +315,11 @@ function Hero({ info = PERSONAL_INFO }) {
                     >
                       <img
                         src={avatar}
-                        alt={`Foto Profil ${info.name || "Muhammad Raynar Hammam"}`}
+                        alt={
+                          language === "en"
+                            ? `Profile Photo of ${info.name || "Muhammad Raynar Hammam"}`
+                            : `Foto Profil ${info.name || "Muhammad Raynar Hammam"}`
+                        }
                         className="w-full h-full object-cover object-top transition-transform duration-300 group-hover:scale-105 select-none"
                         loading="eager"
                       />
@@ -369,7 +373,11 @@ function Hero({ info = PERSONAL_INFO }) {
             ? "Hero Profile Photo • Software Engineering & Information Systems"
             : "Foto Profil Hero • Rekayasa Perangkat Lunak & Sistem Informasi"
         }
-        alt={`Foto Profil ${info.name || "Muhammad Raynar Hammam"}`}
+        alt={
+          language === "en"
+            ? `Profile Photo of ${info.name || "Muhammad Raynar Hammam"}`
+            : `Foto Profil ${info.name || "Muhammad Raynar Hammam"}`
+        }
         onClose={() => setHeroZoomOpen(false)}
       />
     </Section>
@@ -1273,7 +1281,7 @@ function CertificationsSection({
             <button
               type="button"
               onClick={() => scrollTrack(-1)}
-              aria-label="Geser ke kiri / Scroll left"
+              aria-label={language === "en" ? "Scroll left" : "Geser ke kiri"}
               className="w-10 h-10 rounded-full border-2 border-[var(--border)] bg-[var(--surface)] shadow-[2px_2px_0_var(--shadow-color)] hover:translate-x-[-1px] hover:translate-y-[-1px] active:translate-x-0 active:translate-y-0 transition-all cursor-pointer flex items-center justify-center shrink-0"
             >
               <Icon name="arrow-left" size={18} />
@@ -1281,7 +1289,7 @@ function CertificationsSection({
             <button
               type="button"
               onClick={() => scrollTrack(1)}
-              aria-label="Geser ke kanan / Scroll right"
+              aria-label={language === "en" ? "Scroll right" : "Geser ke kanan"}
               className="w-10 h-10 rounded-full border-2 border-[var(--border)] bg-[var(--surface)] shadow-[2px_2px_0_var(--shadow-color)] hover:translate-x-[-1px] hover:translate-y-[-1px] active:translate-x-0 active:translate-y-0 transition-all cursor-pointer flex items-center justify-center shrink-0"
             >
               <Icon name="arrow-right" size={18} />
@@ -1445,9 +1453,9 @@ function CertificationsSection({
       <ImageLightboxModal
         isOpen={Boolean(zoomCert)}
         imageUrl={zoomCert?.image}
-        title={zoomCert?.title || "Sertifikat"}
+        title={zoomCert?.title || (language === "en" ? "Certificate" : "Sertifikat")}
         subtitle={`${zoomCert?.provider || ""} • ${zoomCert?.issuer || ""} (${zoomCert?.date || ""})`}
-        alt={zoomCert?.title || "Sertifikat"}
+        alt={zoomCert?.title || (language === "en" ? "Certificate" : "Sertifikat")}
         onClose={() => setZoomCert(null)}
       />
     </Section>

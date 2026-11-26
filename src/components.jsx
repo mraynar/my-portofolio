@@ -17,11 +17,14 @@ export function CustomSelect({
   value,
   onChange,
   options = [],
-  placeholder = "Pilih opsi...",
+  placeholder,
   className = "",
   disabled = false,
   ariaLabel,
 }) {
+  const { language } = useLanguage();
+  const resolvedPlaceholder =
+    placeholder || (language === "en" ? "Select option..." : "Pilih opsi...");
   const [open, setOpen] = useState(false);
   const containerRef = useRef(null);
 
@@ -110,7 +113,7 @@ export function CustomSelect({
               )}
             </>
           ) : (
-            <span className="text-[var(--ink-muted)]">{placeholder}</span>
+            <span className="text-[var(--ink-muted)]">{resolvedPlaceholder}</span>
           )}
         </div>
 
@@ -348,6 +351,8 @@ export function Pagination({
   className = "",
   itemLabel = "item",
 }) {
+  const { language } = useLanguage();
+  const isEn = language === "en";
   const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
 
   if (totalPages <= 1) return null;
@@ -381,11 +386,11 @@ export function Pagination({
         className="text-xs font-mono font-medium"
         style={{ color: "var(--ink-secondary)" }}
       >
-        Menampilkan{" "}
+        {isEn ? "Showing" : "Menampilkan"}{" "}
         <span className="font-bold font-mono" style={{ color: "var(--ink)" }}>
           {startIdx}-{endIdx}
         </span>{" "}
-        dari{" "}
+        {isEn ? "of" : "dari"}{" "}
         <span className="font-bold font-mono" style={{ color: "var(--ink)" }}>
           {totalItems}
         </span>{" "}
@@ -397,7 +402,7 @@ export function Pagination({
           type="button"
           onClick={() => onPageChange(Math.max(1, currentPage - 1))}
           disabled={currentPage <= 1}
-          aria-label="Halaman sebelumnya"
+          aria-label={isEn ? "Previous page" : "Halaman sebelumnya"}
           className="h-9 px-3 rounded-xl border-2 font-bold text-xs inline-flex items-center gap-1 transition-all shadow-[2px_2px_0_var(--shadow-color)] disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none cursor-pointer"
           style={{
             backgroundColor: "var(--surface)",
@@ -406,7 +411,9 @@ export function Pagination({
           }}
         >
           <Icon name="chevron-left" size={15} />
-          <span className="hidden sm:inline">Sebelumnya</span>
+          <span className="hidden sm:inline">
+            {isEn ? "Previous" : "Sebelumnya"}
+          </span>
         </button>
 
         {getPageNumbers().map((p, idx) => {
@@ -427,7 +434,7 @@ export function Pagination({
               key={p}
               type="button"
               onClick={() => onPageChange(p)}
-              aria-label={`Halaman ${p}`}
+              aria-label={isEn ? `Page ${p}` : `Halaman ${p}`}
               aria-current={isActive ? "page" : undefined}
               className="w-9 h-9 rounded-xl border-2 font-mono font-extrabold text-xs inline-flex items-center justify-center transition-all cursor-pointer shadow-[2px_2px_0_var(--shadow-color)] active:translate-x-0.5 active:translate-y-0.5"
               style={{
@@ -447,7 +454,7 @@ export function Pagination({
           type="button"
           onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
           disabled={currentPage >= totalPages}
-          aria-label="Halaman berikutnya"
+          aria-label={isEn ? "Next page" : "Halaman berikutnya"}
           className="h-9 px-3 rounded-xl border-2 font-bold text-xs inline-flex items-center gap-1 transition-all shadow-[2px_2px_0_var(--shadow-color)] disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none cursor-pointer"
           style={{
             backgroundColor: "var(--surface)",
@@ -455,7 +462,9 @@ export function Pagination({
             color: "var(--ink)",
           }}
         >
-          <span className="hidden sm:inline">Berikutnya</span>
+          <span className="hidden sm:inline">
+            {isEn ? "Next" : "Berikutnya"}
+          </span>
           <Icon name="chevron-right" size={15} />
         </button>
       </div>
@@ -465,6 +474,7 @@ export function Pagination({
 
 // Floating toast notification descending from top with auto-dismiss
 export function FloatingAlert({ feedback, onClose, duration = 3500 }) {
+  const { language } = useLanguage();
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -544,7 +554,9 @@ export function FloatingAlert({ feedback, onClose, duration = 3500 }) {
             setVisible(false);
             setTimeout(() => onClose(), 200);
           }}
-          aria-label="Tutup notifikasi"
+          aria-label={
+            language === "en" ? "Close notification" : "Tutup notifikasi"
+          }
           className="p-1 rounded-md text-[var(--ink-secondary)] hover:text-[var(--ink)] hover:bg-[var(--surface-alt)] transition-colors ml-auto shrink-0 cursor-pointer"
         >
           <Icon name="x" size={14} />
@@ -571,6 +583,7 @@ export function ImageLightboxModal({
   const displayTitle = language === "en" ? translateText(title, "en") : title;
   const displaySubtitle =
     language === "en" && subtitle ? translateText(subtitle, "en") : subtitle;
+  const displayAlt = language === "en" ? translateText(alt, "en") : alt;
 
   const handleClose = () => {
     setZoomLevel(1);
@@ -687,7 +700,7 @@ export function ImageLightboxModal({
         >
           <img
             src={imageUrl}
-            alt={alt}
+            alt={displayAlt}
             onClick={toggleZoom}
             className={`max-w-full max-h-[58vh] object-contain rounded-lg transition-transform duration-200 select-none ${
               zoomLevel > 1 ? "cursor-zoom-out" : "cursor-zoom-in"
@@ -1623,7 +1636,11 @@ export function ExpCard({
                 backgroundColor: "var(--surface-alt)",
               }}
               onClick={() => setPhotoZoomOpen(true)}
-              title="Klik untuk memperbesar foto dokumentasi"
+              title={
+                language === "en"
+                  ? "Click to enlarge documentation photo"
+                  : "Klik untuk memperbesar foto dokumentasi"
+              }
             >
               <img
                 src={item.photo}
@@ -1735,7 +1752,11 @@ export function ExpCard({
           isOpen={photoZoomOpen}
           imageUrl={item.photo}
           title={item.role}
-          subtitle={`${item.org} • ${item.period} • Rasio 16:9`}
+          subtitle={
+            language === "en"
+              ? `${item.org} • ${item.period} • 16:9 Ratio`
+              : `${item.org} • ${item.period} • Rasio 16:9`
+          }
           alt={item.photoAlt || item.role}
           onClose={() => setPhotoZoomOpen(false)}
         />
@@ -1826,7 +1847,7 @@ export function Navbar({ info = {} }) {
             className="inline-flex items-stretch p-0.5 h-[32px] sm:h-[36px] rounded-full border-2 border-[var(--border)] shadow-[2px_2px_0_var(--shadow-color)] box-border shrink-0 cursor-pointer select-none"
             style={{ backgroundColor: "var(--surface-alt)" }}
             role="group"
-            aria-label="Pilih Bahasa / Select Language"
+            aria-label={language === "en" ? "Select Language" : "Pilih Bahasa"}
           >
             <button
               type="button"
@@ -1878,7 +1899,15 @@ export function Navbar({ info = {} }) {
           <button
             onClick={() => setOpen(!open)}
             className="lg:hidden flex items-center justify-center w-[30px] h-[30px] sm:w-[34px] sm:h-[34px] rounded-full border-2 border-[var(--border)] bg-[var(--surface)] shadow-[2px_2px_0_var(--shadow-color)] hover:translate-x-[-1px] hover:translate-y-[-1px] cursor-pointer shrink-0"
-            aria-label={open ? "Tutup menu" : "Buka menu"}
+            aria-label={
+              language === "en"
+                ? open
+                  ? "Close menu"
+                  : "Open menu"
+                : open
+                  ? "Tutup menu"
+                  : "Buka menu"
+            }
             aria-expanded={open}
           >
             <Icon name={open ? "x" : "menu"} size={16} />
@@ -1912,7 +1941,7 @@ export function Navbar({ info = {} }) {
           >
             <div className="flex items-center justify-between">
               <span className="text-xs font-mono font-bold text-[var(--ink-secondary)]">
-                Bahasa / Language:
+                {language === "en" ? "Language:" : "Bahasa:"}
               </span>
               <div
                 onClick={(e) => {
@@ -2085,6 +2114,8 @@ export function Footer({ info = {} }) {
 
 // Floating controls for theme toggle and vertical scroll navigation
 export function ScrollTopFab({ dark, toggleDark }) {
+  const { language } = useLanguage();
+  const isEn = language === "en";
   const [canScrollUp, setCanScrollUp] = useState(false);
   const [canScrollDown, setCanScrollDown] = useState(false);
 
@@ -2126,9 +2157,23 @@ export function ScrollTopFab({ dark, toggleDark }) {
           onClick={toggleDark}
           className="flex items-center justify-center w-9 h-9 sm:w-12 sm:h-12 rounded-full border-2 border-[var(--border)] bg-[var(--surface)]/95 shadow-[2px_2px_0_var(--shadow-color)] sm:shadow-[3px_3px_0_var(--shadow-color)] hover:translate-x-[-1px] hover:translate-y-[-1px] cursor-pointer transition-all"
           aria-label={
-            dark ? "Beralih ke mode terang" : "Beralih ke mode gelap"
+            isEn
+              ? dark
+                ? "Switch to light mode"
+                : "Switch to dark mode"
+              : dark
+                ? "Beralih ke mode terang"
+                : "Beralih ke mode gelap"
           }
-          title={dark ? "Mode Terang" : "Mode Gelap"}
+          title={
+            isEn
+              ? dark
+                ? "Light Mode"
+                : "Dark Mode"
+              : dark
+                ? "Mode Terang"
+                : "Mode Gelap"
+          }
         >
           <Icon name={dark ? "sun" : "moon"} size={16} className="sm:w-5 sm:h-5" />
         </button>
@@ -2139,8 +2184,8 @@ export function ScrollTopFab({ dark, toggleDark }) {
         <button
           onClick={scrollToTop}
           className="flex items-center justify-center w-9 h-9 sm:w-12 sm:h-12 rounded-full border-2 border-[var(--border)] bg-[var(--surface)]/95 shadow-[2px_2px_0_var(--shadow-color)] sm:shadow-[3px_3px_0_var(--shadow-color)] hover:translate-x-[-1px] hover:translate-y-[-1px] cursor-pointer transition-all"
-          aria-label="Gulir ke atas"
-          title="Gulir ke atas"
+          aria-label={isEn ? "Scroll to top" : "Gulir ke atas"}
+          title={isEn ? "Scroll to top" : "Gulir ke atas"}
         >
           <Icon name="chevron-up" size={18} className="sm:w-[22px] sm:h-[22px]" />
         </button>
@@ -2151,8 +2196,8 @@ export function ScrollTopFab({ dark, toggleDark }) {
         <button
           onClick={scrollToBottom}
           className="flex items-center justify-center w-9 h-9 sm:w-12 sm:h-12 rounded-full border-2 border-[var(--border)] bg-[var(--surface)]/95 shadow-[2px_2px_0_var(--shadow-color)] sm:shadow-[3px_3px_0_var(--shadow-color)] hover:translate-x-[-1px] hover:translate-y-[-1px] cursor-pointer transition-all"
-          aria-label="Gulir ke bawah"
-          title="Gulir ke bawah"
+          aria-label={isEn ? "Scroll to bottom" : "Gulir ke bawah"}
+          title={isEn ? "Scroll to bottom" : "Gulir ke bawah"}
         >
           <Icon name="chevron-down" size={18} className="sm:w-[22px] sm:h-[22px]" />
         </button>
