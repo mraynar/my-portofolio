@@ -1754,8 +1754,8 @@ export function Navbar({ info = {} }) {
     { label: t("nav_home"), href: "/#home" },
     { label: t("nav_about"), href: "/#about" },
     { label: t("nav_skills"), href: "/#skills" },
-    { label: t("nav_projects"), href: "/projects" },
     { label: t("nav_experience"), href: "/experience" },
+    { label: t("nav_projects"), href: "/projects" },
     { label: t("nav_contact"), href: "/#contact" },
   ];
 

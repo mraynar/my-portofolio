@@ -1814,12 +1814,12 @@ function HomePage({
         certCount={localizedCertifications.length}
       />
       <Skills categories={localizedCategories} info={localizedInfo} />
+      <ExperiencePreview experience={localizedExperience} info={localizedInfo} />
       <ProjectsPreview
         projects={localizedProjects}
         info={localizedInfo}
         onOpenCaseStudy={onOpenCaseStudy}
       />
-      <ExperiencePreview experience={localizedExperience} info={localizedInfo} />
       <CertificationsSection
         certifications={localizedCertifications}
         info={localizedInfo}
