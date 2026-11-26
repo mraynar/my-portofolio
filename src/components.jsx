@@ -2070,13 +2070,12 @@ export function Footer({ info = {} }) {
         </div>
 
         <div
-          className="mt-8 pt-6 border-t-2 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs sm:text-sm font-semibold"
+          className="mt-8 pt-6 border-t-2 flex items-center justify-center text-[10.5px] sm:text-xs font-semibold text-center"
           style={{ borderColor: "var(--border)", color: "var(--ink-muted)" }}
         >
-          <div>
-            Copyright (c) {new Date().getFullYear()} Muhammad Raynar Hammam. {t("footer_rights")}
+          <div className="whitespace-nowrap">
+            Copyright (c) {new Date().getFullYear()} {name}. {t("footer_rights")}
           </div>
-          <div>{t("footer_system")}</div>
         </div>
       </Container>
     </footer>
