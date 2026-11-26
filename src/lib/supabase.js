@@ -1,3 +1,4 @@
+/* global __SUPABASE_URL__, __SUPABASE_PUBLISHABLE_KEY__ */
 import { createClient } from "@supabase/supabase-js";
 import {
   PERSONAL_INFO,
@@ -15,12 +16,25 @@ import {
   broadcastDataSync,
 } from "./localDb";
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+// Public RLS-protected Supabase project defaults for browser client reads
+const PUBLIC_SUPABASE_URL = "https://jodkbpgzoptjibxkbbks.supabase.co";
+const PUBLIC_SUPABASE_KEY = "sb_publishable_FQJSWNQO6wfOEwLdVxjoFw_8nBQWR9l";
 
-// Graceful null client if env vars are unset during dev
+const envUrl =
+  import.meta.env.VITE_SUPABASE_URL ||
+  (typeof __SUPABASE_URL__ !== "undefined" ? __SUPABASE_URL__ : "");
+const envKey =
+  import.meta.env.VITE_SUPABASE_ANON_KEY ||
+  (typeof __SUPABASE_PUBLISHABLE_KEY__ !== "undefined"
+    ? __SUPABASE_PUBLISHABLE_KEY__
+    : "");
+
+const supabaseUrl = (envUrl || PUBLIC_SUPABASE_URL).trim();
+const supabaseAnonKey = (envKey || PUBLIC_SUPABASE_KEY).trim();
+
+// Initialize Supabase browser client (protected by RLS policies)
 export const supabase =
-  supabaseUrl && supabaseAnonKey && supabaseAnonKey.trim().length > 0
+  supabaseUrl.length > 0 && supabaseAnonKey.length > 0
     ? createClient(supabaseUrl, supabaseAnonKey)
     : null;
 
