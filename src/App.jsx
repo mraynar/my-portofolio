@@ -1605,7 +1605,7 @@ function Contact({ info = PERSONAL_INFO }) {
                     <Icon name="map-pin" size={12} className="mr-1" />
                     {location}
                   </span>
-                  <span className="neo-badge text-xs font-mono">
+                  <span className="!hidden sm:!inline-flex neo-badge text-xs font-mono">
                     {timezone}
                   </span>
                   <span
