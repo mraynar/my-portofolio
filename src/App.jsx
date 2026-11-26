@@ -137,9 +137,9 @@ function Hero({ info = PERSONAL_INFO }) {
       }}
     >
       <Container className="relative z-10 w-full my-auto">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-8 xl:gap-10 items-stretch">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-8 xl:gap-10 items-center lg:items-stretch">
           {/* Left column: narrative and actions */}
-          <div className="md:col-span-7 xl:col-span-6 flex flex-col justify-between">
+          <div className="md:col-span-6 lg:col-span-7 xl:col-span-6 flex flex-col justify-between">
             <div className="pt-4 sm:pt-6 lg:pt-9">
               <div className="mb-3.5 sm:mb-4">
                 <Chip variant="blue" className="neo-badge-wrap leading-snug">
@@ -271,9 +271,13 @@ function Hero({ info = PERSONAL_INFO }) {
           </div>
 
           {/* Profile photo card on tablet (iPad) and desktop */}
-          <div className="hidden md:flex md:col-span-5 xl:col-span-6 justify-center md:justify-end">
-            <div className="w-full max-w-[360px] lg:max-w-[480px] xl:max-w-[540px] h-full">
-              <Card variant="flat" className="p-0 overflow-hidden h-full flex flex-col">
+          <div className="hidden md:flex md:col-span-6 lg:col-span-5 xl:col-span-6 justify-center md:justify-end">
+            <div className="w-full max-w-[380px] lg:max-w-[480px] xl:max-w-[540px] lg:h-full">
+              <Card
+                variant="flat"
+                className="overflow-hidden lg:h-full flex flex-col"
+                style={{ padding: 0 }}
+              >
                 <div
                   className="h-9 sm:h-10 px-3.5 flex items-center justify-between border-b-2 flex-shrink-0"
                   style={{
@@ -281,23 +285,23 @@ function Hero({ info = PERSONAL_INFO }) {
                     borderColor: "var(--border)",
                   }}
                 >
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-2.5 h-2.5 rounded-full border border-[var(--border)] bg-[#ea4335]" />
-                    <span className="w-2.5 h-2.5 rounded-full border border-[var(--border)] bg-[#fbbc04]" />
-                    <span className="w-2.5 h-2.5 rounded-full border border-[var(--border)] bg-[#34a853]" />
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <span className="w-2.5 h-2.5 rounded-full border border-[var(--border)] bg-[#ea4335] shrink-0" />
+                    <span className="w-2.5 h-2.5 rounded-full border border-[var(--border)] bg-[#fbbc04] shrink-0" />
+                    <span className="w-2.5 h-2.5 rounded-full border border-[var(--border)] bg-[#34a853] shrink-0" />
                     <span
-                      className="text-[11px] font-mono ml-1.5 font-bold"
+                      className="text-[11px] font-mono ml-1.5 font-bold whitespace-nowrap truncate"
                       style={{ color: "var(--ink)" }}
                     >
                       {info.codeCardTitle || "raynar-dev.ts"}
                     </span>
                   </div>
-                  <Chip variant="green" className="text-[11px] py-0.5 px-2">
+                  <Chip variant="green" className="text-[11px] py-0.5 px-2 shrink-0">
                     {t("hero_online")}
                   </Chip>
                 </div>
 
-                <div className="relative w-full aspect-[4/5] min-h-[340px] md:min-h-[380px] lg:min-h-[450px] overflow-hidden bg-[var(--surface-alt)] flex-1">
+                <div className="relative w-full aspect-[4/5] lg:min-h-[450px] overflow-hidden bg-[var(--surface-alt)] flex-1">
                   {avatar ? (
                     <button
                       type="button"
