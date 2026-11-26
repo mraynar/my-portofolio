@@ -17,6 +17,10 @@ import {
   uploadStorageFile,
 } from "../lib/supabase";
 
+// Built-in provider presets for quick selection alongside custom input
+const PROVIDER_PRESETS = ["Coursera", "Dicoding", "Udemy", "Karirnex", "AWS"];
+const CUSTOM_PROVIDER_VALUE = "__custom__";
+
 // Education and certifications management tab
 export default function AdminEducationCerts({
   education = [],
@@ -28,6 +32,7 @@ export default function AdminEducationCerts({
   const [activeSubTab, setActiveSubTab] = useState("education");
   const [editingEdu, setEditingEdu] = useState(null);
   const [editingCert, setEditingCert] = useState(null);
+  const [isCustomProvider, setIsCustomProvider] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedback, setFeedback] = useState(null);
   const [uploadingCertImg, setUploadingCertImg] = useState(false);
@@ -65,13 +70,18 @@ export default function AdminEducationCerts({
     setIsSubmitting(true);
     setFeedback(null);
     try {
-      await upsertCertification(editingCert);
+      const cleanedProvider = String(editingCert.provider || "").trim();
+      await upsertCertification({
+        ...editingCert,
+        provider: cleanedProvider || "Lainnya",
+      });
       setFeedback({
         type: "success",
         text: "Data sertifikasi berhasil disimpan.",
       });
       await onRefresh();
       setEditingCert(null);
+      setIsCustomProvider(false);
     } catch (err) {
       setFeedback({
         type: "error",
@@ -365,6 +375,11 @@ export default function AdminEducationCerts({
 
   if (editingCert) {
     const isNew = !certifications.some((c) => c.id === editingCert.id);
+    const showCustomProviderInput =
+      isCustomProvider || !PROVIDER_PRESETS.includes(editingCert.provider || "");
+    const selectProviderValue = showCustomProviderInput
+      ? CUSTOM_PROVIDER_VALUE
+      : editingCert.provider;
     return (
       <div className="space-y-6 w-full">
         {/* Dedicated edit header with back button */}
@@ -474,22 +489,63 @@ export default function AdminEducationCerts({
                       Platform Provider
                     </label>
                     <CustomSelect
-                      value={editingCert.provider}
-                      onChange={(e) =>
-                        setEditingCert({
-                          ...editingCert,
-                          provider: e.target.value,
-                        })
-                      }
+                      value={selectProviderValue}
+                      onChange={(e) => {
+                        const picked = e.target.value;
+                        if (picked === CUSTOM_PROVIDER_VALUE) {
+                          setIsCustomProvider(true);
+                          const currentVal = editingCert.provider || "";
+                          const resetVal =
+                            PROVIDER_PRESETS.includes(currentVal) ||
+                            currentVal === "Lainnya"
+                              ? ""
+                              : currentVal;
+                          setEditingCert({
+                            ...editingCert,
+                            provider: resetVal,
+                          });
+                        } else {
+                          setIsCustomProvider(false);
+                          setEditingCert({
+                            ...editingCert,
+                            provider: picked,
+                          });
+                        }
+                      }}
                       options={[
-                        "Coursera",
-                        "Dicoding",
-                        "Udemy",
-                        "Karirnex",
-                        "AWS",
-                        "Lainnya",
+                        ...PROVIDER_PRESETS.map((p) => ({
+                          value: p,
+                          label: p,
+                        })),
+                        {
+                          value: CUSTOM_PROVIDER_VALUE,
+                          label: "Lainnya (Ketik Sendiri)",
+                        },
                       ]}
                     />
+                    {showCustomProviderInput && (
+                      <input
+                        type="text"
+                        required
+                        value={
+                          editingCert.provider === "Lainnya"
+                            ? ""
+                            : editingCert.provider || ""
+                        }
+                        onChange={(e) =>
+                          setEditingCert({
+                            ...editingCert,
+                            provider: e.target.value,
+                          })
+                        }
+                        placeholder="Ketik nama platform (mis. Hacktiv8, DQLab, IBM)..."
+                        className="mt-2 w-full h-[46px] px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm shadow-[2px_2px_0_var(--shadow-color)]"
+                        style={{
+                          backgroundColor: "var(--surface-alt)",
+                          borderColor: "var(--google-blue)",
+                        }}
+                      />
+                    )}
                   </div>
 
                   <div>
@@ -871,6 +927,7 @@ export default function AdminEducationCerts({
             <button
               onClick={() => {
                 window.scrollTo({ top: 0, behavior: "smooth" });
+                setIsCustomProvider(false);
                 setEditingCert({
                   title: "",
                   issuer: "",
@@ -952,6 +1009,9 @@ export default function AdminEducationCerts({
                         type="button"
                         aria-label="Edit sertifikasi"
                         onClick={() => {
+                          setIsCustomProvider(
+                            !PROVIDER_PRESETS.includes(c.provider || "")
+                          );
                           setEditingCert(c);
                           window.scrollTo({ top: 0, behavior: "smooth" });
                         }}
