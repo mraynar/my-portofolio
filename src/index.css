@@ -359,6 +359,29 @@ select:focus {
   box-shadow: 6px 6px 0 var(--shadow-color);
 }
 
+/* Smooth top-down page reveal after saving admin changes */
+@keyframes adminSlideDownReveal {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, -32px, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.admin-save-reveal {
+  animation: adminSlideDownReveal 500ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: transform, opacity;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-save-reveal {
+    animation: none;
+  }
+}
+
 /* Static DevFest code symbol watermark pattern */
 .bg-code-tile {
   pointer-events: none;

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from "react";
+import { createPortal } from "react-dom";
 import { useLocation } from "react-router-dom";
 import { PERSONAL_INFO, isInternshipExperience } from "./data";
 import { Icon } from "./components/icons/Icon";
@@ -523,7 +524,7 @@ export function FloatingAlert({ feedback, onClose, duration = 3500 }) {
     ? "var(--google-red-bg)"
     : "var(--google-blue-bg)";
 
-  return (
+  const toast = (
     <div
       role="alert"
       aria-live="assertive"
@@ -573,6 +574,11 @@ export function FloatingAlert({ feedback, onClose, duration = 3500 }) {
       )}
     </div>
   );
+
+  if (typeof document !== "undefined") {
+    return createPortal(toast, document.body);
+  }
+  return toast;
 }
 
 // Image lightbox modal with zoom and optional edit action

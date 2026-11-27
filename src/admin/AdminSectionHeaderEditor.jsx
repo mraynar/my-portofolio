@@ -10,6 +10,7 @@ export default function AdminSectionHeaderEditor({
   defaultValues,
   info,
   onUpdateInfo,
+  onSaveComplete,
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -55,10 +56,12 @@ export default function AdminSectionHeaderEditor({
       if (onUpdateInfo) {
         onUpdateInfo(updated);
       }
+      setIsOpen(false);
       setFeedback({
         type: "success",
         text: `Header section "${sectionName}" berhasil diperbarui.`,
       });
+      if (onSaveComplete) onSaveComplete();
     } catch (err) {
       setFeedback({
         type: "error",
@@ -254,13 +257,7 @@ export default function AdminSectionHeaderEditor({
         </form>
       )}
 
-      {feedback && (
-        <FloatingAlert
-          type={feedback.type}
-          message={feedback.text}
-          onClose={() => setFeedback(null)}
-        />
-      )}
+      <FloatingAlert feedback={feedback} onClose={() => setFeedback(null)} />
     </Card>
   );
 }

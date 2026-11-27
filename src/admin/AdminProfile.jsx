@@ -4,7 +4,11 @@ import ImageCropModal from "./ImageCropModal";
 import { saveSiteSettings, uploadStorageFile } from "../lib/supabase";
 
 // Profile and site settings management
-export default function AdminProfile({ initialInfo, onUpdateInfo }) {
+export default function AdminProfile({
+  initialInfo,
+  onUpdateInfo,
+  onSaveComplete,
+}) {
   const [formData, setFormData] = useState({ ...initialInfo });
   const [isSaving, setIsSaving] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
@@ -95,6 +99,7 @@ export default function AdminProfile({ initialInfo, onUpdateInfo }) {
         type: "success",
         text: "Pengaturan profil dan tautan berhasil disimpan.",
       });
+      if (onSaveComplete) onSaveComplete();
     } catch (err) {
       setFeedback({
         type: "error",

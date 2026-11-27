@@ -15,6 +15,7 @@ export default function AdminSkills({
   onRefresh,
   info,
   onUpdateInfo,
+  onSaveComplete,
 }) {
   const [editingCat, setEditingCat] = useState(null);
   const [editingSkillsList, setEditingSkillsList] = useState([]);
@@ -242,6 +243,7 @@ export default function AdminSkills({
       });
       await onRefresh();
       setEditingCat(null);
+      if (onSaveComplete) onSaveComplete();
     } catch (err) {
       setFeedback({
         type: "error",
@@ -611,6 +613,7 @@ export default function AdminSkills({
         }}
         info={info}
         onUpdateInfo={onUpdateInfo}
+        onSaveComplete={onSaveComplete}
       />
 
       <BulkActionBar

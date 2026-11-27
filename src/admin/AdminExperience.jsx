@@ -46,6 +46,7 @@ export default function AdminExperience({
   onRefresh,
   info,
   onUpdateInfo,
+  onSaveComplete,
 }) {
   const [editingItem, setEditingItem] = useState(null);
   const [filterType, setFilterType] = useState("all");
@@ -491,6 +492,7 @@ export default function AdminExperience({
         type: "success",
         text: `Data pengalaman berhasil disimpan di Posisi #${finalPos}.`,
       });
+      if (onSaveComplete) onSaveComplete();
     } catch (err) {
       setFeedback({
         type: "error",
@@ -994,6 +996,7 @@ export default function AdminExperience({
         }}
         info={info}
         onUpdateInfo={onUpdateInfo}
+        onSaveComplete={onSaveComplete}
       />
 
       {/* Filter tabs and reorder instructions */}

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDarkMode } from "../useDarkMode";
 import { Chip, Icon } from "../components";
@@ -44,6 +44,60 @@ export default function AdminLayout({
     }
   });
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const mainScrollRef = useRef(null);
+  const contentRevealRef = useRef(null);
+  const revealTimerRef = useRef(null);
+
+  // Snap viewport to top 100vh frame and play top-down reveal on save
+  const triggerSaveReveal = useCallback(() => {
+    const resetTop = () => {
+      if (mainScrollRef.current) {
+        mainScrollRef.current.scrollTo({
+          top: 0,
+          left: 0,
+          behavior: "instant",
+        });
+      }
+      if (document.scrollingElement) {
+        document.scrollingElement.scrollTo({
+          top: 0,
+          left: 0,
+          behavior: "instant",
+        });
+      }
+      if (typeof window !== "undefined") {
+        window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+      }
+    };
+
+    resetTop();
+
+    requestAnimationFrame(() => {
+      resetTop();
+      const target = contentRevealRef.current;
+      if (!target) return;
+
+      target.classList.remove("admin-save-reveal");
+      void target.offsetWidth;
+      target.classList.add("admin-save-reveal");
+
+      if (revealTimerRef.current) {
+        clearTimeout(revealTimerRef.current);
+      }
+      const cleanup = () => {
+        target.classList.remove("admin-save-reveal");
+        target.removeEventListener("animationend", cleanup);
+      };
+      target.addEventListener("animationend", cleanup, { once: true });
+      revealTimerRef.current = setTimeout(cleanup, 560);
+    });
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (revealTimerRef.current) clearTimeout(revealTimerRef.current);
+    };
+  }, []);
 
   // CMS state collections
   const [info, setInfo] = useState(null);
@@ -537,8 +591,11 @@ export default function AdminLayout({
         </aside>
 
         {/* Main content display area */}
-        <main className="flex-1 min-w-0 p-4 sm:p-6 lg:p-8 overflow-y-auto">
-          <div className="w-full">
+        <main
+          ref={mainScrollRef}
+          className="flex-1 min-w-0 p-4 sm:p-6 lg:p-8 overflow-y-auto"
+        >
+          <div ref={contentRevealRef} className="w-full">
             {/* Breadcrumb section indicator */}
             <div
               className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b-2"
@@ -592,6 +649,7 @@ export default function AdminLayout({
                 <AdminProfile
                   initialInfo={info}
                   onUpdateInfo={(updated) => setInfo(updated)}
+                  onSaveComplete={triggerSaveReveal}
                 />
               )}
 
@@ -601,6 +659,7 @@ export default function AdminLayout({
                   onRefresh={loadCmsData}
                   info={info}
                   onUpdateInfo={(updated) => setInfo(updated)}
+                  onSaveComplete={triggerSaveReveal}
                 />
               )}
 
@@ -610,6 +669,7 @@ export default function AdminLayout({
                   onRefresh={loadCmsData}
                   info={info}
                   onUpdateInfo={(updated) => setInfo(updated)}
+                  onSaveComplete={triggerSaveReveal}
                 />
               )}
 
@@ -619,6 +679,7 @@ export default function AdminLayout({
                   onRefresh={loadCmsData}
                   info={info}
                   onUpdateInfo={(updated) => setInfo(updated)}
+                  onSaveComplete={triggerSaveReveal}
                 />
               )}
 
@@ -629,6 +690,7 @@ export default function AdminLayout({
                   onRefresh={loadCmsData}
                   info={info}
                   onUpdateInfo={(updated) => setInfo(updated)}
+                  onSaveComplete={triggerSaveReveal}
                 />
               )}
 
@@ -638,6 +700,7 @@ export default function AdminLayout({
                   onRefresh={loadCmsData}
                   info={info}
                   onUpdateInfo={(updated) => setInfo(updated)}
+                  onSaveComplete={triggerSaveReveal}
                 />
               )}
             </div>

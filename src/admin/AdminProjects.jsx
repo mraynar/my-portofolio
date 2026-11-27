@@ -52,6 +52,7 @@ export default function AdminProjects({
   onRefresh,
   info = {},
   onUpdateInfo,
+  onSaveComplete,
 }) {
   const [editingProject, setEditingProject] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -215,6 +216,7 @@ export default function AdminProjects({
         type: "success",
         text: "Jumlah statistik proyek digital berhasil disimpan.",
       });
+      if (onSaveComplete) onSaveComplete();
     } catch (err) {
       setCountFeedback({
         type: "error",
@@ -313,6 +315,7 @@ export default function AdminProjects({
       });
       await onRefresh();
       setEditingProject(null);
+      if (onSaveComplete) onSaveComplete();
     } catch (err) {
       setFeedback({
         type: "error",
@@ -936,6 +939,7 @@ export default function AdminProjects({
           }}
           info={info}
           onUpdateInfo={onUpdateInfo}
+          onSaveComplete={onSaveComplete}
         />
       )}
 

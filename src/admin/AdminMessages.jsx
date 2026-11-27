@@ -10,6 +10,7 @@ export default function AdminMessages({
   onRefresh,
   info,
   onUpdateInfo,
+  onSaveComplete,
 }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedIds, setSelectedIds] = useState([]);
@@ -109,6 +110,7 @@ export default function AdminMessages({
         }}
         info={info}
         onUpdateInfo={onUpdateInfo}
+        onSaveComplete={onSaveComplete}
       />
 
       {messages.length === 0 ? (

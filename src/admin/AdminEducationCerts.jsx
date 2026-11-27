@@ -34,6 +34,7 @@ export default function AdminEducationCerts({
   onRefresh,
   info,
   onUpdateInfo,
+  onSaveComplete,
 }) {
   const [activeSubTab, setActiveSubTab] = useState("education");
   const [editingEdu, setEditingEdu] = useState(null);
@@ -117,6 +118,7 @@ export default function AdminEducationCerts({
       });
       await onRefresh();
       setEditingEdu(null);
+      if (onSaveComplete) onSaveComplete();
     } catch (err) {
       setFeedback({
         type: "error",
@@ -158,6 +160,7 @@ export default function AdminEducationCerts({
       await onRefresh();
       setEditingCert(null);
       setIsCustomProvider(false);
+      if (onSaveComplete) onSaveComplete();
     } catch (err) {
       setFeedback({
         type: "error",
@@ -1215,6 +1218,7 @@ export default function AdminEducationCerts({
             }}
             info={info}
             onUpdateInfo={onUpdateInfo}
+            onSaveComplete={onSaveComplete}
           />
 
           <div className="flex flex-wrap items-center justify-between gap-3">
