@@ -36,3 +36,8 @@ When seeding the database or drafting case studies, use these placeholders until
 - `[TBD: SUPABASE_PROJECT_URL]`: What is the Supabase project reference URL and public anon key?
 - `[TBD: CV_FILE_PATH]`: Path or URL to the latest verified PDF curriculum vitae.
 - `[TBD: LIVE_DEMO_URLS]`: Specific live demo URLs or video screencasts for private projects to replace private repository notices.
+
+## 5. Certifications & Bilingual Content Guidelines
+- **Issuer-First Hierarchy**: Place the authoritative issuing body (`issuer`, e.g., `IBM SkillsBuild`, `Meta`, `Google`, `KOMDIGI`) in the primary top badge and the delivery platform (`provider`, e.g., `Coursera`, `Hacktiv8 Indonesia`) in the subtitle.
+- **No Static Seed Fallback**: All certifications are managed dynamically via Supabase and Admin CMS without hardcoded fallback records.
+- **EN Translation Maintenance**: When adding new Indonesian paragraphs or bullets in Supabase, add corresponding natural English entries in `EXACT_TRANSLATIONS` inside `src/lib/translations.js` to avoid fallback phrasing.
