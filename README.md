@@ -1,16 +1,63 @@
-# React + Vite
+# Muhammad Raynar Hammam - Personal Portfolio & Admin CMS
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Production portfolio and full-stack Admin CMS for **Muhammad Raynar Hammam**, built with the neo-brutalist Google palette design system, bilingual ID/EN support, and live Supabase persistence.
 
-Currently, two official plugins are available:
+Live site: https://mraynar.my.id
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Technology Stack
 
-## React Compiler
+- **Frontend**: React 19, Vite 8, React Router v7, Tailwind CSS v4, Lucide React
+- **Backend & Database**: Supabase (PostgreSQL 15+, Row Level Security, Auth, Storage)
+- **Caching & Resilience**: IndexedDB local mirror with cross-tab BroadcastChannel sync
+- **Deployment**: Vercel (main-only auto-deployment) behind Cloudflare DNS proxy
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Core Features
 
-## Expanding the ESLint configuration
+- **Public Portfolio**:
+  - Responsive Hero, About & Education Timeline, By The Numbers metrics, Technical Skills, Experience Timeline (2 latest preview per category with Show More toggle), Featured Projects & Case Study Modal, Certifications Slider (issuer-first badges), and Contact Form.
+  - Full bilingual toggle (`ID` / `EN`) with exact translations and idempotent lookup.
+  - Light and dark themes persisted in `localStorage` without flash.
+  - Lazy-loaded Admin bundle and manual Vite vendor chunking for fast first paint.
+- **Admin CMS (`/admin`)**:
+  - Protected by Supabase Auth + `admins` table RLS (`is_admin()`).
+  - Full CRUD for Site Profile, Projects, Experience, Skills, Formal Education, Certifications, and Contact Messages.
+  - Drag-and-drop card reordering and position dropdown selectors.
+  - Multi-select bulk deletion (`BulkActionBar`) across all CMS collections.
+  - Client-side image cropping, compression, and Supabase Storage uploads.
+  - Custom platform provider entry on certifications alongside quick presets.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Getting Started
+
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
+2. Copy `.env.example` to `.env` and set your public Supabase credentials:
+   ```bash
+   cp .env.example .env
+   ```
+3. Start the local development server:
+   ```bash
+   npm run dev
+   ```
+
+## Verification Scripts
+
+- `npm run dev` - Run local dev server at `http://localhost:5173`
+- `npm run build` - Build production client bundle with vendor chunk splitting
+- `npm run lint` - Run ESLint across the repository
+- `npm run check:comments` - Enforce English-only, single-line comments (max 80 chars)
+- `npm run check:emoji` - Enforce zero emojis and zero text-glyph icons
+- `npm run check:layout` - Run Playwright layout audit across 14 viewport/theme pairs
+- `npm run check:all` - Execute all quality gates sequentially
+
+## Documentation
+
+- `docs/PRD.md` - Product requirements, personas, and delivered scope
+- `docs/DESIGN.md` - Design tokens, typography, and neo-brutalist component specs
+- `docs/ARCHITECTURE.md` - Topology, schema, RLS policies, and caching model
+- `docs/RULES.md` - Coding conventions, security invariants, and git workflow
+- `docs/CONTENT.md` - Content structure, case study schema, and i18n rules
+- `docs/TASKS.md` - Phase roadmap and completion status
+- `docs/DECISIONS.md` - Architectural Decision Records (ADR)
+- `supabase/README.md` - SQL setup and bulk import reference
