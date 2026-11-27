@@ -1060,6 +1060,26 @@ export default function AdminExperience({
       />
 
       {/* Experience list with drag-and-drop reordering */}
+      {filteredExperience.length === 0 ? (
+        <Card className="p-8 text-center space-y-2">
+          <div
+            className="w-12 h-12 rounded-xl border-2 mx-auto flex items-center justify-center"
+            style={{
+              backgroundColor: "var(--surface-alt)",
+              borderColor: "var(--border)",
+              color: "var(--google-blue)",
+            }}
+          >
+            <Icon name="briefcase" size={22} />
+          </div>
+          <p className="font-bold text-sm">
+            Belum ada pengalaman pada kategori ini.
+          </p>
+          <p className="text-xs" style={{ color: "var(--ink-secondary)" }}>
+            Klik Tambah Pengalaman untuk menambahkan riwayat baru.
+          </p>
+        </Card>
+      ) : (
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-stretch">
         {(() => {
           const displayedList = filteredExperience;
@@ -1265,6 +1285,7 @@ export default function AdminExperience({
           });
         })()}
       </div>
+      )}
 
       <Pagination
         currentPage={currentPage}
