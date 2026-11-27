@@ -46,7 +46,7 @@ export default function BulkActionBar({
 
   return (
     <div
-      className="p-3 sm:p-3.5 rounded-xl border-2 flex flex-wrap items-center justify-between gap-2.5 transition-all"
+      className="p-3 sm:p-3.5 rounded-xl border-2 flex flex-wrap items-center justify-between gap-2.5 transition-all overflow-hidden min-w-0"
       style={{
         backgroundColor:
           selectedCount > 0 ? "var(--google-blue-bg)" : "var(--surface)",

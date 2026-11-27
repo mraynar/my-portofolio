@@ -84,10 +84,10 @@ export default function AdminSectionHeaderEditor({
   return (
     <Card
       id={`header-editor-${sectionKey}`}
-      className="p-4 sm:p-6 mb-6 border-2 transition-all"
+      className="p-4 sm:p-6 mb-6 border-2 transition-all overflow-hidden min-w-0"
     >
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+        <div className="flex items-start sm:items-center gap-3 min-w-0">
           <div
             className="w-10 h-10 rounded-xl border-2 flex items-center justify-center shrink-0"
             style={{
@@ -98,10 +98,10 @@ export default function AdminSectionHeaderEditor({
           >
             <Icon name="sliders" size={20} />
           </div>
-          <div>
+          <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
               <h3
-                className="text-base sm:text-lg font-extrabold"
+                className="text-base sm:text-lg font-extrabold break-words"
                 style={{ fontFamily: "var(--font-display)" }}
               >
                 Header & Keterangan Section
@@ -122,7 +122,7 @@ export default function AdminSectionHeaderEditor({
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
-          className="neo-btn-secondary text-xs font-bold py-1.5 px-3 self-start sm:self-auto inline-flex items-center gap-1.5"
+          className="neo-btn-secondary text-xs font-bold py-1.5 px-3 self-start lg:self-auto shrink-0 inline-flex items-center gap-1.5"
         >
           <Icon name={isOpen ? "chevron-up" : "chevron-down"} size={14} />
           <span>{isOpen ? "Tutup Editor" : "Kustomisasi Header"}</span>

@@ -185,7 +185,7 @@ export default function AdminLayout({
   }, [isMobileOpen]);
 
   const toggleSidebar = () => {
-    if (typeof window !== "undefined" && window.innerWidth < 768) {
+    if (typeof window !== "undefined" && window.innerWidth < 1024) {
       setIsMobileOpen((prev) => !prev);
     } else {
       setIsCollapsed((prev) => {
@@ -227,6 +227,12 @@ export default function AdminLayout({
   const effectiveProjectCount = hasCustomProjectCount
     ? String(info.customProjectCount).trim()
     : projects.length;
+  const hasCustomCertCount = Boolean(
+    info?.customCertCount && String(info.customCertCount).trim() !== ""
+  );
+  const effectiveCertCount = hasCustomCertCount
+    ? String(info.customCertCount).trim()
+    : certifications.length;
 
   const tabs = [
     { id: "overview", label: "Ringkasan", icon: "layout" },
@@ -252,7 +258,9 @@ export default function AdminLayout({
     {
       id: "education",
       label: "Pendidikan & Sertifikasi",
-      count: education.length + certifications.length,
+      count: hasCustomCertCount
+        ? effectiveCertCount
+        : education.length + certifications.length,
       icon: "education",
     },
     {
@@ -286,7 +294,7 @@ export default function AdminLayout({
             onClick={() => setIsMobileOpen((prev) => !prev)}
             aria-label={isMobileOpen ? "Tutup menu admin" : "Buka menu admin"}
             aria-expanded={isMobileOpen}
-            className="md:hidden w-9 h-9 rounded-xl border-2 flex items-center justify-center shrink-0 cursor-pointer transition-colors"
+            className="lg:hidden w-9 h-9 rounded-xl border-2 flex items-center justify-center shrink-0 cursor-pointer transition-colors"
             style={{
               backgroundColor: "var(--surface-alt)",
               borderColor: "var(--border)",
@@ -362,10 +370,10 @@ export default function AdminLayout({
 
       {/* Main body with collapsible sidebar rail */}
       <div className="flex flex-1 min-h-[calc(100vh-61px)] relative">
-        {/* Mobile backdrop overlay when drawer is open */}
+        {/* Mobile and tablet backdrop overlay when drawer is open */}
         {isMobileOpen && (
           <div
-            className="fixed inset-0 top-[61px] bg-black/40 z-20 md:hidden backdrop-blur-xs"
+            className="fixed inset-0 top-[57px] bg-black/40 z-20 lg:hidden backdrop-blur-xs"
             onClick={() => setIsMobileOpen(false)}
           />
         )}
@@ -376,13 +384,13 @@ export default function AdminLayout({
             border-r-2 flex flex-col justify-between shrink-0 overflow-hidden
             transition-[width,transform] duration-300 ease-[cubic-bezier(0.2,0,0,1)] z-30
             fixed top-[57px] left-0 bottom-0 w-64
-            md:sticky md:top-[61px] md:bottom-auto md:self-start md:translate-x-0 md:pointer-events-auto md:shadow-none
+            lg:sticky lg:top-[61px] lg:bottom-auto lg:self-start lg:translate-x-0 lg:pointer-events-auto lg:shadow-none
             ${
               isMobileOpen
                 ? "translate-x-0 shadow-2xl pointer-events-auto"
                 : "-translate-x-full pointer-events-none"
             }
-            ${isCollapsed ? "md:w-20" : "md:w-64"}
+            ${isCollapsed ? "lg:w-20" : "lg:w-64"}
           `}
           style={{
             backgroundColor: "var(--surface)",

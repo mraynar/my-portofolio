@@ -1000,7 +1000,7 @@ export default function AdminExperience({
       />
 
       {/* Filter tabs and reorder instructions */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2">
+      <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-3 pb-2">
         <div className="flex flex-wrap gap-2">
           {[
             { key: "all", label: "Semua Pengalaman" },

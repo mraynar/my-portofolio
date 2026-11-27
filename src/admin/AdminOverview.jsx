@@ -130,7 +130,7 @@ export default function AdminOverview({
       <FloatingAlert feedback={feedback} onClose={() => setFeedback(null)} />
 
       {/* Metrics grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6">
         <Card className="devfest-card-blue p-6 flex flex-col justify-between">
           <div>
             <div
@@ -229,7 +229,7 @@ export default function AdminOverview({
       </div>
 
       {/* Cloud sync and backup panel */}
-      <Card className="p-6 space-y-5">
+      <Card className="p-4 sm:p-6 space-y-5 overflow-hidden">
         <div
           className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b-2"
           style={{ borderColor: "var(--border)" }}
