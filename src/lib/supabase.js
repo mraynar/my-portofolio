@@ -1463,26 +1463,81 @@ export async function upsertCertification(cert) {
       credential_id: payload.credentialId || payload.credential_id || "-",
       credential_url: payload.credentialUrl || payload.credential_url || "#",
       date: payload.date || "",
-      order_index: payload.orderIndex ?? 0,
+      order_index: payload.orderIndex ?? payload.order_index ?? 0,
       image_url: payload.image || payload.imageUrl || null,
     };
-    const { error } = await supabase.from("certifications").upsert(dbPayload);
-    if (error && error.message && error.message.includes("image_url")) {
+    let res = await supabase
+      .from("certifications")
+      .upsert(dbPayload)
+      .select("id")
+      .maybeSingle();
+    if (res.error && res.error.message && res.error.message.includes("image_url")) {
       const fallbackPayload = { ...dbPayload };
       delete fallbackPayload.image_url;
-      const retry = await supabase
+      res = await supabase
         .from("certifications")
-        .upsert(fallbackPayload);
-      if (retry.error) {
-        throw new Error(retry.error.message || "Gagal menyimpan sertifikasi.");
-      }
-    } else if (error) {
-      throw new Error(error.message || "Gagal menyimpan sertifikasi.");
+        .upsert(fallbackPayload)
+        .select("id")
+        .maybeSingle();
+    }
+    if (res.error) {
+      throw new Error(res.error.message || "Gagal menyimpan sertifikasi.");
+    }
+    if (res.data && res.data.id && res.data.id !== id) {
+      const synced = updated.map((c) =>
+        c.id === id ? { ...payload, id: res.data.id } : c
+      );
+      await setLocalItem(CACHE_KEYS.CERTS, synced);
+      notifyDataChanged();
+      return { ...payload, id: res.data.id };
     }
   }
 
   notifyDataChanged();
   return payload;
+}
+
+// Reorder certifications array and persist new order_index atomically
+export async function reorderCertifications(orderedList = []) {
+  const updated = orderedList.map((item, idx) => ({
+    ...item,
+    id: item.id || generateRecordId(),
+    orderIndex: idx + 1,
+    order_index: idx + 1,
+  }));
+
+  await setLocalItem(CACHE_KEYS.CERTS, updated);
+
+  if (supabase && updated.length > 0) {
+    const updates = updated.map((item) => ({
+      ...(isValidUuid(item.id) ? { id: item.id } : {}),
+      title: item.title || "Sertifikasi",
+      issuer: item.issuer || "",
+      provider: item.provider || "Lainnya",
+      credential_id: item.credentialId || item.credential_id || "-",
+      credential_url: item.credentialUrl || item.credential_url || "#",
+      date: item.date || "",
+      order_index: item.orderIndex,
+      image_url: item.image || item.imageUrl || null,
+    }));
+    let res = await supabase.from("certifications").upsert(updates);
+    if (res.error && res.error.message && res.error.message.includes("image_url")) {
+      const fallbackUpdates = updates.map((row) => {
+        const copy = { ...row };
+        delete copy.image_url;
+        return copy;
+      });
+      res = await supabase.from("certifications").upsert(fallbackUpdates);
+    }
+    if (res.error) {
+      throw new Error(
+        res.error.message || "Gagal memperbarui urutan sertifikasi."
+      );
+    }
+  }
+
+  notifyDataChanged();
+  return updated;
 }
 
 // Delete certification entry by UUID, credential ID, or title

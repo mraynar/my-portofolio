@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 import {
   Card,
   Chip,
@@ -17,6 +17,7 @@ import {
   upsertCertification,
   deleteCertification,
   deleteCertificationsBulk,
+  reorderCertifications,
   purgeLegacyStaticCertifications,
   LEGACY_STATIC_CERT_IDS,
   uploadStorageFile,
@@ -48,8 +49,61 @@ export default function AdminEducationCerts({
   const [selectedEduIds, setSelectedEduIds] = useState([]);
   const [selectedCertIds, setSelectedCertIds] = useState([]);
   const [isBulkDeleting, setIsBulkDeleting] = useState(false);
+  const [draggedCertIdx, setDraggedCertIdx] = useState(null);
+  const [dragOverCertIdx, setDragOverCertIdx] = useState(null);
+  const [isReorderingCerts, setIsReorderingCerts] = useState(false);
+  const [certTargetPosition, setCertTargetPosition] = useState(1);
   const eduPageSize = 4;
   const certPageSize = 6;
+
+  const sortedCerts = useMemo(
+    () =>
+      [...certifications].sort(
+        (a, b) =>
+          (a.orderIndex ?? a.order_index ?? 0) -
+          (b.orderIndex ?? b.order_index ?? 0)
+      ),
+    [certifications]
+  );
+
+  // Build position options for certification add/edit dropdown
+  const certPositionOptions = useMemo(() => {
+    if (!editingCert) return [];
+    const isNew = !sortedCerts.some(
+      (c) =>
+        (editingCert.id && c.id === editingCert.id) ||
+        (editingCert.credentialId &&
+          c.credentialId === editingCert.credentialId)
+    );
+    const totalSlots = isNew
+      ? sortedCerts.length + 1
+      : Math.max(sortedCerts.length, 1);
+    const currentIdx = sortedCerts.findIndex(
+      (c) =>
+        (editingCert.id && c.id === editingCert.id) ||
+        (editingCert.credentialId &&
+          c.credentialId === editingCert.credentialId)
+    );
+
+    const options = [];
+    for (let pos = 1; pos <= totalSlots; pos++) {
+      let label = `Posisi #${pos}`;
+      const existing = sortedCerts[pos - 1];
+      if (isNew) {
+        if (pos === totalSlots) {
+          label += " (Posisi Terakhir / Baru)";
+        } else if (existing?.title) {
+          label += ` (Sebelum: ${existing.title})`;
+        }
+      } else if (pos - 1 === currentIdx) {
+        label += " (Posisi Saat Ini)";
+      } else if (existing?.title) {
+        label += ` (Tukar dengan: ${existing.title})`;
+      }
+      options.push({ value: String(pos), label });
+    }
+    return options;
+  }, [editingCert, sortedCerts]);
 
   const handleEduSubmit = async (e) => {
     e.preventDefault();
@@ -79,13 +133,27 @@ export default function AdminEducationCerts({
     setFeedback(null);
     try {
       const cleanedProvider = String(editingCert.provider || "").trim();
-      await upsertCertification({
+      const targetPos = Math.max(1, parseInt(certTargetPosition, 10) || 1);
+      const saved = await upsertCertification({
         ...editingCert,
         provider: cleanedProvider || "Lainnya",
+        orderIndex: targetPos,
       });
+
+      // Place saved certification at chosen position and persist full order
+      const withoutSaved = sortedCerts.filter(
+        (c) =>
+          c.id !== saved.id &&
+          !(editingCert.id && c.id === editingCert.id)
+      );
+      const insertIdx = Math.min(Math.max(0, targetPos - 1), withoutSaved.length);
+      const reordered = [...withoutSaved];
+      reordered.splice(insertIdx, 0, saved);
+      await reorderCertifications(reordered);
+
       setFeedback({
         type: "success",
-        text: "Data sertifikasi berhasil disimpan.",
+        text: `Data sertifikasi berhasil disimpan di posisi #${insertIdx + 1}.`,
       });
       await onRefresh();
       setEditingCert(null);
@@ -97,6 +165,38 @@ export default function AdminEducationCerts({
       });
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  // Reorder certification cards via drag and drop
+  const handleMoveCert = async (fromIdx, toIdx) => {
+    if (fromIdx === toIdx || isReorderingCerts) return;
+    const itemA = sortedCerts[fromIdx];
+    const itemB = sortedCerts[toIdx];
+    if (!itemA || !itemB) return;
+
+    const nextOrder = [...sortedCerts];
+    const [moved] = nextOrder.splice(fromIdx, 1);
+    nextOrder.splice(toIdx, 0, moved);
+
+    setIsReorderingCerts(true);
+    setFeedback(null);
+    try {
+      await reorderCertifications(nextOrder);
+      setFeedback({
+        type: "success",
+        text: `Urutan disimpan: ${moved.title} kini di posisi #${toIdx + 1}.`,
+      });
+      await onRefresh();
+    } catch (err) {
+      setFeedback({
+        type: "error",
+        text: err.message || "Gagal memperbarui urutan sertifikasi.",
+      });
+    } finally {
+      setIsReorderingCerts(false);
+      setDraggedCertIdx(null);
+      setDragOverCertIdx(null);
     }
   };
 
@@ -704,13 +804,34 @@ export default function AdminEducationCerts({
                         setEditingCert({ ...editingCert, date: e.target.value })
                       }
                       placeholder="Nov 2024"
-                      className="w-full px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm"
+                      className="w-full h-[46px] px-3.5 py-2.5 rounded-xl border-2 font-medium text-sm shadow-[2px_2px_0_var(--shadow-color)]"
                       style={{
                         backgroundColor: "var(--surface-alt)",
                         borderColor: "var(--border)",
                       }}
                     />
                   </div>
+                </div>
+
+                {/* Display position selector dropdown */}
+                <div>
+                  <label className="block text-xs font-bold font-mono uppercase mb-1.5">
+                    Urutan Posisi Tampilan
+                  </label>
+                  <CustomSelect
+                    value={String(certTargetPosition)}
+                    onChange={(e) =>
+                      setCertTargetPosition(parseInt(e.target.value, 10) || 1)
+                    }
+                    options={certPositionOptions}
+                    ariaLabel="Pilih urutan posisi tampilan sertifikasi"
+                  />
+                  <span
+                    className="text-[11px] block mt-1"
+                    style={{ color: "var(--ink-secondary)" }}
+                  >
+                    Tentukan nomor urut tampil sertifikat di halaman publik dan daftar admin.
+                  </span>
                 </div>
 
                 {/* Certificate image upload & uncropped preview */}
@@ -1101,6 +1222,7 @@ export default function AdminEducationCerts({
                 onClick={() => {
                   window.scrollTo({ top: 0, behavior: "smooth" });
                   setIsCustomProvider(false);
+                  setCertTargetPosition(sortedCerts.length + 1);
                   setEditingCert({
                     title: "",
                     issuer: "",
@@ -1108,7 +1230,7 @@ export default function AdminEducationCerts({
                     credentialId: "",
                     credentialUrl: "",
                     date: String(new Date().getFullYear()),
-                    orderIndex: certifications.length,
+                    orderIndex: sortedCerts.length + 1,
                     image: "",
                   });
                 }}
@@ -1120,18 +1242,28 @@ export default function AdminEducationCerts({
             </div>
           </div>
 
+          {sortedCerts.length > 1 && (
+            <div
+              className="text-xs font-mono font-medium flex items-center gap-1.5"
+              style={{ color: "var(--ink-muted)" }}
+            >
+              <Icon name="info" size={14} />
+              <span>Tarik kartu untuk mengatur urutan posisi tampilan sertifikasi.</span>
+            </div>
+          )}
+
           <BulkActionBar
-            totalCount={certifications.length}
+            totalCount={sortedCerts.length}
             selectedCount={validSelectedCert.length}
             allSelected={
-              certifications.length > 0 &&
-              validSelectedCert.length === certifications.length
+              sortedCerts.length > 0 &&
+              validSelectedCert.length === sortedCerts.length
             }
             onToggleSelectAll={() =>
               setSelectedCertIds(
-                validSelectedCert.length === certifications.length
+                validSelectedCert.length === sortedCerts.length
                   ? []
-                  : certifications.map(getCertKey)
+                  : sortedCerts.map(getCertKey)
               )
             }
             onClearSelection={() => setSelectedCertIds([])}
@@ -1140,7 +1272,7 @@ export default function AdminEducationCerts({
             itemLabel="sertifikasi"
           />
 
-          {certifications.length === 0 ? (
+          {sortedCerts.length === 0 ? (
             <Card className="p-8 text-center space-y-2">
               <div
                 className="w-12 h-12 rounded-xl border-2 mx-auto flex items-center justify-center"
@@ -1163,26 +1295,95 @@ export default function AdminEducationCerts({
               </p>
             </Card>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 items-stretch">
             {(() => {
-              const maxCertPage = Math.max(1, Math.ceil(certifications.length / certPageSize));
+              const maxCertPage = Math.max(1, Math.ceil(sortedCerts.length / certPageSize));
               const effectiveCertPage = Math.min(certPage, maxCertPage);
-              const paginatedCerts = certifications.slice(
+              const paginatedCerts = sortedCerts.slice(
                 (effectiveCertPage - 1) * certPageSize,
                 effectiveCertPage * certPageSize
               );
 
-              return paginatedCerts.map((c, idx) => {
+              return paginatedCerts.map((c, localIdx) => {
+                const absoluteIdx =
+                  (effectiveCertPage - 1) * certPageSize + localIdx;
                 const certKey = getCertKey(c);
                 const isSelected = validSelectedCert.includes(certKey);
+                const isDragging = draggedCertIdx === absoluteIdx;
+                const isOver = dragOverCertIdx === absoluteIdx;
                 return (
+                <div
+                  key={c.id || c.credentialId || absoluteIdx}
+                  draggable={!isReorderingCerts}
+                  onDragStart={(e) => {
+                    setDraggedCertIdx(absoluteIdx);
+                    e.dataTransfer.effectAllowed = "move";
+                    e.dataTransfer.setData("text/plain", String(absoluteIdx));
+                  }}
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = "move";
+                    if (dragOverCertIdx !== absoluteIdx) {
+                      setDragOverCertIdx(absoluteIdx);
+                    }
+                  }}
+                  onDragLeave={() => {
+                    if (dragOverCertIdx === absoluteIdx) {
+                      setDragOverCertIdx(null);
+                    }
+                  }}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    if (
+                      draggedCertIdx !== null &&
+                      draggedCertIdx !== absoluteIdx
+                    ) {
+                      handleMoveCert(draggedCertIdx, absoluteIdx);
+                    }
+                  }}
+                  onDragEnd={() => {
+                    setDraggedCertIdx(null);
+                    setDragOverCertIdx(null);
+                  }}
+                  className={`transition-all duration-200 cursor-grab active:cursor-grabbing select-none ${
+                    isDragging ? "opacity-40 scale-[0.98]" : "opacity-100"
+                  }`}
+                >
                 <Card
-                  key={c.id || c.credentialId || idx}
-                  className={`p-4 flex flex-col justify-between transition-all ${
-                    isSelected ? "ring-2 ring-[var(--google-blue)]" : ""
+                  className={`p-4 h-full flex flex-col justify-between transition-all ${
+                    isOver
+                      ? "ring-4 ring-[var(--google-blue)] border-[var(--google-blue)] shadow-[0_0_15px_rgba(26,115,232,0.25)]"
+                      : isSelected
+                      ? "ring-2 ring-[var(--google-blue)]"
+                      : ""
                   }`}
                 >
                   <div>
+                    <div className="flex items-center justify-between gap-2 mb-2.5 pb-2 border-b-2">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <SelectCheckbox
+                          checked={isSelected}
+                          onChange={() => toggleSelectCert(certKey)}
+                          ariaLabel={`Pilih ${c.title}`}
+                        />
+                        <span
+                          className="neo-badge text-[11px] font-mono font-extrabold px-2 py-0.5 shrink-0"
+                          style={{
+                            backgroundColor: "var(--surface)",
+                            borderColor: "var(--border)",
+                          }}
+                        >
+                          #{absoluteIdx + 1}
+                        </span>
+                        <Chip variant="blue" className="truncate">
+                          {c.provider}
+                        </Chip>
+                      </div>
+                      <span className="text-xs font-mono font-bold shrink-0">
+                        {c.date}
+                      </span>
+                    </div>
+
                     {c.image && (
                       <div
                         className="relative w-full aspect-[16/10] rounded-lg border-2 overflow-hidden mb-2.5 flex items-center justify-center cursor-pointer group"
@@ -1190,6 +1391,7 @@ export default function AdminEducationCerts({
                           backgroundColor: "var(--surface-alt)",
                           borderColor: "var(--border)",
                         }}
+                        onMouseDown={(e) => e.stopPropagation()}
                         onClick={() => setPreviewCertImg(c.image)}
                       >
                         <img
@@ -1202,19 +1404,6 @@ export default function AdminEducationCerts({
                         </span>
                       </div>
                     )}
-                    <div className="flex items-center justify-between gap-2 mb-2 pb-2 border-b-2">
-                      <div className="flex items-center gap-2 min-w-0">
-                        <SelectCheckbox
-                          checked={isSelected}
-                          onChange={() => toggleSelectCert(certKey)}
-                          ariaLabel={`Pilih ${c.title}`}
-                        />
-                        <Chip variant="blue">{c.provider}</Chip>
-                      </div>
-                      <span className="text-xs font-mono font-bold shrink-0">
-                        {c.date}
-                      </span>
-                    </div>
                     <h4
                       className="font-extrabold text-sm sm:text-base line-clamp-2 mb-1"
                       style={{ fontFamily: "var(--font-display)" }}
@@ -1236,7 +1425,10 @@ export default function AdminEducationCerts({
                     >
                       {c.credentialId}
                     </span>
-                    <div className="flex items-center gap-1.5">
+                    <div
+                      className="flex items-center gap-1.5"
+                      onMouseDown={(e) => e.stopPropagation()}
+                    >
                       <button
                         type="button"
                         aria-label="Edit sertifikasi"
@@ -1244,10 +1436,11 @@ export default function AdminEducationCerts({
                           setIsCustomProvider(
                             !PROVIDER_PRESETS.includes(c.provider || "")
                           );
+                          setCertTargetPosition(absoluteIdx + 1);
                           setEditingCert(c);
                           window.scrollTo({ top: 0, behavior: "smooth" });
                         }}
-                        className="neo-btn-secondary text-xs font-bold py-1 px-2"
+                        className="neo-btn-secondary text-xs font-bold py-1 px-2 cursor-pointer"
                       >
                         <Icon name="edit" size={12} />
                       </button>
@@ -1267,6 +1460,7 @@ export default function AdminEducationCerts({
                     </div>
                   </div>
                 </Card>
+                </div>
                 );
               });
             })()}
