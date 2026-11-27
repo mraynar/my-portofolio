@@ -104,37 +104,67 @@ if (typeof window !== "undefined" && "scrollRestoration" in window.history) {
   window.history.scrollRestoration = "manual";
 }
 
-// Scroll to target hash or top on route change
+// Scroll to target hash or top on route change without flashing hero
 function ScrollToTop() {
-  const { pathname, hash } = useLocation();
+  const { pathname, hash, key } = useLocation();
+  const isInitialMountRef = useRef(true);
+  const prevPathRef = useRef(pathname);
 
   useEffect(() => {
-    // Default to hero section at top when refreshing the home page
-    const isReload =
-      window.performance?.navigation?.type === 1 ||
-      (window.performance?.getEntriesByType &&
-        window.performance.getEntriesByType("navigation")[0]?.type === "reload");
+    const isInitialMount = isInitialMountRef.current;
+    const prevPath = prevPathRef.current;
+    isInitialMountRef.current = false;
+    prevPathRef.current = pathname;
 
-    if (isReload && pathname === "/") {
-      if (window.location.hash) {
-        window.history.replaceState(null, "", "/");
+    // Only reset hash to hero once on an actual browser page reload
+    if (isInitialMount && pathname === "/") {
+      const navEntry = window.performance?.getEntriesByType?.("navigation")?.[0];
+      const isReload =
+        window.performance?.navigation?.type === 1 ||
+        navEntry?.type === "reload";
+
+      if (isReload) {
+        if (window.location.hash) {
+          window.history.replaceState(null, "", "/");
+        }
+        window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+        return;
       }
-      window.scrollTo(0, 0);
-      return;
     }
 
     if (hash) {
       const targetId = hash.replace("#", "");
-      const targetEl = document.getElementById(targetId);
-      if (targetEl) {
-        setTimeout(() => {
-          targetEl.scrollIntoView({ behavior: "smooth", block: "start" });
-        }, 80);
+      if (targetId === "home") {
+        window.scrollTo({
+          top: 0,
+          left: 0,
+          behavior: prevPath === pathname ? "smooth" : "instant",
+        });
         return;
       }
+
+      const behavior = prevPath === pathname && !isInitialMount ? "smooth" : "instant";
+      let attempts = 0;
+      let rafId = 0;
+
+      const scrollToTarget = () => {
+        const targetEl = document.getElementById(targetId);
+        if (targetEl) {
+          targetEl.scrollIntoView({ behavior, block: "start" });
+          return;
+        }
+        if (attempts < 10) {
+          attempts += 1;
+          rafId = requestAnimationFrame(scrollToTarget);
+        }
+      };
+
+      rafId = requestAnimationFrame(scrollToTarget);
+      return () => cancelAnimationFrame(rafId);
     }
-    window.scrollTo(0, 0);
-  }, [pathname, hash]);
+
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+  }, [pathname, hash, key]);
 
   return null;
 }

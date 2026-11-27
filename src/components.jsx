@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { createPortal } from "react-dom";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { PERSONAL_INFO, isInternshipExperience } from "./data";
 import { Icon } from "./components/icons/Icon";
 import { useLanguage } from "./context/LanguageContext";
@@ -1786,6 +1786,7 @@ export function ExpCard({
 export function Navbar({ info = {} }) {
   const [open, setOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const { language, setLanguage, t } = useLanguage();
   const cvUrl = info?.cvUrl || PERSONAL_INFO.cvUrl;
 
@@ -1797,6 +1798,43 @@ export function Navbar({ info = {} }) {
     window.addEventListener("keydown", handleEsc);
     return () => window.removeEventListener("keydown", handleEsc);
   }, [open]);
+
+  // Client-side SPA navigation preventing reloads and hero flashes
+  const handleNavClick = (e, href) => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) {
+      return;
+    }
+    e.preventDefault();
+    setOpen(false);
+
+    if (href.startsWith("/#")) {
+      const targetHash = href.slice(1);
+      const targetId = targetHash.slice(1);
+
+      if (location.pathname === "/") {
+        if (targetId === "home") {
+          window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+        } else {
+          const targetEl = document.getElementById(targetId);
+          if (targetEl) {
+            targetEl.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+        }
+        if (location.hash !== targetHash) {
+          navigate(href);
+        }
+      } else {
+        navigate(href);
+      }
+      return;
+    }
+
+    if (location.pathname === href) {
+      window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+    } else {
+      navigate(href);
+    }
+  };
 
   const navLinks = [
     { label: t("nav_home"), href: "/#home" },
@@ -1819,6 +1857,7 @@ export function Navbar({ info = {} }) {
         {/* Clean brand wordmark */}
         <a
           href="/#home"
+          onClick={(e) => handleNavClick(e, "/#home")}
           className="font-extrabold text-xl sm:text-2xl tracking-tight no-underline flex items-center"
           style={{ fontFamily: "var(--font-display)", color: "var(--ink)" }}
         >
@@ -1843,6 +1882,7 @@ export function Navbar({ info = {} }) {
               <a
                 key={item.href}
                 href={item.href}
+                onClick={(e) => handleNavClick(e, item.href)}
                 className="text-base font-bold no-underline transition-colors py-1 hover:text-[var(--google-blue)]"
                 style={{
                   color: isActive
@@ -1954,7 +1994,7 @@ export function Navbar({ info = {} }) {
             <a
               key={item.href}
               href={item.href}
-              onClick={() => setOpen(false)}
+              onClick={(e) => handleNavClick(e, item.href)}
               className="block text-lg font-bold py-1 no-underline"
               style={{ color: "var(--ink)" }}
             >
