@@ -10,6 +10,7 @@
     "check:comments": "node scripts/check-comments.mjs",
     "check:emoji": "node scripts/check-emoji.mjs",
     "check:layout": "node scripts/check-layout.mjs",
+    "check:all": "npm run check:comments && npm run check:emoji && npm run lint && npm run build && npm run check:layout",
     "preview": "vite preview"
   },
   "dependencies": {
