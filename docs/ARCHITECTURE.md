@@ -119,3 +119,10 @@ VITE_SUPABASE_ANON_KEY=eyJhbGciOi...
 # Server / Local Migration variables (Never committed)
 # SUPABASE_SERVICE_ROLE_KEY=ey... (CLI migrations only, never in code)
 ```
+
+## 7. Production Caching & Bundle Strategy
+- **SPA HTML Routes**: `vercel.json` sends `Cache-Control: no-cache, no-store, must-revalidate` for all non-asset routes (`/`, `/admin`, `/admin/*`, `/projects`, `/experience`) so browsers always fetch the latest hashed JS bundle.
+- **Hashed Assets**: `/assets/*` uses `Cache-Control: public, max-age=31536000, immutable`.
+- **Code Splitting**: Public routes ship `index.js` alongside independent `vendor-react`, `vendor-supabase`, and `vendor-icons` chunks; `AdminLayout` and `AdminLogin` load lazily on demand.
+- **Deployment Policy**: `vercel.json` restricts automatic builds to `main` to preserve Vercel Hobby deployment quota.
+```
