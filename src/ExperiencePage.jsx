@@ -153,16 +153,31 @@ export default function ExperiencePage({
             </div>
 
             <div className="relative">
-              <RoadTrack />
-              {internships.map((item, idx) => (
-                <ExpCard
-                  key={item.id || item.role + item.org}
-                  item={item}
-                  index={idx}
-                  isLeft={idx % 2 === 0}
-                  customIndex={idx + 1}
-                />
-              ))}
+              {internships.length === 0 ? (
+                <Card variant="flat" className="p-8 text-center">
+                  <p
+                    className="text-sm font-bold"
+                    style={{ color: "var(--ink-secondary)" }}
+                  >
+                    {language === "en"
+                      ? "No internship records published yet."
+                      : "Belum ada pengalaman magang yang dipublikasikan."}
+                  </p>
+                </Card>
+              ) : (
+                <>
+                  <RoadTrack />
+                  {internships.map((item, idx) => (
+                    <ExpCard
+                      key={item.id || item.role + item.org}
+                      item={item}
+                      index={idx}
+                      isLeft={idx % 2 === 0}
+                      customIndex={idx + 1}
+                    />
+                  ))}
+                </>
+              )}
             </div>
           </div>
 
@@ -224,16 +239,31 @@ export default function ExperiencePage({
             </div>
 
             <div className="relative">
-              <RoadTrack />
-              {organizations.map((item, idx) => (
-                <ExpCard
-                  key={item.id || item.role + item.org}
-                  item={item}
-                  index={idx}
-                  isLeft={idx % 2 === 0}
-                  customIndex={internships.length + idx + 1}
-                />
-              ))}
+              {organizations.length === 0 ? (
+                <Card variant="flat" className="p-8 text-center">
+                  <p
+                    className="text-sm font-bold"
+                    style={{ color: "var(--ink-secondary)" }}
+                  >
+                    {language === "en"
+                      ? "No organization records published yet."
+                      : "Belum ada pengalaman organisasi yang dipublikasikan."}
+                  </p>
+                </Card>
+              ) : (
+                <>
+                  <RoadTrack />
+                  {organizations.map((item, idx) => (
+                    <ExpCard
+                      key={item.id || item.role + item.org}
+                      item={item}
+                      index={idx}
+                      isLeft={idx % 2 === 0}
+                      customIndex={internships.length + idx + 1}
+                    />
+                  ))}
+                </>
+              )}
             </div>
           </div>
 
