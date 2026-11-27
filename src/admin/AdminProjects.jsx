@@ -128,6 +128,7 @@ export default function AdminProjects({
           info?.rawId || "default-site-settings",
           {
             customProjectCount: "",
+            stat1Value: "",
           }
         );
         if (onUpdateInfo) onUpdateInfo(updated);
@@ -143,6 +144,7 @@ export default function AdminProjects({
           info?.rawId || "default-site-settings",
           {
             customProjectCount: targetValue,
+            stat1Value: targetValue,
           }
         );
         if (onUpdateInfo) onUpdateInfo(updated);
@@ -205,10 +207,12 @@ export default function AdminProjects({
     setIsSavingCount(true);
     setCountFeedback(null);
     try {
+      const nextVal = customCountInput.trim();
       const updated = await saveSiteSettings(
         info?.rawId || "default-site-settings",
         {
-          customProjectCount: customCountInput.trim(),
+          customProjectCount: nextVal,
+          stat1Value: nextVal,
         }
       );
       if (onUpdateInfo) onUpdateInfo(updated);
@@ -944,9 +948,9 @@ export default function AdminProjects({
       )}
 
       {!editingProject && (
-        <Card className="p-4 sm:p-5 space-y-4">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-3 border-b border-[var(--border)]">
-            <div className="flex items-center gap-3">
+        <Card className="p-4 sm:p-5 space-y-4 overflow-hidden">
+          <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4 pb-3 border-b border-[var(--border)]">
+            <div className="flex items-start sm:items-center gap-3 min-w-0">
               <div
                 className="w-10 h-10 rounded-xl border-2 border-[var(--border)] flex items-center justify-center shrink-0"
                 style={{
@@ -956,8 +960,8 @@ export default function AdminProjects({
               >
                 <Icon name="folder" size={20} />
               </div>
-              <div>
-                <h3 className="font-extrabold text-sm sm:text-base">
+              <div className="min-w-0">
+                <h3 className="font-extrabold text-sm sm:text-base break-words">
                   Mode & Angka Total Proyek (Sinkronisasi Admin & Web)
                 </h3>
                 <p className="text-xs text-[var(--ink-secondary)]">
@@ -967,7 +971,7 @@ export default function AdminProjects({
             </div>
 
             {/* Mode selection toggle */}
-            <div className="flex flex-wrap items-center gap-2 self-start md:self-auto">
+            <div className="flex flex-wrap items-center gap-2 self-start xl:self-auto shrink-0">
               <button
                 type="button"
                 onClick={() => handleSelectCountMode("real")}
@@ -1002,10 +1006,10 @@ export default function AdminProjects({
           {hasCustomCount && (
             <form
               onSubmit={handleSaveCustomCount}
-              className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1"
+              className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pt-1"
             >
-              <div className="text-xs text-[var(--ink-secondary)] flex items-center gap-1.5">
-                <Icon name="info" size={14} className="shrink-0 text-[var(--google-blue)]" />
+              <div className="text-xs text-[var(--ink-secondary)] flex items-start sm:items-center gap-1.5 min-w-0">
+                <Icon name="info" size={14} className="shrink-0 mt-0.5 sm:mt-0 text-[var(--google-blue)]" />
                 <span>
                   Angka ini akan disinkronkan ke Ringkasan Admin ({effectiveProjectCount}), sidebar, header, dan web publik.
                 </span>

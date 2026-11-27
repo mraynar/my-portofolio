@@ -449,8 +449,8 @@ function About({
   };
 
   const stat1Val = cleanStatValue(
-    info.stat1Value || info.customProjectCount,
-    `${projectCount}+`
+    info.customProjectCount || info.stat1Value,
+    String(projectCount)
   );
   const stat1Label =
     info.stat1Label ||
@@ -462,8 +462,8 @@ function About({
       : "Aplikasi web full-stack, mobile lintas platform, dan sistem informasi bisnis operasional.");
 
   const stat2Val = cleanStatValue(
-    info.stat2Value || info.customCertCount,
-    `${certCount}+`
+    info.customCertCount || info.stat2Value,
+    String(certCount)
   );
   const stat2Label =
     info.stat2Label ||

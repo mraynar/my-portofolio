@@ -395,14 +395,12 @@ export async function getSiteSettings() {
             cachedSettings.numbersTitle ||
             PERSONAL_INFO.numbersTitle,
           stat1Value:
-            data.stat1_value !== undefined &&
-              data.stat1_value !== null &&
-              data.stat1_value !== ""
+            data.stat1_value !== undefined && data.stat1_value !== null
               ? data.stat1_value
-              : cachedSettings.stat1Value ||
-              data.custom_project_count ||
-              cachedSettings.customProjectCount ||
-              PERSONAL_INFO.stat1Value,
+              : data.custom_project_count !== undefined &&
+                  data.custom_project_count !== null
+                ? data.custom_project_count
+                : cachedSettings.stat1Value ?? PERSONAL_INFO.stat1Value,
           stat1Label:
             data.stat1_label ||
             cachedSettings.stat1Label ||
@@ -412,14 +410,12 @@ export async function getSiteSettings() {
             cachedSettings.stat1Desc ||
             PERSONAL_INFO.stat1Desc,
           stat2Value:
-            data.stat2_value !== undefined &&
-              data.stat2_value !== null &&
-              data.stat2_value !== ""
+            data.stat2_value !== undefined && data.stat2_value !== null
               ? data.stat2_value
-              : cachedSettings.stat2Value ||
-              data.custom_cert_count ||
-              cachedSettings.customCertCount ||
-              PERSONAL_INFO.stat2Value,
+              : data.custom_cert_count !== undefined &&
+                  data.custom_cert_count !== null
+                ? data.custom_cert_count
+                : cachedSettings.stat2Value ?? PERSONAL_INFO.stat2Value,
           stat2Label:
             data.stat2_label ||
             cachedSettings.stat2Label ||
@@ -532,7 +528,9 @@ export async function saveSiteSettings(id, fields) {
       stat1_value:
         fields.stat1Value !== undefined
           ? fields.stat1Value
-          : updated.stat1Value || "",
+          : fields.customProjectCount !== undefined
+            ? fields.customProjectCount
+            : updated.stat1Value ?? "",
       stat1_label:
         fields.stat1Label !== undefined
           ? fields.stat1Label
@@ -544,7 +542,9 @@ export async function saveSiteSettings(id, fields) {
       stat2_value:
         fields.stat2Value !== undefined
           ? fields.stat2Value
-          : updated.stat2Value || "",
+          : fields.customCertCount !== undefined
+            ? fields.customCertCount
+            : updated.stat2Value ?? "",
       stat2_label:
         fields.stat2Label !== undefined
           ? fields.stat2Label
@@ -578,17 +578,17 @@ export async function saveSiteSettings(id, fields) {
           ? fields.stat4Desc
           : updated.stat4Desc || "",
       custom_project_count:
-        fields.stat1Value ||
-        fields.customProjectCount ||
-        updated.stat1Value ||
-        updated.customProjectCount ||
-        "",
+        fields.customProjectCount !== undefined
+          ? fields.customProjectCount
+          : fields.stat1Value !== undefined
+            ? fields.stat1Value
+            : updated.customProjectCount ?? "",
       custom_cert_count:
-        fields.stat2Value ||
-        fields.customCertCount ||
-        updated.stat2Value ||
-        updated.customCertCount ||
-        "",
+        fields.customCertCount !== undefined
+          ? fields.customCertCount
+          : fields.stat2Value !== undefined
+            ? fields.stat2Value
+            : updated.customCertCount ?? "",
       start_year:
         fields.stat3Value ||
         fields.startYear ||

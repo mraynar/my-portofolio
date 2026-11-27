@@ -21,6 +21,7 @@ import {
   purgeLegacyStaticCertifications,
   LEGACY_STATIC_CERT_IDS,
   uploadStorageFile,
+  saveSiteSettings,
 } from "../lib/supabase";
 
 // Built-in provider presets for quick selection alongside custom input
@@ -54,8 +55,95 @@ export default function AdminEducationCerts({
   const [dragOverCertIdx, setDragOverCertIdx] = useState(null);
   const [isReorderingCerts, setIsReorderingCerts] = useState(false);
   const [certTargetPosition, setCertTargetPosition] = useState(1);
+  const [customCertCountInput, setCustomCertCountInput] = useState(
+    info?.customCertCount || ""
+  );
+  const [isSavingCertCount, setIsSavingCertCount] = useState(false);
+  const [certCountFeedback, setCertCountFeedback] = useState(null);
   const eduPageSize = 4;
   const certPageSize = 6;
+
+  const hasCustomCertCount = Boolean(
+    info?.customCertCount && String(info.customCertCount).trim() !== ""
+  );
+  const effectiveCertCount = hasCustomCertCount
+    ? String(info.customCertCount).trim()
+    : certifications.length;
+
+  // Toggle between database real count and custom count for certifications
+  const handleSelectCertCountMode = async (mode) => {
+    setIsSavingCertCount(true);
+    setCertCountFeedback(null);
+    try {
+      if (mode === "real") {
+        const updated = await saveSiteSettings(
+          info?.rawId || "default-site-settings",
+          {
+            customCertCount: "",
+            stat2Value: "",
+          }
+        );
+        if (onUpdateInfo) onUpdateInfo(updated);
+        setCustomCertCountInput("");
+        setCertCountFeedback({
+          type: "success",
+          text: `Mode diubah: kini menggunakan jumlah data riil (${certifications.length} sertifikasi).`,
+        });
+      } else {
+        const targetValue =
+          customCertCountInput.trim() || `${Math.max(certifications.length + 5, 15)}+`;
+        const updated = await saveSiteSettings(
+          info?.rawId || "default-site-settings",
+          {
+            customCertCount: targetValue,
+            stat2Value: targetValue,
+          }
+        );
+        if (onUpdateInfo) onUpdateInfo(updated);
+        setCustomCertCountInput(targetValue);
+        setCertCountFeedback({
+          type: "success",
+          text: `Mode diubah: kini menggunakan angka kustom (${targetValue} sertifikasi).`,
+        });
+      }
+    } catch (err) {
+      setCertCountFeedback({
+        type: "error",
+        text: err.message || "Gagal mengubah mode jumlah sertifikasi.",
+      });
+    } finally {
+      setIsSavingCertCount(false);
+    }
+  };
+
+  const handleSaveCustomCertCount = async (e) => {
+    e.preventDefault();
+    setIsSavingCertCount(true);
+    setCertCountFeedback(null);
+    try {
+      const nextVal = customCertCountInput.trim();
+      const updated = await saveSiteSettings(
+        info?.rawId || "default-site-settings",
+        {
+          customCertCount: nextVal,
+          stat2Value: nextVal,
+        }
+      );
+      if (onUpdateInfo) onUpdateInfo(updated);
+      setCertCountFeedback({
+        type: "success",
+        text: "Jumlah statistik sertifikasi resmi berhasil disimpan.",
+      });
+      if (onSaveComplete) onSaveComplete();
+    } catch (err) {
+      setCertCountFeedback({
+        type: "error",
+        text: err.message || "Gagal menyimpan jumlah sertifikasi.",
+      });
+    } finally {
+      setIsSavingCertCount(false);
+    }
+  };
 
   const sortedCerts = useMemo(
     () =>
@@ -1014,7 +1102,7 @@ export default function AdminEducationCerts({
             borderColor: "var(--border)",
           }}
         >
-          Sertifikasi Resmi ({certifications.length})
+          Sertifikasi Resmi ({effectiveCertCount})
         </button>
       </div>
 
@@ -1221,12 +1309,139 @@ export default function AdminEducationCerts({
             onSaveComplete={onSaveComplete}
           />
 
+          <Card className="p-4 sm:p-5 space-y-4 overflow-hidden">
+            <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4 pb-3 border-b border-[var(--border)]">
+              <div className="flex items-start sm:items-center gap-3 min-w-0">
+                <div
+                  className="w-10 h-10 rounded-xl border-2 border-[var(--border)] flex items-center justify-center shrink-0"
+                  style={{
+                    backgroundColor: "var(--google-green-bg)",
+                    color: "var(--google-green)",
+                  }}
+                >
+                  <Icon name="award" size={20} />
+                </div>
+                <div className="min-w-0">
+                  <h3 className="font-extrabold text-sm sm:text-base break-words">
+                    Mode & Angka Total Sertifikasi (Sinkronisasi Admin & Web)
+                  </h3>
+                  <p className="text-xs text-[var(--ink-secondary)]">
+                    Pilih apakah total sertifikasi mengikuti data riil database atau dikustomisasi manual.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2 self-start xl:self-auto shrink-0">
+                <button
+                  type="button"
+                  onClick={() => handleSelectCertCountMode("real")}
+                  disabled={isSavingCertCount}
+                  className={`text-xs font-bold font-mono px-3 py-1.5 rounded-xl border-2 transition-colors cursor-pointer flex items-center gap-1.5 ${
+                    !hasCustomCertCount
+                      ? "bg-[var(--google-green)] text-white border-[var(--border)] shadow-[2px_2px_0_0_#000]"
+                      : "bg-[var(--surface-alt)] text-[var(--ink-secondary)] border-[var(--border)] hover:bg-[var(--surface)]"
+                  }`}
+                >
+                  <Icon name={!hasCustomCertCount ? "check" : "database"} size={13} />
+                  Sesuai Data Riil ({certifications.length})
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleSelectCertCountMode("custom")}
+                  disabled={isSavingCertCount}
+                  className={`text-xs font-bold font-mono px-3 py-1.5 rounded-xl border-2 transition-colors cursor-pointer flex items-center gap-1.5 ${
+                    hasCustomCertCount
+                      ? "bg-[var(--google-green)] text-white border-[var(--border)] shadow-[2px_2px_0_0_#000]"
+                      : "bg-[var(--surface-alt)] text-[var(--ink-secondary)] border-[var(--border)] hover:bg-[var(--surface)]"
+                  }`}
+                >
+                  <Icon name={hasCustomCertCount ? "check" : "edit"} size={13} />
+                  Kustomisasi ({hasCustomCertCount ? effectiveCertCount : "Atur"})
+                </button>
+              </div>
+            </div>
+
+            {hasCustomCertCount && (
+              <form
+                onSubmit={handleSaveCustomCertCount}
+                className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pt-1"
+              >
+                <div className="text-xs text-[var(--ink-secondary)] flex items-start sm:items-center gap-1.5 min-w-0">
+                  <Icon name="info" size={14} className="shrink-0 mt-0.5 sm:mt-0 text-[var(--google-green)]" />
+                  <span>
+                    Angka ini akan disinkronkan ke kartu Sertifikasi Resmi ({effectiveCertCount}), sidebar, dan web publik.
+                  </span>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2 shrink-0">
+                  <label className="text-xs font-mono font-bold uppercase text-[var(--ink-muted)]">
+                    Nilai:
+                  </label>
+                  <input
+                    type="text"
+                    value={customCertCountInput}
+                    onChange={(e) => setCustomCertCountInput(e.target.value)}
+                    placeholder={`${Math.max(certifications.length + 5, 15)}+`}
+                    className="w-24 px-3 py-1.5 rounded-xl border-2 font-mono font-bold text-sm text-center"
+                    style={{
+                      backgroundColor: "var(--surface-alt)",
+                      borderColor: "var(--border)",
+                    }}
+                  />
+                  <button
+                    type="submit"
+                    disabled={isSavingCertCount}
+                    className="neo-btn-primary text-xs font-bold py-2 px-3.5 cursor-pointer"
+                  >
+                    <Icon name="check" size={14} />
+                    {isSavingCertCount ? "Menyimpan..." : "Simpan Angka"}
+                  </button>
+                </div>
+              </form>
+            )}
+
+            {certCountFeedback && (
+              <div
+                className="mt-2 p-2.5 rounded-xl border-2 text-xs font-bold flex items-center gap-2"
+                style={{
+                  backgroundColor:
+                    certCountFeedback.type === "success"
+                      ? "var(--google-green-bg)"
+                      : "var(--google-red-bg)",
+                  borderColor:
+                    certCountFeedback.type === "success"
+                      ? "var(--google-green)"
+                      : "var(--google-red)",
+                  color:
+                    certCountFeedback.type === "success"
+                      ? "var(--google-green-text)"
+                      : "var(--google-red-text)",
+                }}
+              >
+                <Icon
+                  name={certCountFeedback.type === "success" ? "check" : "alert"}
+                  size={14}
+                />
+                <span>{certCountFeedback.text}</span>
+              </div>
+            )}
+          </Card>
+
           <div className="flex flex-wrap items-center justify-between gap-3">
             <h3
-              className="text-lg font-extrabold"
+              className="text-lg font-extrabold flex flex-wrap items-center gap-2"
               style={{ fontFamily: "var(--font-display)" }}
             >
-              Sertifikasi & Kredensial Resmi
+              <span>Sertifikasi & Kredensial Resmi ({effectiveCertCount})</span>
+              {hasCustomCertCount && (
+                <span
+                  className="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full border border-[var(--google-green)] text-[var(--google-green-text)]"
+                  style={{ backgroundColor: "var(--google-green-bg)" }}
+                >
+                  Kustom ({certifications.length} Riil)
+                </span>
+              )}
             </h3>
             <div className="flex flex-wrap items-center gap-2">
               {legacyStaticCertCount > 0 && (

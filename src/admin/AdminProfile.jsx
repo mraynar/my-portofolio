@@ -809,7 +809,7 @@ export default function AdminProfile({
                   className="text-base font-extrabold font-mono"
                   style={{ color: "var(--google-blue)" }}
                 >
-                  [{formData.stat1Value || formData.customProjectCount || "20+"}]
+                  [{formData.stat1Value || formData.customProjectCount || "Data Riil"}]
                 </span>
               </div>
 
@@ -893,7 +893,7 @@ export default function AdminProfile({
                   className="text-base font-extrabold font-mono"
                   style={{ color: "var(--google-green)" }}
                 >
-                  [{formData.stat2Value || formData.customCertCount || "15+"}]
+                  [{formData.stat2Value || formData.customCertCount || "Data Riil"}]
                 </span>
               </div>
 
