@@ -862,30 +862,49 @@ export function CaseStudyModal({ project, onClose }) {
       onClick={onClose}
     >
       <div
-        className="neo-card-flat relative w-full max-w-2xl max-h-[90vh] overflow-y-auto p-4 sm:p-8"
+        className="neo-card-flat relative w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden !p-0"
         style={{ backgroundColor: "var(--surface)" }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Top Google accent bar */}
-        <div className="google-bar -mx-4 sm:-mx-8 -mt-4 sm:-mt-8 mb-5 sm:mb-6" />
-
-        {/* Modal header */}
-        <div
-          className="flex items-start justify-between gap-3 sm:gap-4 border-b-2 pb-4 sm:pb-5"
-          style={{ borderColor: "var(--border)" }}
-        >
-          <div className="min-w-0 flex-1">
-            <Cluster gap={8} className="mb-2">
+        {/* Pinned Google accent bar and close header */}
+        <div className="shrink-0 z-10" style={{ backgroundColor: "var(--surface)" }}>
+          <div className="google-bar w-full" />
+          <div
+            className="flex items-center justify-between gap-3 px-4 sm:px-8 py-3 sm:py-3.5 border-b-2"
+            style={{ borderColor: "var(--border)" }}
+          >
+            <Cluster gap={8} className="min-w-0 flex-1">
               <Chip variant="blue">{targetProject.label}</Chip>
               {cs?.duration && (
                 <span
-                  className="text-xs sm:text-sm font-semibold"
+                  className="text-xs sm:text-sm font-semibold truncate"
                   style={{ color: "var(--ink-muted)" }}
                 >
                   - {cs.duration}
                 </span>
               )}
             </Cluster>
+            <button
+              type="button"
+              onClick={onClose}
+              className="neo-badge cursor-pointer p-2 hover:opacity-80 shrink-0"
+              style={{
+                backgroundColor: "var(--surface-alt)",
+                color: "var(--ink)",
+              }}
+              aria-label={t("modal_close")}
+            >
+              <Icon name="x" size={18} />
+            </button>
+          </div>
+        </div>
+
+        {/* Scrollable modal body */}
+        <div className="flex-1 min-h-0 overflow-y-auto px-4 sm:px-8 py-5 sm:py-6 space-y-6">
+          <div
+            className="pb-4 sm:pb-5 border-b-2"
+            style={{ borderColor: "var(--border)" }}
+          >
             <h3
               className="text-xl sm:text-3xl font-extrabold break-words"
               style={{
@@ -897,28 +916,14 @@ export function CaseStudyModal({ project, onClose }) {
             </h3>
             {cs?.role && (
               <p
-                className="text-xs sm:text-base font-semibold mt-1 break-words"
+                className="text-xs sm:text-base font-semibold mt-1.5 break-words"
                 style={{ color: "var(--google-blue)" }}
               >
                 {t("modal_role")} {cs.role} {cs.client ? `| ${t("modal_client")} ${cs.client}` : ""}
               </p>
             )}
           </div>
-          <button
-            onClick={onClose}
-            className="neo-badge cursor-pointer p-2 hover:opacity-80 shrink-0"
-            style={{
-              backgroundColor: "var(--surface-alt)",
-              color: "var(--ink)",
-            }}
-            aria-label={t("modal_close")}
-          >
-            <Icon name="x" size={20} />
-          </button>
-        </div>
 
-        {/* Modal body */}
-        <div className="space-y-6 pt-5">
           <div>
             <h4
               className="text-xs sm:text-sm font-bold font-mono uppercase tracking-wider mb-2"
