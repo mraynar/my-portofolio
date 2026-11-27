@@ -200,13 +200,13 @@ export const TRANSLATIONS = {
 
     // Hero
     hero_tag: "INFORMATION SYSTEMS & SOFTWARE ENGINEER",
-    hero_campus: "UPN Veteran Jawa Timur",
+    hero_campus: "UPN Veteran East Java",
     hero_bio:
-      "Developing scalable, functional, and operationally efficient web and mobile applications. Undergraduate Information Systems student at UPN \"Veteran\" Jawa Timur.",
+      "Developing scalable, functional, and operationally efficient web and mobile applications. Undergraduate Information Systems student at UPN \"Veteran\" East Java.",
     hero_view_projects: "View Projects",
     hero_links: "LINKS:",
     hero_terminal_role:
-      "Information Systems Student - UPN \"Veteran\" Jawa Timur",
+      "Information Systems Student - UPN \"Veteran\" East Java",
     hero_terminal_title: "raynar-dev.ts",
     hero_online: "Online",
 
@@ -214,7 +214,7 @@ export const TRANSLATIONS = {
     about_kicker: "ABOUT ME",
     about_title: "Building Relevant & Scalable Digital Solutions",
     about_p1:
-      "Information Systems student at UPN \"Veteran\" Jawa Timur focusing on applied software engineering. Combining business requirements analysis, modular architecture design, and clean code implementation.",
+      "Information Systems student at UPN \"Veteran\" East Java focusing on applied software engineering. Combining business requirements analysis, modular architecture design, and clean code implementation.",
     about_p2:
       "Active in campus scientific research organizations, tech committees, and industry leadership incubation programs. Experienced in leading digital initiatives from problem identification to deployment.",
     about_stat_gpa: "6th Semester (GPA 3.84)",
