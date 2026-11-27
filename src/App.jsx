@@ -181,12 +181,12 @@ function Hero({ info = PERSONAL_INFO }) {
         paddingBottom: 0,
       }}
     >
-      <Container className="relative z-10 w-full my-auto">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-8 xl:gap-10 items-center lg:items-stretch">
+      <Container className="relative z-10 w-full my-auto py-4 sm:py-6 lg:py-0">
+        <div className="grid grid-cols-1 min-[600px]:grid-cols-12 gap-5 md:gap-6 lg:gap-8 xl:gap-10 items-center lg:items-stretch">
           {/* Left column: narrative and actions */}
-          <div className="md:col-span-6 lg:col-span-7 xl:col-span-6 flex flex-col justify-between">
-            <div className="pt-4 sm:pt-6 lg:pt-9">
-              <div className="mb-3.5 sm:mb-4">
+          <div className="min-[600px]:col-span-7 md:col-span-6 lg:col-span-7 xl:col-span-6 flex flex-col justify-between min-w-0">
+            <div className="pt-2 sm:pt-4 lg:pt-9">
+              <div className="mb-3 sm:mb-4">
                 <Chip variant="blue" className="neo-badge-wrap leading-snug">
                   {kicker}
                 </Chip>
@@ -197,7 +197,7 @@ function Hero({ info = PERSONAL_INFO }) {
                 className="font-extrabold tracking-tight mb-3 sm:mb-4 select-none"
                 style={{
                   fontFamily: "var(--font-display)",
-                  fontSize: "clamp(2.75rem, 5.5vw, 5.4rem)",
+                  fontSize: "clamp(2.35rem, 5.2vw, 5.4rem)",
                   lineHeight: 1.0,
                   color: "var(--ink)",
                 }}
@@ -219,7 +219,7 @@ function Hero({ info = PERSONAL_INFO }) {
               </h1>
 
               <p
-                className="text-base sm:text-lg leading-relaxed font-normal"
+                className="text-sm sm:text-[15px] md:text-base lg:text-lg leading-relaxed font-normal"
                 style={{
                   color: "var(--ink-secondary)",
                   maxWidth: "64ch",
@@ -229,31 +229,31 @@ function Hero({ info = PERSONAL_INFO }) {
               </p>
 
               {/* Primary actions */}
-              <div className="mt-7 sm:mt-8 flex flex-wrap sm:flex-row gap-2.5 sm:gap-4">
+              <div className="mt-5 sm:mt-6 lg:mt-8 flex flex-wrap gap-2.5 sm:gap-3 lg:gap-4">
                 <button
                   onClick={() => scrollToSection("projects")}
-                  className="neo-btn-primary flex-1 sm:flex-none justify-center font-bold text-xs sm:text-base py-3 sm:py-3.5 px-3.5 sm:px-6"
+                  className="neo-btn-primary flex-1 sm:flex-none justify-center font-bold text-xs md:text-sm lg:text-base py-2.5 sm:py-3 lg:py-3.5 px-3.5 sm:px-5 lg:px-6"
                 >
                   {t("hero_view_projects")}
-                  <Icon name="arrow-right" size={18} />
+                  <Icon name="arrow-right" size={16} />
                 </button>
 
                 <a
                   href={cvUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="neo-btn-secondary flex-1 sm:flex-none justify-center font-bold text-xs sm:text-base py-3 sm:py-3.5 px-3.5 sm:px-6"
+                  className="neo-btn-secondary flex-1 sm:flex-none justify-center font-bold text-xs md:text-sm lg:text-base py-2.5 sm:py-3 lg:py-3.5 px-3.5 sm:px-5 lg:px-6"
                 >
-                  <Icon name="download" size={18} />
+                  <Icon name="download" size={16} />
                   {t("download_cv")}
                 </a>
               </div>
             </div>
 
             {/* Social link pills */}
-            <div className="mt-6 sm:mt-8 md:mt-6 lg:mt-0 md:mb-4 lg:mb-8 xl:mb-10 flex flex-wrap items-center gap-1.5 sm:gap-2">
+            <div className="mt-5 sm:mt-6 lg:mt-0 md:mb-4 lg:mb-8 xl:mb-10 flex flex-wrap items-center gap-1.5 sm:gap-2">
               <span
-                className="text-xs sm:text-sm font-extrabold uppercase tracking-wider font-mono shrink-0 mr-0.5 sm:mr-1"
+                className="text-xs lg:text-sm font-extrabold uppercase tracking-wider font-mono shrink-0 mr-0.5 sm:mr-1"
                 style={{ color: "var(--ink-muted)" }}
               >
                 {t("hero_links")}
@@ -262,7 +262,7 @@ function Hero({ info = PERSONAL_INFO }) {
                 href={github}
                 target="_blank"
                 rel="noreferrer"
-                className="neo-badge text-xs sm:text-sm font-bold inline-flex items-center gap-1 sm:gap-2 px-2.5 sm:px-4 !py-1 sm:!py-2 !min-h-[34px] sm:!min-h-[40px] shrink-0"
+                className="neo-badge text-xs lg:text-sm font-bold inline-flex items-center gap-1 lg:gap-2 px-2.5 lg:px-4 !py-1 lg:!py-2 !min-h-[32px] lg:!min-h-[40px] shrink-0"
                 style={{
                   backgroundColor: "var(--surface)",
                   color: "var(--ink)",
@@ -270,13 +270,13 @@ function Hero({ info = PERSONAL_INFO }) {
                 }}
               >
                 GitHub
-                <Icon name="github" size={15} />
+                <Icon name="github" size={14} />
               </a>
               <a
                 href={linkedin}
                 target="_blank"
                 rel="noreferrer"
-                className="neo-badge text-xs sm:text-sm font-bold inline-flex items-center gap-1 sm:gap-2 px-2.5 sm:px-4 !py-1 sm:!py-2 !min-h-[34px] sm:!min-h-[40px] shrink-0"
+                className="neo-badge text-xs lg:text-sm font-bold inline-flex items-center gap-1 lg:gap-2 px-2.5 lg:px-4 !py-1 lg:!py-2 !min-h-[32px] lg:!min-h-[40px] shrink-0"
                 style={{
                   backgroundColor: "var(--google-blue-bg)",
                   color: "var(--google-blue-text)",
@@ -284,13 +284,13 @@ function Hero({ info = PERSONAL_INFO }) {
                 }}
               >
                 LinkedIn
-                <Icon name="linkedin" size={15} />
+                <Icon name="linkedin" size={14} />
               </a>
               <a
                 href={instagram}
                 target="_blank"
                 rel="noreferrer"
-                className="!hidden sm:!inline-flex neo-badge text-xs sm:text-sm font-bold items-center gap-1.5 sm:gap-2 px-3 sm:px-4 !py-1.5 sm:!py-2 !min-h-[36px] sm:!min-h-[40px] shrink-0"
+                className="!hidden sm:!inline-flex neo-badge text-xs lg:text-sm font-bold items-center gap-1 lg:gap-2 px-2.5 lg:px-4 !py-1 lg:!py-2 !min-h-[32px] lg:!min-h-[40px] shrink-0"
                 style={{
                   backgroundColor: "var(--google-yellow-bg)",
                   color: "var(--google-yellow-text)",
@@ -298,11 +298,11 @@ function Hero({ info = PERSONAL_INFO }) {
                 }}
               >
                 Instagram
-                <Icon name="instagram" size={15} />
+                <Icon name="instagram" size={14} />
               </a>
               <a
                 href={`mailto:${email}`}
-                className="neo-badge text-xs sm:text-sm font-bold inline-flex items-center gap-1 sm:gap-2 px-2.5 sm:px-4 !py-1 sm:!py-2 !min-h-[34px] sm:!min-h-[40px] shrink-0"
+                className="neo-badge text-xs lg:text-sm font-bold inline-flex items-center gap-1 lg:gap-2 px-2.5 lg:px-4 !py-1 lg:!py-2 !min-h-[32px] lg:!min-h-[40px] shrink-0"
                 style={{
                   backgroundColor: "var(--google-red-bg)",
                   color: "var(--google-red-text)",
@@ -310,21 +310,21 @@ function Hero({ info = PERSONAL_INFO }) {
                 }}
               >
                 Email
-                <Icon name="mail" size={15} />
+                <Icon name="mail" size={14} />
               </a>
             </div>
           </div>
 
-          {/* Profile photo card on tablet (iPad) and desktop */}
-          <div className="hidden md:flex md:col-span-6 lg:col-span-5 xl:col-span-6 justify-center md:justify-end">
-            <div className="w-full max-w-[380px] lg:max-w-[480px] xl:max-w-[540px] lg:h-full">
+          {/* Profile photo card on tablet and half-screen desktop upward */}
+          <div className="hidden min-[600px]:flex min-[600px]:col-span-5 md:col-span-6 lg:col-span-5 xl:col-span-6 justify-center min-[600px]:justify-end">
+            <div className="w-full max-w-[300px] md:max-w-[380px] lg:max-w-[480px] xl:max-w-[540px] lg:h-full">
               <Card
                 variant="flat"
                 className="overflow-hidden lg:h-full flex flex-col"
                 style={{ padding: 0 }}
               >
                 <div
-                  className="h-9 sm:h-10 px-3.5 flex items-center justify-between border-b-2 flex-shrink-0"
+                  className="h-9 sm:h-10 px-2.5 sm:px-3.5 flex items-center justify-between gap-2 border-b-2 flex-shrink-0"
                   style={{
                     backgroundColor: "var(--surface-alt)",
                     borderColor: "var(--border)",
@@ -335,13 +335,13 @@ function Hero({ info = PERSONAL_INFO }) {
                     <span className="w-2.5 h-2.5 rounded-full border border-[var(--border)] bg-[#fbbc04] shrink-0" />
                     <span className="w-2.5 h-2.5 rounded-full border border-[var(--border)] bg-[#34a853] shrink-0" />
                     <span
-                      className="text-[11px] font-mono ml-1.5 font-bold whitespace-nowrap truncate"
+                      className="text-[10px] sm:text-[11px] font-mono ml-1 sm:ml-1.5 font-bold whitespace-nowrap truncate"
                       style={{ color: "var(--ink)" }}
                     >
                       {info.codeCardTitle || "raynar-dev.ts"}
                     </span>
                   </div>
-                  <Chip variant="green" className="text-[11px] py-0.5 px-2 shrink-0">
+                  <Chip variant="green" className="text-[10px] sm:text-[11px] py-0.5 px-2 shrink-0">
                     {t("hero_online")}
                   </Chip>
                 </div>
