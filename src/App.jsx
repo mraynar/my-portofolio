@@ -229,10 +229,10 @@ function Hero({ info = PERSONAL_INFO }) {
               </p>
 
               {/* Primary actions */}
-              <div className="mt-7 sm:mt-8 flex flex-row gap-3 sm:gap-4">
+              <div className="mt-7 sm:mt-8 flex flex-wrap sm:flex-row gap-2.5 sm:gap-4">
                 <button
                   onClick={() => scrollToSection("projects")}
-                  className="neo-btn-primary flex-1 sm:flex-none justify-center font-bold text-sm sm:text-base py-3 sm:py-3.5 px-4 sm:px-6"
+                  className="neo-btn-primary flex-1 sm:flex-none justify-center font-bold text-xs sm:text-base py-3 sm:py-3.5 px-3.5 sm:px-6"
                 >
                   {t("hero_view_projects")}
                   <Icon name="arrow-right" size={18} />
@@ -242,7 +242,7 @@ function Hero({ info = PERSONAL_INFO }) {
                   href={cvUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="neo-btn-secondary flex-1 sm:flex-none justify-center font-bold text-sm sm:text-base py-3 sm:py-3.5 px-4 sm:px-6"
+                  className="neo-btn-secondary flex-1 sm:flex-none justify-center font-bold text-xs sm:text-base py-3 sm:py-3.5 px-3.5 sm:px-6"
                 >
                   <Icon name="download" size={18} />
                   {t("download_cv")}
@@ -251,7 +251,7 @@ function Hero({ info = PERSONAL_INFO }) {
             </div>
 
             {/* Social link pills */}
-            <div className="mt-6 sm:mt-8 md:mt-6 lg:mt-0 md:mb-4 lg:mb-8 xl:mb-10 flex flex-nowrap sm:flex-wrap items-center gap-1.5 sm:gap-2">
+            <div className="mt-6 sm:mt-8 md:mt-6 lg:mt-0 md:mb-4 lg:mb-8 xl:mb-10 flex flex-wrap items-center gap-1.5 sm:gap-2">
               <span
                 className="text-xs sm:text-sm font-extrabold uppercase tracking-wider font-mono shrink-0 mr-0.5 sm:mr-1"
                 style={{ color: "var(--ink-muted)" }}
@@ -1480,7 +1480,7 @@ function CertificationsSection({
               return (
                 <Card
                   key={cert.credentialId || cert.id || idx}
-                  className="w-[280px] sm:w-[320px] md:w-[350px] shrink-0 snap-start flex flex-col justify-between p-4 sm:p-5"
+                  className="w-[280px] max-w-[82vw] sm:w-[320px] sm:max-w-none md:w-[350px] shrink-0 snap-start flex flex-col justify-between p-4 sm:p-5"
                 >
                   <div>
                     {/* Uncropped certificate frame */}
@@ -1741,14 +1741,14 @@ function Contact({ info = PERSONAL_INFO }) {
                   <div className="space-y-3 mb-6">
                     <a
                       href={`mailto:${email}`}
-                      className="neo-btn-primary font-bold text-sm w-full justify-center"
+                      className="neo-btn-primary font-bold text-xs sm:text-sm w-full justify-center text-center break-all"
                       style={{
                         backgroundColor: "var(--google-red)",
                         borderColor: "var(--border)",
                       }}
                     >
-                      <Icon name="mail" size={18} />
-                      {email}
+                      <Icon name="mail" size={18} className="shrink-0" />
+                      <span>{email}</span>
                     </a>
 
                     <a

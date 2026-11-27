@@ -398,7 +398,7 @@ export function Pagination({
         {itemLabel}
       </div>
 
-      <div className="flex items-center gap-1.5 sm:gap-2">
+      <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2">
         <button
           type="button"
           onClick={() => onPageChange(Math.max(1, currentPage - 1))}
@@ -742,7 +742,7 @@ export function ImageLightboxModal({
                 : "Klik foto untuk memperbesar tampilan."}
           </div>
 
-          <div className="flex items-center gap-2 ml-auto">
+          <div className="flex flex-wrap items-center justify-end gap-2 ml-auto">
             {onUpload && (
               <button
                 type="button"
@@ -862,19 +862,19 @@ export function CaseStudyModal({ project, onClose }) {
       onClick={onClose}
     >
       <div
-        className="neo-card-flat relative w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 sm:p-8"
+        className="neo-card-flat relative w-full max-w-2xl max-h-[90vh] overflow-y-auto p-4 sm:p-8"
         style={{ backgroundColor: "var(--surface)" }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Top Google accent bar */}
-        <div className="google-bar -mx-6 sm:-mx-8 -mt-6 sm:-mt-8 mb-6" />
+        <div className="google-bar -mx-4 sm:-mx-8 -mt-4 sm:-mt-8 mb-5 sm:mb-6" />
 
         {/* Modal header */}
         <div
-          className="flex items-start justify-between gap-4 border-b-2 pb-5"
+          className="flex items-start justify-between gap-3 sm:gap-4 border-b-2 pb-4 sm:pb-5"
           style={{ borderColor: "var(--border)" }}
         >
-          <div>
+          <div className="min-w-0 flex-1">
             <Cluster gap={8} className="mb-2">
               <Chip variant="blue">{targetProject.label}</Chip>
               {cs?.duration && (
@@ -887,7 +887,7 @@ export function CaseStudyModal({ project, onClose }) {
               )}
             </Cluster>
             <h3
-              className="text-2xl sm:text-3xl font-extrabold"
+              className="text-xl sm:text-3xl font-extrabold break-words"
               style={{
                 fontFamily: "var(--font-display)",
                 color: "var(--ink)",
@@ -897,7 +897,7 @@ export function CaseStudyModal({ project, onClose }) {
             </h3>
             {cs?.role && (
               <p
-                className="text-sm sm:text-base font-semibold mt-1"
+                className="text-xs sm:text-base font-semibold mt-1 break-words"
                 style={{ color: "var(--google-blue)" }}
               >
                 {t("modal_role")} {cs.role} {cs.client ? `| ${t("modal_client")} ${cs.client}` : ""}
@@ -906,7 +906,7 @@ export function CaseStudyModal({ project, onClose }) {
           </div>
           <button
             onClick={onClose}
-            className="neo-badge cursor-pointer p-2 hover:opacity-80"
+            className="neo-badge cursor-pointer p-2 hover:opacity-80 shrink-0"
             style={{
               backgroundColor: "var(--surface-alt)",
               color: "var(--ink)",
@@ -1075,24 +1075,24 @@ export function FeaturedHeroCard({ project: rawProject, onOpenCaseStudy }) {
         }}
       >
         <div
-          className="h-11 px-4 flex items-center justify-between border-b-2 flex-shrink-0"
+          className="h-11 px-3 sm:px-4 flex items-center justify-between gap-2 border-b-2 flex-shrink-0"
           style={{
             backgroundColor: "var(--surface)",
             borderColor: "var(--border)",
           }}
         >
-          <div className="flex items-center gap-2">
-            <span className="w-3 h-3 rounded-full border border-[var(--border)] bg-[#ea4335]" />
-            <span className="w-3 h-3 rounded-full border border-[var(--border)] bg-[#fbbc04]" />
-            <span className="w-3 h-3 rounded-full border border-[var(--border)] bg-[#34a853]" />
+          <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+            <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full border border-[var(--border)] bg-[#ea4335] shrink-0" />
+            <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full border border-[var(--border)] bg-[#fbbc04] shrink-0" />
+            <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full border border-[var(--border)] bg-[#34a853] shrink-0" />
             <span
-              className="text-xs font-mono ml-2 font-bold truncate max-w-[200px]"
+              className="text-xs font-mono ml-1.5 sm:ml-2 font-bold truncate"
               style={{ color: "var(--ink)" }}
             >
               {project.title}
             </span>
           </div>
-          <Chip variant="blue">{project.label}</Chip>
+          <Chip variant="blue" className="shrink-0">{project.label}</Chip>
         </div>
 
         <div className="relative w-full aspect-[16/10] overflow-hidden flex-1 group/hero">
@@ -2063,7 +2063,7 @@ export function Footer({ info = {} }) {
             </p>
           </div>
 
-          <div className="flex flex-nowrap items-center justify-center gap-1.5 sm:gap-2 max-w-full">
+          <div className="flex flex-wrap items-center justify-center gap-2 max-w-full">
             <a
               href={github}
               target="_blank"
@@ -2124,7 +2124,7 @@ export function Footer({ info = {} }) {
           className="mt-8 pt-6 border-t-2 flex items-center justify-center text-[10.5px] sm:text-xs font-semibold text-center"
           style={{ borderColor: "var(--border)", color: "var(--ink-muted)" }}
         >
-          <div className="whitespace-nowrap">
+          <div className="leading-relaxed">
             Copyright (c) {new Date().getFullYear()} {name}. {t("footer_rights")}
           </div>
         </div>
