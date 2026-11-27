@@ -368,9 +368,18 @@ export const EXACT_TRANSLATIONS = {
   "Sertifikasi Kompetensi": "Skill Certifications",
   "Penerbit:": "Issuer:",
   "Terverifikasi Internal": "Internal Verification",
+  "Januari 2026": "January 2026",
+  "Februari 2026": "February 2026",
+  "Maret 2026": "March 2026",
   "April 2026": "April 2026",
   "Mei 2026": "May 2026",
-  "Maret 2026": "March 2026",
+  "Juni 2026": "June 2026",
+  "Juli 2026": "July 2026",
+  "Agustus 2026": "August 2026",
+  "September 2026": "September 2026",
+  "Oktober 2026": "October 2026",
+  "November 2026": "November 2026",
+  "Desember 2026": "December 2026",
 };
 
 // Regex replacement patterns for months and temporal references
