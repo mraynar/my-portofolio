@@ -896,7 +896,7 @@ export default function AdminExperience({
               />
             </div>
 
-            <div className="flex justify-end gap-3 pt-4 border-t-2">
+            <div className="flex flex-wrap justify-end gap-3 pt-4 border-t-2">
               <button
                 type="button"
                 onClick={() => { setEditingItem(null); window.scrollTo({ top: 0, behavior: "smooth" }); }}
@@ -1138,7 +1138,7 @@ export default function AdminExperience({
                   } ${isDragging ? "opacity-40 scale-[0.98]" : "opacity-100"}`}
               >
                 <Card
-                  className={`p-5 h-full flex flex-col justify-between transition-all relative ${isOver
+                  className={`p-4 sm:p-5 h-full flex flex-col justify-between transition-all relative overflow-hidden min-w-0 ${isOver
                     ? "ring-4 ring-[var(--google-blue)] border-[var(--google-blue)] shadow-[0_0_15px_rgba(26,115,232,0.25)]"
                     : isSelected
                     ? "ring-2 ring-[var(--google-blue)]"
@@ -1218,7 +1218,7 @@ export default function AdminExperience({
                           </div>
                         </button>
                       )}
-                      <div className="flex-1">
+                      <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1 flex-wrap">
                           <span
                             className="neo-badge text-[11px] font-bold px-2 py-0.5"

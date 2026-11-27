@@ -542,7 +542,7 @@ export default function AdminSkills({
               </div>
             </div>
 
-            <div className="flex justify-end gap-3 pt-4 border-t-2">
+            <div className="flex flex-wrap justify-end gap-3 pt-4 border-t-2">
               <button
                 type="button"
                 onClick={() => { setEditingCat(null); window.scrollTo({ top: 0, behavior: "smooth" }); }}
@@ -711,7 +711,7 @@ export default function AdminSkills({
                 }`}
               >
                 <Card
-                  className={`p-5 flex flex-col justify-between h-full transition-all ${
+                  className={`p-4 sm:p-5 flex flex-col justify-between h-full transition-all overflow-hidden min-w-0 ${
                     isSelected ? "ring-2 ring-[var(--google-blue)]" : ""
                   }`}
                 >

@@ -487,7 +487,7 @@ export default function AdminProfile({
                 />
               </div>
             </div>
-            <div className="mt-2 flex items-center gap-2">
+            <div className="mt-2 flex flex-wrap items-center gap-2">
               <label className="neo-btn-secondary text-xs font-bold cursor-pointer py-1.5 px-3">
                 <Icon name="upload" size={14} />
                 {uploadingAvatar ? "Mengunggah..." : "Unggah Foto Baru"}
@@ -529,7 +529,7 @@ export default function AdminProfile({
                 }}
               />
             </div>
-            <div className="mt-2 flex items-center gap-2">
+            <div className="mt-2 flex flex-wrap items-center gap-2">
               <label className="neo-btn-secondary text-xs font-bold cursor-pointer py-1.5 px-3">
                 <Icon name="upload" size={14} />
                 {uploadingCv ? "Mengunggah..." : "Unggah File PDF"}

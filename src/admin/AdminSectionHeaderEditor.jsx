@@ -99,7 +99,7 @@ export default function AdminSectionHeaderEditor({
             <Icon name="sliders" size={20} />
           </div>
           <div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <h3
                 className="text-base sm:text-lg font-extrabold"
                 style={{ fontFamily: "var(--font-display)" }}

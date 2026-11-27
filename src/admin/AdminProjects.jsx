@@ -444,7 +444,7 @@ export default function AdminProjects({
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div>
                 <label className="block text-xs font-bold font-mono uppercase mb-1.5">
                   Kategori
@@ -833,7 +833,7 @@ export default function AdminProjects({
               </div>
             </div>
 
-            <div className="flex justify-end gap-3 pt-4 border-t-2">
+            <div className="flex flex-wrap justify-end gap-3 pt-4 border-t-2">
               <button
                 type="button"
                 onClick={() => { setEditingProject(null); window.scrollTo({ top: 0, behavior: "smooth" }); }}
@@ -967,7 +967,7 @@ export default function AdminProjects({
             </div>
 
             {/* Mode selection toggle */}
-            <div className="flex items-center gap-2 self-start md:self-auto shrink-0">
+            <div className="flex flex-wrap items-center gap-2 self-start md:self-auto">
               <button
                 type="button"
                 onClick={() => handleSelectCountMode("real")}
@@ -1011,7 +1011,7 @@ export default function AdminProjects({
                 </span>
               </div>
 
-              <div className="flex items-center gap-2 shrink-0">
+              <div className="flex flex-wrap items-center gap-2 shrink-0">
                 <label className="text-xs font-mono font-bold uppercase text-[var(--ink-muted)]">
                   Nilai:
                 </label>
@@ -1123,7 +1123,7 @@ export default function AdminProjects({
           </p>
         </Card>
       ) : (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 sm:gap-6 items-stretch">
         {(() => {
           const sortedProjects = [...projects].sort(
             (a, b) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0)
@@ -1173,7 +1173,7 @@ export default function AdminProjects({
                 }`}
               >
                 <Card
-                  className={`p-5 h-full flex flex-col justify-between transition-all relative ${
+                  className={`p-4 sm:p-5 h-full flex flex-col justify-between transition-all relative overflow-hidden min-w-0 ${
                     isOver
                       ? "ring-4 ring-[var(--google-blue)] border-[var(--google-blue)] shadow-[0_0_15px_rgba(26,115,232,0.25)]"
                       : isSelected
@@ -1181,16 +1181,16 @@ export default function AdminProjects({
                       : ""
                   }`}
                 >
-                  <div>
-                    <div className="flex items-center justify-between mb-3 pb-2 border-b-2">
-                      <div className="flex items-center gap-2">
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-center justify-between gap-2 mb-3 pb-2.5 border-b-2">
+                      <div className="flex flex-wrap items-center gap-1.5 min-w-0">
                         <SelectCheckbox
                           checked={isSelected}
                           onChange={() => toggleSelectProject(p.id)}
                           ariaLabel={`Pilih ${p.title}`}
                         />
                         <span
-                          className="neo-badge text-[11px] font-mono font-extrabold px-2 py-0.5"
+                          className="neo-badge text-[11px] font-mono font-extrabold px-2 py-0.5 shrink-0"
                           style={{
                             backgroundColor: "var(--surface)",
                             borderColor: "var(--border)",
@@ -1208,15 +1208,31 @@ export default function AdminProjects({
                               ? "red"
                               : "green"
                           }
+                          className="!text-[11px] !px-2.5 !py-0.5 !min-h-[26px]"
                         >
                           {p.label}
                         </Chip>
-                        {p.featured && <Chip variant="blue">Unggulan</Chip>}
+                        {p.featured && (
+                          <Chip
+                            variant="blue"
+                            className="!text-[11px] !px-2.5 !py-0.5 !min-h-[26px]"
+                          >
+                            Unggulan
+                          </Chip>
+                        )}
                       </div>
                       <span
-                        className="text-xs font-mono font-bold"
+                        className="text-[11px] font-mono font-bold px-2 py-0.5 rounded-full border shrink-0 ml-auto"
                         style={{
                           color:
+                            p.status === "draft"
+                              ? "var(--google-red-text)"
+                              : "var(--google-green-text)",
+                          backgroundColor:
+                            p.status === "draft"
+                              ? "var(--google-red-bg)"
+                              : "var(--google-green-bg)",
+                          borderColor:
                             p.status === "draft"
                               ? "var(--google-red)"
                               : "var(--google-green)",
@@ -1227,7 +1243,7 @@ export default function AdminProjects({
                     </div>
 
                     <h4
-                      className="font-extrabold text-base sm:text-lg mb-2"
+                      className="font-extrabold text-base sm:text-lg mb-2 break-words"
                       style={{ fontFamily: "var(--font-display)" }}
                     >
                       {p.title}
@@ -1270,15 +1286,16 @@ export default function AdminProjects({
                     </p>
                   </div>
 
-                  <div className="pt-3 border-t-2 flex items-center justify-between">
+                  <div className="pt-3 border-t-2 flex items-center justify-between gap-2 min-w-0">
                     <span
-                      className="text-xs font-mono font-bold"
+                      className="text-xs font-mono font-bold truncate min-w-0 flex-1"
                       style={{ color: "var(--ink-muted)" }}
+                      title={`ID: ${p.id}`}
                     >
                       ID: {p.id}
                     </span>
                     <div
-                      className="flex items-center gap-2"
+                      className="flex items-center gap-2 shrink-0"
                       onMouseDown={(e) => e.stopPropagation()}
                     >
                       <button

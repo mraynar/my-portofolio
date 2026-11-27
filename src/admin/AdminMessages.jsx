@@ -171,12 +171,12 @@ export default function AdminMessages({
                   return (
                   <Card
                     key={msg.id}
-                    className={`p-5 sm:p-6 space-y-4 transition-all ${
+                    className={`p-4 sm:p-6 space-y-4 transition-all overflow-hidden ${
                       isSelected ? "ring-2 ring-[var(--google-blue)]" : ""
                     }`}
                   >
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b-2">
-                      <div className="flex items-start gap-2.5">
+                      <div className="flex items-start gap-2.5 min-w-0">
                         <div className="pt-0.5">
                           <SelectCheckbox
                             checked={isSelected}
@@ -184,11 +184,11 @@ export default function AdminMessages({
                             ariaLabel={`Pilih pesan dari ${msg.name}`}
                           />
                         </div>
-                        <div>
-                          <h4 className="font-extrabold text-base">{msg.name}</h4>
+                        <div className="min-w-0">
+                          <h4 className="font-extrabold text-base break-words">{msg.name}</h4>
                           <a
                             href={`mailto:${msg.email}`}
-                            className="text-xs font-mono font-bold hover:underline"
+                            className="text-xs font-mono font-bold hover:underline break-all"
                             style={{ color: "var(--google-blue)" }}
                           >
                             {msg.email}

@@ -267,20 +267,35 @@ export default function AdminLayout({
 
   return (
     <div
-      className="min-h-screen flex flex-col"
+      className="min-h-screen flex flex-col overflow-x-clip"
       style={{ backgroundColor: "var(--canvas)", color: "var(--ink)" }}
     >
       <div className="bg-code-tile fixed inset-0 pointer-events-none opacity-40" />
 
       {/* Admin header */}
       <header
-        className="sticky top-0 z-40 border-b-2 px-3 sm:px-6 py-2.5 flex items-center justify-between"
+        className="sticky top-0 z-40 border-b-2 px-3 sm:px-6 py-2.5 flex items-center justify-between gap-2"
         style={{
           backgroundColor: "var(--surface)",
           borderColor: "var(--border)",
         }}
       >
         <div className="flex items-center gap-2 sm:gap-4 min-w-0">
+          <button
+            type="button"
+            onClick={() => setIsMobileOpen((prev) => !prev)}
+            aria-label={isMobileOpen ? "Tutup menu admin" : "Buka menu admin"}
+            aria-expanded={isMobileOpen}
+            className="md:hidden w-9 h-9 rounded-xl border-2 flex items-center justify-center shrink-0 cursor-pointer transition-colors"
+            style={{
+              backgroundColor: "var(--surface-alt)",
+              borderColor: "var(--border)",
+              color: "var(--ink)",
+            }}
+          >
+            <Icon name={isMobileOpen ? "x" : "menu"} size={18} />
+          </button>
+
           <Link
             to="/admin"
             className="flex items-center gap-1.5 font-mono font-extrabold text-sm sm:text-base truncate"
@@ -359,23 +374,21 @@ export default function AdminLayout({
         <aside
           className={`
             border-r-2 flex flex-col justify-between shrink-0 overflow-hidden
-            transition-[width] duration-300 ease-[cubic-bezier(0.2,0,0,1)] z-30
+            transition-[width,transform] duration-300 ease-[cubic-bezier(0.2,0,0,1)] z-30
+            fixed top-[57px] left-0 bottom-0 w-64
+            md:sticky md:top-[61px] md:bottom-auto md:self-start md:translate-x-0 md:pointer-events-auto md:shadow-none
             ${
               isMobileOpen
-                ? "fixed top-[61px] left-0 bottom-0 w-64 shadow-2xl"
-                : "sticky top-[61px] self-start"
+                ? "translate-x-0 shadow-2xl pointer-events-auto"
+                : "-translate-x-full pointer-events-none"
             }
-            ${
-              !isMobileOpen && isCollapsed
-                ? "w-16 md:w-20"
-                : "w-64"
-            }
+            ${isCollapsed ? "md:w-20" : "md:w-64"}
           `}
           style={{
             backgroundColor: "var(--surface)",
             borderColor: "var(--border)",
             height: isMobileOpen ? undefined : "calc(100vh - 61px)",
-            willChange: "width",
+            willChange: "width, transform",
           }}
         >
           {/* Top rail controls and navigation list */}
@@ -593,7 +606,7 @@ export default function AdminLayout({
         {/* Main content display area */}
         <main
           ref={mainScrollRef}
-          className="flex-1 min-w-0 p-4 sm:p-6 lg:p-8 overflow-y-auto"
+          className="flex-1 w-full min-w-0 p-3.5 sm:p-6 lg:p-8 overflow-y-auto overflow-x-clip"
         >
           <div ref={contentRevealRef} className="w-full">
             {/* Breadcrumb section indicator */}

@@ -576,7 +576,7 @@ export default function AdminEducationCerts({
                   />
                 </div>
 
-                <div className="flex justify-end gap-3 pt-3 border-t-2">
+                <div className="flex flex-wrap justify-end gap-3 pt-3 border-t-2">
                   <button
                     type="button"
                     onClick={() => { setEditingEdu(null); window.scrollTo({ top: 0, behavior: "smooth" }); }}
@@ -953,7 +953,7 @@ export default function AdminEducationCerts({
                   />
                 </div>
 
-                <div className="flex justify-end gap-3 pt-3 border-t-2">
+                <div className="flex flex-wrap justify-end gap-3 pt-3 border-t-2">
                   <button
                     type="button"
                     onClick={() => { setEditingCert(null); window.scrollTo({ top: 0, behavior: "smooth" }); }}
@@ -978,7 +978,7 @@ export default function AdminEducationCerts({
   return (
     <div className="space-y-8 w-full">
       {/* Sub-tab navigation */}
-      <div className="flex items-center gap-3 pb-4 border-b-2">
+      <div className="flex flex-wrap items-center gap-2 sm:gap-3 pb-4 border-b-2">
         <button
           onClick={() => {
             setActiveSubTab("education");
@@ -1023,7 +1023,7 @@ export default function AdminEducationCerts({
       {/* Education tab view */}
       {activeSubTab === "education" && (
         <div className="space-y-6">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-wrap items-center justify-between gap-3">
             <h3
               className="text-lg font-extrabold"
               style={{ fontFamily: "var(--font-display)" }}
@@ -1106,12 +1106,12 @@ export default function AdminEducationCerts({
                 return (
                 <Card
                   key={edu.id || edu.school + idx}
-                  className={`p-5 transition-all ${
+                  className={`p-4 sm:p-5 transition-all overflow-hidden ${
                     isSelected ? "ring-2 ring-[var(--google-blue)]" : ""
                   }`}
                 >
-                  <div className="flex items-center justify-between mb-2 pb-2 border-b-2">
-                    <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center justify-between gap-2 mb-2 pb-2 border-b-2">
+                    <div className="flex flex-wrap items-center gap-2 min-w-0">
                       <SelectCheckbox
                         checked={isSelected}
                         onChange={() => toggleSelectEdu(eduKey)}
@@ -1322,7 +1322,7 @@ export default function AdminEducationCerts({
               </p>
             </Card>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 items-stretch">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 items-stretch">
             {(() => {
               const maxCertPage = Math.max(1, Math.ceil(sortedCerts.length / certPageSize));
               const effectiveCertPage = Math.min(certPage, maxCertPage);
@@ -1377,7 +1377,7 @@ export default function AdminEducationCerts({
                   }`}
                 >
                 <Card
-                  className={`p-4 h-full flex flex-col justify-between transition-all ${
+                  className={`p-4 h-full flex flex-col justify-between transition-all overflow-hidden min-w-0 ${
                     isOver
                       ? "ring-4 ring-[var(--google-blue)] border-[var(--google-blue)] shadow-[0_0_15px_rgba(26,115,232,0.25)]"
                       : isSelected
@@ -1447,15 +1447,16 @@ export default function AdminEducationCerts({
                     </div>
                   </div>
 
-                  <div className="pt-2 border-t-2 flex items-center justify-between">
+                  <div className="pt-2 border-t-2 flex items-center justify-between gap-2 min-w-0">
                     <span
-                      className="text-xs font-mono truncate max-w-[150px]"
+                      className="text-xs font-mono truncate min-w-0 flex-1"
                       style={{ color: "var(--ink-muted)" }}
+                      title={c.credentialId}
                     >
                       {c.credentialId}
                     </span>
                     <div
-                      className="flex items-center gap-1.5"
+                      className="flex items-center gap-1.5 shrink-0"
                       onMouseDown={(e) => e.stopPropagation()}
                     >
                       <button

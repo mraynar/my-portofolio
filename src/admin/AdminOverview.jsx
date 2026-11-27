@@ -388,8 +388,8 @@ export default function AdminOverview({
       </Card>
 
       {/* Recent contact messages preview */}
-      <Card className="p-6">
-        <div className="flex items-center justify-between mb-6 pb-4 border-b-2">
+      <Card className="p-4 sm:p-6 overflow-hidden">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 pb-4 border-b-2">
           <div>
             <h3
               className="text-lg sm:text-xl font-extrabold"
@@ -406,7 +406,7 @@ export default function AdminOverview({
           </div>
           <button
             onClick={() => onNavigateTab("messages")}
-            className="neo-btn-secondary text-xs sm:text-sm font-bold cursor-pointer"
+            className="neo-btn-secondary text-xs sm:text-sm font-bold cursor-pointer self-start sm:self-auto shrink-0"
           >
             Buka Kotak Masuk
             <Icon name="arrow-right" size={14} />
@@ -431,11 +431,11 @@ export default function AdminOverview({
                   borderColor: "var(--border)",
                 }}
               >
-                <div>
-                  <div className="font-extrabold text-sm mb-0.5">
+                <div className="min-w-0 flex-1">
+                  <div className="font-extrabold text-sm mb-0.5 break-words">
                     {msg.name}{" "}
                     <span
-                      className="text-xs font-normal font-mono"
+                      className="text-xs font-normal font-mono break-all"
                       style={{ color: "var(--ink-muted)" }}
                     >
                       ({msg.email})
