@@ -100,3 +100,8 @@ The design system implements a controlled neo-brutalist aesthetic inspired by th
 3. FORBIDDEN: generic marketing cliches ("passionate", "cutting-edge", "high-performance", "frictionless"). All copy must state concrete actions, systems, and measurable outcomes.
 4. FORBIDDEN: 3 identical plain cards in all sections. Varied weights (featured 2-column card, 2-column secondary cards) must be used.
 5. FORBIDDEN: copying GDG/DevFest proprietary logos, branded stickers, or trademarks. Only the underlying design system is emulated.
+
+## 8. Admin CMS v2.1 Component Patterns
+- **BulkActionBar & SelectCheckbox**: Shared neo-brutalist multi-select toolbar placed above every Admin CMS collection grid. Checkboxes stop `mousedown` and `click` propagation so selection never conflicts with card drag-and-drop.
+- **Certification Cards**: Display the issuing organization (`issuer`) as the top pill badge with graceful truncation (`max-w-[68%]`), and render the learning platform (`provider`) below the title as `Platform: <provider>`.
+- **Home Experience Preview**: Each experience category renders the 2 latest milestones by default with an inline neo-brutalist Show More / Show Less toggle.
