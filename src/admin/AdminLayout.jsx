@@ -480,7 +480,7 @@ export default function AdminLayout({
               }}
               title={
                 !isMobileOpen && isCollapsed
-                  ? "Online v2.0 - Muhammad Raynar"
+                  ? "Online v2.1 - Muhammad Raynar"
                   : undefined
               }
             >
@@ -510,7 +510,7 @@ export default function AdminLayout({
                       : "max-w-[40px] opacity-100"
                   }`}
                 >
-                  v2.0
+                  v2.1
                 </span>
               </div>
 
