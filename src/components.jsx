@@ -491,9 +491,18 @@ export function FloatingAlert({ feedback, onClose, duration = 3500 }) {
       }, 300);
     }, duration);
 
+    const handleEsc = (e) => {
+      if (e.key === "Escape") {
+        setVisible(false);
+        setTimeout(() => onClose?.(), 150);
+      }
+    };
+    window.addEventListener("keydown", handleEsc);
+
     return () => {
       cancelAnimationFrame(animId);
       clearTimeout(timer);
+      window.removeEventListener("keydown", handleEsc);
     };
   }, [feedback, duration, onClose]);
 
@@ -1768,6 +1777,15 @@ export function Navbar({ info = {} }) {
   const location = useLocation();
   const { language, setLanguage, t } = useLanguage();
   const cvUrl = info?.cvUrl || PERSONAL_INFO.cvUrl;
+
+  useEffect(() => {
+    if (!open) return;
+    const handleEsc = (e) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, [open]);
 
   const navLinks = [
     { label: t("nav_home"), href: "/#home" },
