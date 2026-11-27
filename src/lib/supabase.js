@@ -670,7 +670,7 @@ export async function getProjects() {
         .select("*")
         .order("order_index", { ascending: true });
 
-      if (!error && data && data.length > 0) {
+      if (!error && Array.isArray(data)) {
         const mapped = data.map((p) => ({
           id: p.id,
           title: p.title,
@@ -709,7 +709,7 @@ export async function getProjects() {
   }
 
   const cached = await getLocalItem(CACHE_KEYS.PROJECTS);
-  if (Array.isArray(cached) && cached.length > 0) return cached;
+  if (Array.isArray(cached)) return cached;
   return PROJECTS;
 }
 
@@ -866,7 +866,7 @@ export async function getExperience() {
         .select("*")
         .order("order_index", { ascending: true });
 
-      if (!error && data && data.length > 0) {
+      if (!error && Array.isArray(data)) {
         const normalized = data.map(normalizeExperienceItem);
         const sorted = sortExperiencesLatestFirst(normalized);
         try {
@@ -882,7 +882,7 @@ export async function getExperience() {
   }
 
   const cached = await getLocalItem(CACHE_KEYS.EXPERIENCE);
-  if (Array.isArray(cached) && cached.length > 0) {
+  if (Array.isArray(cached)) {
     return sortExperiencesLatestFirst(cached.map(normalizeExperienceItem));
   }
   return sortExperiencesLatestFirst(EXPERIENCE.map(normalizeExperienceItem));
@@ -1115,7 +1115,7 @@ export async function getSkillCategories() {
         .select("*")
         .order("order_index", { ascending: true });
 
-      if (!error && data && data.length > 0) {
+      if (!error && Array.isArray(data)) {
         try {
           await setLocalItem(CACHE_KEYS.SKILLS, data);
         } catch {
@@ -1129,7 +1129,7 @@ export async function getSkillCategories() {
   }
 
   const cached = await getLocalItem(CACHE_KEYS.SKILLS);
-  if (Array.isArray(cached) && cached.length > 0) return cached;
+  if (Array.isArray(cached)) return cached;
   return SKILL_CATEGORIES;
 }
 
@@ -1256,7 +1256,7 @@ export async function getEducation() {
         .select("*")
         .order("order_index", { ascending: true });
 
-      if (!error && data && data.length > 0) {
+      if (!error && Array.isArray(data)) {
         const mapped = data.map((item, idx) => {
           const fallback = EDUCATION[idx] || {};
           return {
@@ -1279,7 +1279,7 @@ export async function getEducation() {
   }
 
   const cached = await getLocalItem(CACHE_KEYS.EDUCATION);
-  if (Array.isArray(cached) && cached.length > 0) return cached;
+  if (Array.isArray(cached)) return cached;
   return EDUCATION;
 }
 

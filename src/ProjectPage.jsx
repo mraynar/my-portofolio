@@ -166,15 +166,41 @@ export default function ProjectPage({
 
           return (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-                {paginatedProjects.map((project) => (
-                  <ProjectCard
-                    key={project.id}
-                    project={project}
-                    onOpenCaseStudy={onOpenCaseStudy}
-                  />
-                ))}
-              </div>
+              {paginatedProjects.length === 0 ? (
+                <div
+                  className="neo-card-flat p-10 text-center"
+                  style={{ backgroundColor: "var(--surface)" }}
+                >
+                  <div
+                    className="w-12 h-12 rounded-xl border-2 mx-auto mb-3 flex items-center justify-center"
+                    style={{
+                      backgroundColor: "var(--surface-alt)",
+                      borderColor: "var(--border)",
+                      color: "var(--google-blue)",
+                    }}
+                  >
+                    <Icon name="folder" size={22} />
+                  </div>
+                  <p
+                    className="text-sm sm:text-base font-bold"
+                    style={{ color: "var(--ink)" }}
+                  >
+                    {language === "en"
+                      ? "No projects found in this category yet."
+                      : "Belum ada proyek yang tersedia pada kategori ini."}
+                  </p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+                  {paginatedProjects.map((project) => (
+                    <ProjectCard
+                      key={project.id}
+                      project={project}
+                      onOpenCaseStudy={onOpenCaseStudy}
+                    />
+                  ))}
+                </div>
+              )}
 
               <Pagination
                 currentPage={effectivePage}

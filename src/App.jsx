@@ -994,6 +994,28 @@ function ProjectsPreview({
           </Link>
         </div>
 
+        {displayProjects.length === 0 ? (
+          <Card variant="flat" className="p-8 text-center">
+            <div
+              className="w-12 h-12 rounded-xl border-2 mx-auto mb-3 flex items-center justify-center"
+              style={{
+                backgroundColor: "var(--surface-alt)",
+                borderColor: "var(--border)",
+                color: "var(--google-blue)",
+              }}
+            >
+              <Icon name="folder" size={22} />
+            </div>
+            <p
+              className="text-sm sm:text-base font-bold"
+              style={{ color: "var(--ink)" }}
+            >
+              {language === "en"
+                ? "Featured projects will appear here once published."
+                : "Proyek unggulan akan tampil di sini setelah ditambahkan melalui Admin CMS."}
+            </p>
+          </Card>
+        ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {displayProjects.map((project) => (
             <ProjectCard
@@ -1003,6 +1025,7 @@ function ProjectsPreview({
             />
           ))}
         </div>
+        )}
       </Container>
     </Section>
   );
