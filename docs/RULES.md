@@ -56,3 +56,6 @@
   - `docs: update design tokens table in DESIGN.md`
   - `refactor: extract form input primitives`
 - Commit messages must be concise, single line, and maximum 72 characters.
+- Prefer atomic bulk delete helpers (`delete*Bulk`) over sequential single deletes in Admin CMS to avoid IndexedDB race conditions.
+- Always trust valid empty arrays (`[]`) returned by Supabase; never resurrect static seed arrays when a table is intentionally emptied.
+- Keep `vercel.json` configured for `main`-only auto-deployments and `no-store` HTML caching on all SPA routes.
