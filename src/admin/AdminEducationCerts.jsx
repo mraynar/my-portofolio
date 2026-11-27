@@ -979,6 +979,7 @@ export default function AdminEducationCerts({
         <button
           onClick={() => {
             setActiveSubTab("education");
+            setSelectedCertIds([]);
             setFeedback(null);
           }}
           className="neo-badge text-xs sm:text-sm font-bold cursor-pointer"
@@ -997,6 +998,7 @@ export default function AdminEducationCerts({
         <button
           onClick={() => {
             setActiveSubTab("certifications");
+            setSelectedEduIds([]);
             setFeedback(null);
           }}
           className="neo-badge text-xs sm:text-sm font-bold cursor-pointer"
