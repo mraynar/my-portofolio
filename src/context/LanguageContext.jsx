@@ -180,6 +180,12 @@ export const TRANSLATIONS = {
     // Footer
     footer_rights: "Hak Cipta Dilindungi.",
     footer_system: "Dirancang dengan sistem neo-brutalisme Google.",
+
+    // Not Found Page
+    not_found_title: "Halaman Tidak Ditemukan",
+    not_found_desc:
+      "Tautan yang Anda buka mungkin telah dipindahkan atau tidak tersedia. Silakan kembali ke beranda portofolio.",
+    not_found_home: "Kembali ke Beranda",
   },
   en: {
     // Navigation
@@ -332,6 +338,12 @@ export const TRANSLATIONS = {
     // Footer
     footer_rights: "All Rights Reserved.",
     footer_system: "Designed with Google neo-brutalism system.",
+
+    // Not Found Page
+    not_found_title: "Page Not Found",
+    not_found_desc:
+      "The link you opened may have been moved or does not exist. Please return to the portfolio homepage.",
+    not_found_home: "Back to Home",
   },
 };
 
