@@ -121,6 +121,15 @@ export default function AdminLayout({
     navigate("/admin/login");
   };
 
+  useEffect(() => {
+    if (!isMobileOpen) return;
+    const handleEsc = (e) => {
+      if (e.key === "Escape") setIsMobileOpen(false);
+    };
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, [isMobileOpen]);
+
   const toggleSidebar = () => {
     if (typeof window !== "undefined" && window.innerWidth < 768) {
       setIsMobileOpen((prev) => !prev);
