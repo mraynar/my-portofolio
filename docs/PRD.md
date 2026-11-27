@@ -70,3 +70,11 @@ The current portfolio suffers from visual clutter (floating stars, diamonds, and
 ## 7. Risks & Mitigation
 - **Risk: Supabase free tier database pause**: Mitigation: Client-side cached snapshot fallback ensures site remains rendered even if remote database is paused.
 - **Risk: Slow image load on mobile**: Mitigation: Client-side compression upon upload, WebP format, responsive image sizing, and lazy loading.
+
+## 7. Delivered v2.1 Release Scope
+- Full database-driven public portfolio and Admin CMS v2.1 deployed at `https://mraynar.my.id`.
+- Complete bilingual (`ID` / `EN`) UI and dynamic content translation with zero Indonesian leaks verified via Playwright.
+- Multi-select bulk delete across all Admin CMS collections (`Projects`, `Experience`, `Skills`, `Education`, `Certifications`, `Messages`).
+- Drag-and-drop card reordering and explicit position dropdown selectors on Projects, Experience, Skills, and Certifications.
+- Custom platform provider input alongside preset options in Certification management.
+- Split vendor chunks, lazy-loaded Admin routes, `robots.txt`, `sitemap.xml`, `site.webmanifest`, and branded 404 page.
