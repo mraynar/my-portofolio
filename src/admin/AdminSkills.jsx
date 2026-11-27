@@ -633,6 +633,26 @@ export default function AdminSkills({
       />
 
       {/* Categories grid */}
+      {skills.length === 0 ? (
+        <Card className="p-8 text-center space-y-2">
+          <div
+            className="w-12 h-12 rounded-xl border-2 mx-auto flex items-center justify-center"
+            style={{
+              backgroundColor: "var(--surface-alt)",
+              borderColor: "var(--border)",
+              color: "var(--google-blue)",
+            }}
+          >
+            <Icon name="code" size={22} />
+          </div>
+          <p className="font-bold text-sm">
+            Belum ada kategori keahlian yang tersimpan.
+          </p>
+          <p className="text-xs" style={{ color: "var(--ink-secondary)" }}>
+            Klik Tambah Kategori untuk mulai menyusun daftar keahlian.
+          </p>
+        </Card>
+      ) : (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-6 items-stretch">
         {(() => {
           const sortedSkills = [...skills].sort(
@@ -749,6 +769,7 @@ export default function AdminSkills({
           });
         })()}
       </div>
+      )}
     </div>
   );
 }
