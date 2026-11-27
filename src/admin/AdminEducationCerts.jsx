@@ -1375,8 +1375,10 @@ export default function AdminEducationCerts({
                         >
                           #{absoluteIdx + 1}
                         </span>
-                        <Chip variant="blue" className="truncate">
-                          {c.provider}
+                        <Chip variant="blue" className="min-w-0">
+                          <span className="truncate" title={c.issuer || c.provider}>
+                            {c.issuer || c.provider}
+                          </span>
                         </Chip>
                       </div>
                       <span className="text-xs font-mono font-bold shrink-0">
@@ -1414,7 +1416,7 @@ export default function AdminEducationCerts({
                       className="text-xs font-bold mb-2"
                       style={{ color: "var(--ink-secondary)" }}
                     >
-                      {c.issuer}
+                      Platform: {c.provider}
                     </div>
                   </div>
 

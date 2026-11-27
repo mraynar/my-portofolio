@@ -1442,34 +1442,37 @@ function CertificationsSection({
                             className="text-xs font-mono font-bold tracking-wider uppercase"
                             style={{ color: pColor }}
                           >
-                            {cert.provider}
+                            {cert.issuer || cert.provider}
                           </span>
                           <span
                             className="text-[11px] font-mono mt-1"
                             style={{ color: "var(--ink-muted)" }}
                           >
-                            {cert.credentialId ? `ID: ${cert.credentialId}` : cert.issuer}
+                            {cert.credentialId ? `ID: ${cert.credentialId}` : cert.provider}
                           </span>
                         </div>
                       )}
                     </div>
 
                     <div
-                      className="flex items-center justify-between mb-3 pb-2.5 border-b-2"
+                      className="flex items-center justify-between gap-2 mb-3 pb-2.5 border-b-2"
                       style={{ borderColor: "var(--border)" }}
                     >
                       <span
-                        className="neo-badge text-xs font-bold"
+                        className="neo-badge text-xs font-bold min-w-0 max-w-[68%]"
+                        title={cert.issuer || cert.provider}
                         style={{
                           backgroundColor: "var(--surface-alt)",
                           color: pColor,
                           borderColor: pColor,
                         }}
                       >
-                        {cert.provider}
+                        <span className="truncate">
+                          {cert.issuer || cert.provider}
+                        </span>
                       </span>
                       <span
-                        className="text-xs font-mono font-bold"
+                        className="text-xs font-mono font-bold shrink-0"
                         style={{ color: "var(--ink-muted)" }}
                       >
                         {cert.date}
@@ -1489,7 +1492,7 @@ function CertificationsSection({
                       className="text-xs sm:text-sm font-semibold mb-3"
                       style={{ color: "var(--ink-secondary)" }}
                     >
-                      {language === "en" ? "Issuer:" : "Penerbit:"} {cert.issuer}
+                      Platform: {cert.provider}
                     </p>
                   </div>
 
@@ -1532,7 +1535,7 @@ function CertificationsSection({
         isOpen={Boolean(zoomCert)}
         imageUrl={zoomCert?.image}
         title={zoomCert?.title || (language === "en" ? "Certificate" : "Sertifikat")}
-        subtitle={`${zoomCert?.provider || ""} • ${zoomCert?.issuer || ""} (${zoomCert?.date || ""})`}
+        subtitle={`${zoomCert?.issuer || ""} • ${zoomCert?.provider || ""} (${zoomCert?.date || ""})`}
         alt={zoomCert?.title || (language === "en" ? "Certificate" : "Sertifikat")}
         onClose={() => setZoomCert(null)}
       />
