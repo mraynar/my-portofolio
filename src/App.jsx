@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo, useRef, lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route, Link, useLocation } from "react-router-dom";
 import { LanguageProvider, useLanguage } from "./context/LanguageContext";
 import {
@@ -51,8 +51,53 @@ import {
 import { subscribeDataSync } from "./lib/localDb";
 import ProjectPage from "./ProjectPage";
 import ExperiencePage from "./ExperiencePage";
-import AdminLogin from "./admin/AdminLogin";
-import AdminLayout from "./admin/AdminLayout";
+import NotFoundPage from "./NotFoundPage";
+
+// Lazy-load admin bundle so public visitors download smaller JS payloads
+const AdminLogin = lazy(() => import("./admin/AdminLogin"));
+const AdminLayout = lazy(() => import("./admin/AdminLayout"));
+
+// Minimal neo-brutalist fallback while lazy admin chunks load
+function RouteLoadingFallback() {
+  return (
+    <div
+      className="min-h-screen flex items-center justify-center p-6"
+      style={{ backgroundColor: "var(--canvas)", color: "var(--ink)" }}
+    >
+      <div className="neo-card-flat px-6 py-4 flex items-center gap-3 font-mono text-xs font-bold">
+        <Icon name="loader" size={16} className="animate-spin" />
+        <span>Loading Admin CMS...</span>
+      </div>
+    </div>
+  );
+}
+
+// Keep browser tab title aligned with current public or admin route
+function RouteTitleManager() {
+  const { pathname } = useLocation();
+  const { language } = useLanguage();
+
+  useEffect(() => {
+    const isEn = language === "en";
+    if (pathname.startsWith("/admin")) {
+      document.title = "Admin CMS | mraynar";
+    } else if (pathname === "/projects") {
+      document.title = isEn
+        ? "Projects | Muhammad Raynar Hammam"
+        : "Proyek | Muhammad Raynar Hammam";
+    } else if (pathname === "/experience") {
+      document.title = isEn
+        ? "Experience | Muhammad Raynar Hammam"
+        : "Pengalaman | Muhammad Raynar Hammam";
+    } else {
+      document.title = isEn
+        ? "Muhammad Raynar Hammam | Software Engineer & Information Systems"
+        : "Muhammad Raynar Hammam | Pengembang Perangkat Lunak & Sistem Informasi";
+    }
+  }, [pathname, language]);
+
+  return null;
+}
 
 // Disable automatic scroll restoration to ensure clean top alignment on reload
 if (typeof window !== "undefined" && "scrollRestoration" in window.history) {
@@ -895,6 +940,18 @@ function Skills({ categories = SKILL_CATEGORIES, info = PERSONAL_INFO }) {
           }
         />
 
+        {categories.length === 0 ? (
+          <Card variant="flat" className="p-8 text-center">
+            <p
+              className="text-sm font-bold"
+              style={{ color: "var(--ink-secondary)" }}
+            >
+              {language === "en"
+                ? "Technical skills will appear here once published."
+                : "Keahlian teknis akan tampil di sini setelah ditambahkan melalui Admin CMS."}
+            </p>
+          </Card>
+        ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
           {[...categories]
             .sort(
@@ -943,6 +1000,7 @@ function Skills({ categories = SKILL_CATEGORIES, info = PERSONAL_INFO }) {
             </Card>
           ))}
         </div>
+        )}
       </Container>
     </Section>
   );
@@ -1954,11 +2012,20 @@ function PublicLayout({ dark, toggleDark, info, children }) {
       className="min-h-screen flex flex-col relative"
       style={{ backgroundColor: "var(--canvas)", color: "var(--ink)" }}
     >
+      {/* Skip link for keyboard accessibility */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] neo-btn-primary text-xs font-bold py-2 px-4"
+      >
+        {language === "en" ? "Skip to main content" : "Lewati ke konten utama"}
+      </a>
       {/* DevFest code symbol watermark tile background */}
       <div className="bg-code-tile fixed inset-0 pointer-events-none z-0" />
       <Navbar info={localizedInfo} />
       <ScrollTopFab dark={dark} toggleDark={toggleDark} />
-      <div className="flex-1 relative z-10">{children}</div>
+      <div id="main-content" className="flex-1 relative z-10">
+        {children}
+      </div>
       <Footer info={localizedInfo} />
     </div>
   );
@@ -2037,57 +2104,70 @@ export default function App() {
     <LanguageProvider>
       <BrowserRouter>
         <ScrollToTop />
+        <RouteTitleManager />
 
-        <Routes>
-          {/* Public portfolio views */}
-          <Route
-            path="/"
-            element={
-              <PublicLayout dark={dark} toggleDark={toggleDark} info={info}>
-                <HomePage
-                  info={info}
-                  education={education}
-                  categories={skills}
-                  projects={projects}
-                  experience={experience}
-                  certifications={certifications}
-                  onOpenCaseStudy={setSelectedCaseStudy}
-                />
-              </PublicLayout>
-            }
-          />
-          <Route
-            path="/projects"
-            element={
-              <PublicLayout dark={dark} toggleDark={toggleDark} info={info}>
-                <ProjectPage
-                  projects={projects}
-                  info={info}
-                  onOpenCaseStudy={setSelectedCaseStudy}
-                />
-              </PublicLayout>
-            }
-          />
-          <Route
-            path="/experience"
-            element={
-              <PublicLayout dark={dark} toggleDark={toggleDark} info={info}>
-                <ExperiencePage
-                  experience={experience}
-                  education={education}
-                  info={info}
-                />
-              </PublicLayout>
-            }
-          />
+        <Suspense fallback={<RouteLoadingFallback />}>
+          <Routes>
+            {/* Public portfolio views */}
+            <Route
+              path="/"
+              element={
+                <PublicLayout dark={dark} toggleDark={toggleDark} info={info}>
+                  <HomePage
+                    info={info}
+                    education={education}
+                    categories={skills}
+                    projects={projects}
+                    experience={experience}
+                    certifications={certifications}
+                    onOpenCaseStudy={setSelectedCaseStudy}
+                  />
+                </PublicLayout>
+              }
+            />
+            <Route
+              path="/projects"
+              element={
+                <PublicLayout dark={dark} toggleDark={toggleDark} info={info}>
+                  <ProjectPage
+                    projects={projects}
+                    info={info}
+                    onOpenCaseStudy={setSelectedCaseStudy}
+                  />
+                </PublicLayout>
+              }
+            />
+            <Route
+              path="/experience"
+              element={
+                <PublicLayout dark={dark} toggleDark={toggleDark} info={info}>
+                  <ExperiencePage
+                    experience={experience}
+                    education={education}
+                    info={info}
+                  />
+                </PublicLayout>
+              }
+            />
 
-          {/* Admin CMS portal routes */}
-          <Route path="/admin/login" element={<AdminLogin />} />
-          <Route
-            path="/admin/*"
-            element={<AdminLayout dark={dark} toggleDark={toggleDark} />}
-          />
-        </Routes>
+            {/* Admin CMS portal routes */}
+            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route
+              path="/admin/*"
+              element={<AdminLayout dark={dark} toggleDark={toggleDark} />}
+            />
+
+            {/* Fallback 404 route */}
+            <Route
+              path="*"
+              element={
+                <PublicLayout dark={dark} toggleDark={toggleDark} info={info}>
+                  <NotFoundPage />
+                </PublicLayout>
+              }
+            />
+          </Routes>
+        </Suspense>
 
         {selectedCaseStudy && (
           <CaseStudyModal
