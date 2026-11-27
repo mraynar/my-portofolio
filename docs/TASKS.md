@@ -1,8 +1,8 @@
 # Task Roadmap & Implementation Tracking
 
 ## 1. Project Phase Overview
-- **Active Phase**: Phase 0A (Foundation Documentation)
-- **Current Blocker**: None (Awaiting user confirmation of Phase 0A before proceeding to Phase 0B Audit)
+- **Active Phase**: Phase E (Production Hardening & Launch - COMPLETED)
+- **Current Blocker**: None (Production live at `https://mraynar.my.id`)
 
 ## 2. Phase Checklist
 
@@ -64,16 +64,17 @@
 - [x] Clean up unreferenced image fields in `src/data.jsx`.
 - [x] Verify zero broken references across codebase via `git grep` and automated layout test.
 
-### Phase D: Public Site Integration & Resilient Caching (PENDING)
-- [ ] Connect public pages to Supabase data via `usePortfolioData`.
-- [ ] Implement memory cache and localStorage snapshot fallback for paused database mode.
-- [ ] Render all public sections using newly built design system components.
-- [ ] Verify dynamic SEO meta tags and Person structured data.
-- [ ] Run `npm run lint` and `npm run check:comments`.
+### Phase D: Public Site Integration & Resilient Caching (COMPLETED)
+- [x] Connect public pages to Supabase data with IndexedDB offline mirror.
+- [x] Trust empty Supabase tables without resurrecting static seed arrays.
+- [x] Render all public sections with neo-brutalist design tokens and zero emojis.
+- [x] Verify SEO meta tags, canonical link, robots.txt, sitemap.xml, and manifest.
+- [x] Audit full bilingual ID/EN translation coverage across all public views.
 
-### Phase E: Quality Assurance, Performance & Launch (PENDING)
-- [ ] Test responsiveness across 360px, 768px, 1024px, and 1440px without horizontal scroll.
-- [ ] Verify keyboard accessibility, focus rings, and screen reader announcements.
-- [ ] Run Lighthouse audits targeting scores >= 95 in both themes.
-- [ ] Run `npm run check:comments` and `npm run lint` to guarantee zero violations.
-- [ ] Deliver final deployment guide and README.
+### Phase E: Quality Assurance, Performance & Launch (COMPLETED)
+- [x] Verify responsiveness across 360px to 1920px in light and dark themes.
+- [x] Add skip-to-content link, Escape key dismissal, and dynamic route titles.
+- [x] Split Vite vendor chunks and lazy-load `/admin` routes for smaller payloads.
+- [x] Add multi-select bulk deletion and drag-and-drop reordering in Admin CMS v2.1.
+- [x] Configure `vercel.json` SPA `no-store` HTML headers and main-only deploys.
+- [x] Pass `npm run check:all` and deploy verified build to `https://mraynar.my.id`.
